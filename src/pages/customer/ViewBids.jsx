@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import {
   acceptBid, cancelAcceptedBid, hideBid, unhideBid,
-  expandRadius, cancelRequest, restoreRequest, updateRequest,
+  expandRadius, cancelRequest, restoreRequest,
   getVendorsInRadius, getBidsForRequest, ADDON_SUGGESTIONS,
   subscribeToRequest, subscribeToBidsForRequest
 } from '../../utils/data';
@@ -34,9 +34,6 @@ export default function ViewBids() {
   const [randomSuggestions, setRandomSuggestions] = useState([]);
   const [showAllAddons, setShowAllAddons] = useState(false);
   const [localRequest, setLocalRequest] = useState(null);
-  // coupon removed — kept as constants to avoid runtime errors in any remaining references
-  const coupon = '';
-  const discount = 0;
 
   useEffect(() => {
     if (!user || user.role !== 'customer') navigate('/');
@@ -85,11 +82,27 @@ export default function ViewBids() {
     return () => { cancelled = true; };
   }, [id]);
 
-  // Re-fetch bids on every context refresh (every 3s)
+  // Re-fetch bids on every context refresh
   useEffect(() => {
     if (bidsLoading) return; // skip during initial load
     getBidsForRequest(id).then(bids => setLocalBids(bids || []));
   }, [requests, allBids]);
+
+  // Polling fallback: auto-refresh every 8s while request is active (searching / bidding).
+  // Catches cases where Supabase Realtime isn't firing (auth/network issues in dev).
+  useEffect(() => {
+    if (!id) return;
+    const status = localRequest?.status;
+    if (status === 'confirmed' || status === 'cancelled' || status === 'completed') return;
+
+    const interval = setInterval(async () => {
+      const freshBids = await getBidsForRequest(id);
+      if (freshBids) setLocalBids(freshBids);
+      refresh();
+    }, 8000);
+
+    return () => clearInterval(interval);
+  }, [id, localRequest?.status, refresh]);
 
   useEffect(() => {
     if (request) {
@@ -211,8 +224,7 @@ export default function ViewBids() {
     setAddons(prev => prev.includes(item) ? prev.filter(i => i !== item) : [...prev, item]);
   };
 
-  const handleApplyCoupon = async () => {};
-  const handleRemoveCoupon = async () => {};
+
 
   const perPlateTotal = (ADDON_SUGGESTIONS[request?.foodType] || ADDON_SUGGESTIONS.veg)
     .filter(s => addedons.includes(s.item))

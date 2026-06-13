@@ -99,6 +99,21 @@ export default function CreatePackage() {
   useEffect(() => { if (!user || user.role !== 'vendor') navigate('/'); }, [user, navigate]);
   useEffect(() => { if (!user) return; setPackages(loadVendorPackages(user.id)); }, [user]);
 
+  // ── Filtered dish items — must stay above early return (Rules of Hooks) ───────
+  const dishCategories = CATEGORY_ORDER.filter(c => DISH_ITEMS.some(d => d.category === c));
+
+  const filteredDishes = useMemo(() => {
+    if (!packages.length) return [];
+    return DISH_ITEMS.filter(item => {
+      const matchName = item.name.toLowerCase().includes(dishSearch.toLowerCase());
+      const matchCat  = dishCatFilter === 'all' || item.category === dishCatFilter;
+      const matchSub  = dishSubFilter === 'all' || item.subCategory === dishSubFilter;
+      return matchName && matchCat && matchSub;
+    });
+  }, [dishSearch, dishCatFilter, dishSubFilter, packages.length]);
+
+  const groupedDishes = useMemo(() => groupByCategory(filteredDishes), [filteredDishes]);
+
   if (!user || packages.length === 0) return null;
 
   const pkg  = packages[activeIdx];
@@ -138,19 +153,7 @@ export default function CreatePackage() {
     setSaved(false);
   };
 
-  // ── Filtered dish items ───────────────────────────────────────────────────────
-  const dishCategories = CATEGORY_ORDER.filter(c => DISH_ITEMS.some(d => d.category === c));
-
-  const filteredDishes = useMemo(() =>
-    DISH_ITEMS.filter(item => {
-      const matchName = item.name.toLowerCase().includes(dishSearch.toLowerCase());
-      const matchCat  = dishCatFilter === 'all' || item.category === dishCatFilter;
-      const matchSub  = dishSubFilter === 'all' || item.subCategory === dishSubFilter;
-      return matchName && matchCat && matchSub;
-    }),
-  [dishSearch, dishCatFilter, dishSubFilter]);
-
-  const groupedDishes = useMemo(() => groupByCategory(filteredDishes), [filteredDishes]);
+  // (filteredDishes and groupedDishes are already computed above the guard)
 
   // ── Selected dishes as full master menu objects (no duplicates) ───────────────
   const selectedDishNames = [...new Set(pkg.dishes || [])];
@@ -334,7 +337,7 @@ export default function CreatePackage() {
                     background: `${meta.color}18`, color: meta.color, border: `1px solid ${meta.color}30`,
                   }}>{items.length}</span>
                 </div>
-                {items.map((item, idx) => (
+                {items.map((item) => (
                   <DishRow
                     key={item.id}
                     item={item}

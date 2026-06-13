@@ -6,6 +6,10 @@ import {
   getDishImage,
   groupByCategory,
   getMenuItems,
+  MASTER_MENU,
+  loadVendorMenuSelection,
+  loadVendorDishNames,
+  loadVendorDishPrices,
 } from '../../utils/masterMenu';
 
 // Short unique labels — no duplicates, no emoji
@@ -118,7 +122,7 @@ function DishCard({ item, isSelected, onToggle }) {
 export default function CustomPackage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { foodType = 'both', guests = 100 } = location.state || {};
+  const { foodType = 'both', guests = 100, vendorId = null, vendorName = null } = location.state || {};
 
   const [selected, setSelected] = useState([]);
   const [budget, setBudget] = useState('');
@@ -127,15 +131,38 @@ export default function CustomPackage() {
   const [showBudget, setShowBudget] = useState(true);
   const [showLeaf, setShowLeaf] = useState(false);
 
-  // Filter by food type
+  // Build the base item list:
+  // If a vendorId is provided, show ONLY that vendor's enabled menu items
+  // (with their custom names & prices). Otherwise fall back to full master menu.
   const allowedItems = useMemo(() => {
-    return getMenuItems().filter(item => {
+    let baseItems;
+    if (vendorId) {
+      const enabledIds    = loadVendorMenuSelection(vendorId);
+      const customNames   = loadVendorDishNames(vendorId);
+      const customPrices  = loadVendorDishPrices(vendorId);
+      baseItems = MASTER_MENU
+        .filter(d => d.type === 'menu_item' && enabledIds.has(d.id))
+        .map(d => ({
+          ...d,
+          name:  customNames[d.id]  || d.name,
+          price: customPrices[d.id] ?? d.price,
+        }));
+      if (baseItems.length === 0) {
+        // Vendor hasn't configured their menu yet — fall back to all dishes
+        baseItems = getMenuItems();
+      }
+    } else {
+      baseItems = getMenuItems();
+    }
+
+    // Apply food-type filter
+    return baseItems.filter(item => {
       if (foodType === 'veg' && item.subCategory === 'non-veg') return false;
       if (foodType === 'nonveg' && item.subCategory === 'veg' &&
         !['Indian Breads', 'Rice Items', 'Desserts & Sweets', 'Beverages', 'Salads & Accompaniments'].includes(item.category)) return false;
       return true;
     });
-  }, [foodType]);
+  }, [foodType, vendorId]);
 
   // Build unique categories list (no duplicates)
   const categories = useMemo(() => {
@@ -174,9 +201,12 @@ export default function CustomPackage() {
       }}>
         <button onClick={() => navigate(-1)} style={{ width: 36, height: 36, borderRadius: '50%', background: '#f5f5f5', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem', cursor: 'pointer' }}>←</button>
         <div style={{ flex: 1 }}>
-          <div style={{ fontWeight: 800, fontSize: '1rem', color: '#1a1a1a' }}>Build Your Thali</div>
+          <div style={{ fontWeight: 800, fontSize: '1rem', color: '#1a1a1a' }}>
+            {vendorName ? `${vendorName}'s Menu` : 'Build Your Thali'}
+          </div>
           <div style={{ fontSize: '0.72rem', color: '#9ca3af', marginTop: '1px' }}>
             {selected.length} selected · {foodType === 'veg' ? '🟢 Veg' : foodType === 'nonveg' ? '🔴 Non-Veg' : '🟠 All'} · {guests} guests
+            {vendorId && <span style={{ marginLeft: 6, color: '#FF6B00', fontWeight: 700 }}>· Vendor menu</span>}
           </div>
         </div>
         {selected.length > 0 && (
@@ -324,7 +354,7 @@ export default function CustomPackage() {
         <button
           onClick={() => {
             if (selected.length === 0 || !budget) return;
-            navigate(-1, { state: { customDishes: selected, customBudget: parseInt(budget) || 0 } });
+            navigate(-1, { state: { customDishes: selected, customBudget: parseInt(budget) || 0, vendorId, vendorName } });
           }}
           disabled={selected.length === 0 || !budget}
           style={{

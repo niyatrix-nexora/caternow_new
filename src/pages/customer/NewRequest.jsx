@@ -112,6 +112,11 @@ export default function NewRequest() {
   const [position, setPosition] = useState(null);
   const [vendorCount, setVendorCount] = useState(0);
 
+  // Vendor pre-selection (when navigating from a specific vendor's page)
+  const fromVendorId   = location.state?.vendorId   || null;
+  const fromVendorName = location.state?.vendorName || null;
+  const fromPkgCat     = location.state?.packageCategory || null;
+
   // Step 2
   const [selectedPackage, setSelectedPackage] = useState(null);
   const [showLeafPreview, setShowLeafPreview] = useState(false);
@@ -120,6 +125,14 @@ export default function NewRequest() {
   const [customBudget, setCustomBudget] = useState(0);
 
 
+
+  // Pre-select the package when arriving from a vendor's package card
+  useEffect(() => {
+    if (fromPkgCat) {
+      const matched = getPackages(foodType).find(p => p.category === fromPkgCat);
+      if (matched) setSelectedPackage(matched);
+    }
+  }, [fromPkgCat]);
 
   // Pick up custom package data when navigating back from CustomPackage
   useEffect(() => {
@@ -173,7 +186,16 @@ export default function NewRequest() {
     return true;
   };
 
-  const handleNext = () => { if (validateStep()) setStep(s => s + 1); };
+  const handleNext = () => {
+    if (!validateStep()) return;
+    // If a package is already pre-selected (from dashboard or vendor page),
+    // skip the package-selection step and jump straight to review.
+    if (step === 1 && selectedPackage) {
+      setStep(3);
+    } else {
+      setStep(s => s + 1);
+    }
+  };
 
   const handleSubmit = async () => {
     if (submitting) return;
@@ -195,6 +217,8 @@ export default function NewRequest() {
       customerId: user.id,
       customerName: user.name || 'Customer',
       customerPhone: user.phone || '',
+      // Pre-link to a specific vendor when coming from their page
+      ...(fromVendorId ? { preferredVendorId: fromVendorId, preferredVendorName: fromVendorName } : {}),
     });
 
     if (req) {
@@ -210,7 +234,16 @@ export default function NewRequest() {
     <div className="app-container">
       {/* ── Header ── */}
       <div className="page-header">
-        <button className="back-btn" onClick={() => step > 1 ? setStep(s => s - 1) : navigate('/customer')}>←</button>
+        <button className="back-btn" onClick={() => {
+          if (step === 3 && selectedPackage && (fromPkgCat)) {
+            // Came from a pre-selected package: back goes to step 1, not step 2
+            setStep(1);
+          } else if (step > 1) {
+            setStep(s => s - 1);
+          } else {
+            navigate('/customer');
+          }
+        }}>←</button>
         <h1>{STEPS[step - 1]}</h1>
       </div>
 
@@ -252,6 +285,59 @@ export default function NewRequest() {
         {error && (
           <div style={{ background: '#FEE2E2', color: '#991B1B', padding: '12px 16px', borderRadius: '14px', marginBottom: '16px', fontSize: '0.88rem', fontWeight: 500 }}>
             ⚠️ {error}
+          </div>
+        )}
+
+        {/* Vendor-targeted banner */}
+        {fromVendorName && (
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: '12px',
+            background: 'rgba(232,89,12,0.08)', border: '1.5px solid rgba(232,89,12,0.25)',
+            borderRadius: '16px', padding: '12px 16px', marginBottom: '16px',
+          }}>
+            <span style={{ fontSize: '1.4rem' }}>🎯</span>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontWeight: 800, fontSize: '0.88rem', color: 'var(--primary)' }}>
+                Requesting from {fromVendorName}
+              </div>
+              <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+                {selectedPackage ? `${selectedPackage.title} package pre-selected` : 'Will go directly to this vendor.'}
+                {selectedPackage && (
+                  <button onClick={() => setStep(2)} style={{
+                    marginLeft: '8px', border: 'none', background: 'transparent',
+                    color: 'var(--primary)', fontSize: '0.72rem', fontWeight: 700,
+                    cursor: 'pointer', padding: 0, textDecoration: 'underline',
+                  }}>Change ›</button>
+                )}
+              </div>
+            </div>
+            <button
+              onClick={() => navigate(`/customer/vendors/${fromVendorId}`)}
+              style={{
+                border: '1px solid rgba(232,89,12,0.3)', background: 'transparent',
+                color: 'var(--primary)', borderRadius: '10px', padding: '5px 10px',
+                fontSize: '0.72rem', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit',
+              }}
+            >View ›</button>
+          </div>
+        )}
+
+        {/* Package-only pre-selection banner (from dashboard, no vendor) */}
+        {!fromVendorName && selectedPackage && fromPkgCat && (
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: '10px',
+            background: 'rgba(5,150,105,0.07)', border: '1.5px solid rgba(5,150,105,0.2)',
+            borderRadius: '16px', padding: '10px 14px', marginBottom: '16px',
+          }}>
+            <span style={{ fontSize: '1.2rem' }}>📦</span>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontWeight: 800, fontSize: '0.85rem', color: '#059669' }}>
+                {selectedPackage.title} Package pre-selected
+              </div>
+              <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
+                Fill your event details below · <button onClick={() => setStep(2)} style={{ border: 'none', background: 'transparent', color: '#059669', fontSize: '0.7rem', fontWeight: 700, cursor: 'pointer', padding: 0, textDecoration: 'underline' }}>Change package ›</button>
+              </div>
+            </div>
           </div>
         )}
 
@@ -340,7 +426,7 @@ export default function NewRequest() {
                       if (isCustom) {
                         // Navigate to custom builder
                         navigate('/customer/custom-package', {
-                          state: { foodType, guests: parseInt(guests) || 100 },
+                          state: { foodType, guests: parseInt(guests) || 100, vendorId: fromVendorId || null, vendorName: fromVendorName || null },
                         });
                         return;
                       }
@@ -499,7 +585,7 @@ export default function NewRequest() {
                 </div>
                 <BananaLeaf dishes={customDishes} interactive={false} />
                 <button
-                  onClick={() => navigate('/customer/custom-package', { state: { foodType, guests: parseInt(guests) || 100 } })}
+                  onClick={() => navigate('/customer/custom-package', { state: { foodType, guests: parseInt(guests) || 100, vendorId: fromVendorId || null, vendorName: fromVendorName || null } })}
                   style={{
                     width: '100%', marginTop: '12px', padding: '10px', borderRadius: '12px',
                     background: 'rgba(34,197,94,0.15)', color: '#22c55e',
@@ -540,6 +626,7 @@ export default function NewRequest() {
                 { icon: '📅', label: 'Date', value: new Date(eventDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) },
                 { icon: '👥', label: 'Guests', value: `${guests} people` },
                 { icon: '🍱', label: 'Food Type', value: foodType === 'veg' ? '🟢 Veg' : foodType === 'nonveg' ? '🔴 Non-Veg' : '🟠 Veg + Non-Veg' },
+                ...(fromVendorName ? [{ icon: '🎯', label: 'Vendor', value: fromVendorName }] : []),
               ].map(row => (
                 <div key={row.label} style={{ display: 'flex', gap: '10px', alignItems: 'center', paddingBottom: '10px', marginBottom: '10px', borderBottom: '1px solid var(--border)' }}>
                   <span style={{ fontSize: '1rem', flexShrink: 0 }}>{row.icon}</span>
@@ -581,11 +668,17 @@ export default function NewRequest() {
             </div>
 
             <div style={{ textAlign: 'center', fontSize: '0.82rem', color: 'var(--text-muted)', marginBottom: '16px', lineHeight: 1.5 }}>
-              💡 Vendors near you will receive this request and submit competitive bids.
+              {fromVendorName
+                ? `🎯 This request will go directly to ${fromVendorName} for a personalised bid.`
+                : '💡 Vendors near you will receive this request and submit competitive bids.'}
             </div>
 
             <button className="btn btn-primary btn-block btn-lg" onClick={handleSubmit} disabled={submitting}>
-              {submitting ? '⏳ Sending to vendors...' : '🚀 Send Request to Vendors'}
+              {submitting
+                ? '⏳ Sending...'
+                : fromVendorName
+                  ? `🚀 Send Request to ${fromVendorName}`
+                  : '🚀 Send Request to Vendors'}
             </button>
           </div>
         )}

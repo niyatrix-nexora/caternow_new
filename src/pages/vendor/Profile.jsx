@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, NavLink } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
+import { saveVendorMenu, loadVendorMenu } from '../../utils/data';
 
 // ─── Item pool per food type ──────────────────────────────────────────────────
 const ITEM_POOL = {
@@ -31,15 +32,6 @@ function getDefaultPrice(cat, name) {
   return 50;
 }
 
-const LS_MENU_KEY = (id) => `caternow_vendor_menu_${id}`;
-
-function loadSavedMenu(id) {
-  try { return JSON.parse(localStorage.getItem(LS_MENU_KEY(id)) || 'null'); }
-  catch { return null; }
-}
-function saveMenu(id, menu) {
-  localStorage.setItem(LS_MENU_KEY(id), JSON.stringify(menu));
-}
 
 // Build the full menu split into separate sub-categories
 function buildFullMenu(foodType) {
@@ -82,7 +74,7 @@ function mergeMenu(full, saved) {
     const savedCat = saved[cat] || saved['mains'] || [];
     result[cat] = full[cat].map(row => {
       const s = savedCat.find(r => r.name === row.name);
-      return s ? { ...row, enabled: s.enabled, price: s.price ?? row.price } : row;
+      return s ? { ...row, enabled: s.enabled, price: s.price ?? row.price, customName: s.customName ?? row.customName } : row;
     });
   }
   return result;
@@ -137,9 +129,11 @@ export default function VendorProfile() {
   const [activeTab, setActiveTab]  = useState('history');
   const [menu, setMenu]            = useState(null);
   const [saved, setSaved]          = useState(false);
-  const [openCats, setOpenCats]    = useState(
-    () => new Set(['starters','mainsVeg','mainsNonveg','breads','desserts','beverages'])
-  );
+  // Accordion: only one category open at a time
+  const [openCat, setOpenCat]      = useState('starters');
+  // Inline dish-name editing
+  const [renamingItem, setRenamingItem] = useState(null); // { cat, name }
+  const [renameValue,  setRenameValue]  = useState('');
 
   // Edit profile state
   const [name, setName]               = useState('');
@@ -155,9 +149,11 @@ export default function VendorProfile() {
 
   useEffect(() => {
     if (!user) return;
-    const full   = buildFullMenu(user.foodType || 'both');
-    const stored = loadSavedMenu(user.id);
-    setMenu(stored ? mergeMenu(full, stored) : full);
+    // Load from Supabase first, fall back to localStorage
+    loadVendorMenu(user.id).then(stored => {
+      const full = buildFullMenu(user.foodType || 'both');
+      setMenu(stored ? mergeMenu(full, stored) : full);
+    });
     setName(user.name || '');
     setBusinessName(user.businessName || '');
     setEmail(user.email || '');
@@ -197,8 +193,27 @@ export default function VendorProfile() {
     }));
   }, []);
 
-  const handleSave = () => {
-    saveMenu(user.id, menu);
+  // Rename a dish (custom display name)
+  const commitRename = useCallback((cat, name) => {
+    const trimmed = renameValue.trim();
+    if (trimmed && trimmed !== name) {
+      setSaved(false);
+      setMenu(prev => ({
+        ...prev,
+        [cat]: prev[cat].map(r => r.name === name ? { ...r, customName: trimmed } : r),
+      }));
+    }
+    setRenamingItem(null);
+    setRenameValue('');
+  }, [renameValue]);
+
+  const startRename = useCallback((cat, row) => {
+    setRenamingItem({ cat, name: row.name });
+    setRenameValue(row.customName || row.name);
+  }, []);
+
+  const handleSave = async () => {
+    await saveVendorMenu(user.id, menu);
     setSaved(true);
     setTimeout(() => setSaved(false), 2500);
   };
@@ -396,7 +411,7 @@ export default function VendorProfile() {
                 <strong style={{ color:'var(--primary-light)' }}>{enabledCount}</strong> of {totalCount} items offered
               </p>
               <p style={{ fontSize:'0.72rem', color:'var(--text-muted)', margin:0 }}>
-                Toggle on/off · edit ₹ price
+                Toggle · edit ₹ price · ✏️ rename
               </p>
             </div>
 
@@ -405,12 +420,8 @@ export default function VendorProfile() {
               if (!menu[cat]) return null;
               const rows    = menu[cat] || [];
               const enabled = rows.filter(r => r.enabled).length;
-              const isOpen  = openCats.has(cat);
-              const toggle  = () => setOpenCats(prev => {
-                const next = new Set(prev);
-                next.has(cat) ? next.delete(cat) : next.add(cat);
-                return next;
-              });
+              const isOpen  = openCat === cat;
+              const toggle  = () => setOpenCat(prev => prev === cat ? '' : cat);
 
               return (
                 <div key={cat} className="vm-category" style={{ marginBottom: '10px' }}>
@@ -446,8 +457,73 @@ export default function VendorProfile() {
                             <span className="vm-toggle-knob" />
                           </button>
 
-                          {/* Item name */}
-                          <span className="vm-item-name">{row.name}</span>
+                          {/* Item name — tap ✏️ to rename */}
+                          {renamingItem?.cat === cat && renamingItem?.name === row.name ? (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '5px', flex: 1, minWidth: 0 }}>
+                              <input
+                                autoFocus
+                                type="text"
+                                value={renameValue}
+                                onChange={e => setRenameValue(e.target.value)}
+                                onKeyDown={e => {
+                                  if (e.key === 'Enter') commitRename(cat, row.name);
+                                  if (e.key === 'Escape') { setRenamingItem(null); setRenameValue(''); }
+                                }}
+                                maxLength={60}
+                                style={{
+                                  flex: 1, minWidth: 0, border: '1.5px solid var(--primary)',
+                                  borderRadius: '8px', padding: '4px 8px',
+                                  fontSize: '0.82rem', fontFamily: 'inherit',
+                                  background: 'var(--bg-input)', color: 'var(--text)',
+                                  outline: 'none',
+                                }}
+                              />
+                              <button
+                                onClick={() => commitRename(cat, row.name)}
+                                title="Confirm rename"
+                                style={{
+                                  width: 26, height: 26, borderRadius: '50%', border: 'none',
+                                  background: 'var(--success)', color: '#fff', cursor: 'pointer',
+                                  fontSize: '0.75rem', display: 'flex', alignItems: 'center',
+                                  justifyContent: 'center', flexShrink: 0,
+                                }}
+                              >✓</button>
+                              <button
+                                onClick={() => { setRenamingItem(null); setRenameValue(''); }}
+                                title="Cancel"
+                                style={{
+                                  width: 26, height: 26, borderRadius: '50%', border: 'none',
+                                  background: 'var(--bg-elevated)', color: 'var(--text-muted)',
+                                  cursor: 'pointer', fontSize: '0.75rem',
+                                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                  flexShrink: 0,
+                                }}
+                              >✕</button>
+                            </div>
+                          ) : (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '5px', flex: 1, minWidth: 0 }}>
+                              <span className="vm-item-name" style={{ flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                {row.customName || row.name}
+                                {row.customName && row.customName !== row.name && (
+                                  <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginLeft: '4px', fontStyle: 'italic' }}>
+                                    ({row.name})
+                                  </span>
+                                )}
+                              </span>
+                              <button
+                                onClick={() => startRename(cat, row)}
+                                title="Customize dish name"
+                                style={{
+                                  border: 'none', background: 'transparent', cursor: 'pointer',
+                                  color: 'var(--text-muted)', fontSize: '0.75rem', padding: '2px 4px',
+                                  borderRadius: '6px', flexShrink: 0, opacity: 0.6,
+                                  transition: 'opacity 0.15s, color 0.15s',
+                                }}
+                                onMouseEnter={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.color = 'var(--primary)'; }}
+                                onMouseLeave={e => { e.currentTarget.style.opacity = '0.6'; e.currentTarget.style.color = 'var(--text-muted)'; }}
+                              >✏️</button>
+                            </div>
+                          )}
 
                           {/* Price input */}
                           <div className="vm-price-field">

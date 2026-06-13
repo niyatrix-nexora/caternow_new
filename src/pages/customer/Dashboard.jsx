@@ -35,11 +35,7 @@ const FALLBACK_GRADIENTS = [
   'linear-gradient(135deg,#0891B2,#06B6D4)',
 ];
 
-function imgWithFallback(e, idx) {
-  e.currentTarget.style.display = 'none';
-  const parent = e.currentTarget.parentElement;
-  if (parent) parent.style.background = FALLBACK_GRADIENTS[idx % FALLBACK_GRADIENTS.length];
-}
+
 
 const CATEGORIES = ['Wedding', 'Birthday', 'Corporate', 'Veg', 'Non-Veg', 'Luxury'];
 
@@ -67,9 +63,9 @@ export default function CustomerDashboard() {
   const latestActive = activeRequests[0];
 
   const packages = [
-    { name: 'Royal Wedding', price: 320, meta: '24 dishes | live counters', img: '/royal.jpg', imgIdx: 0 },
-    { name: 'Classic Feast', price: 220, meta: '16 dishes | full service', img: '/spice.jpeg', imgIdx: 1 },
-    { name: 'Premium Biryani', price: 280, meta: 'Chef special | fast bids', img: '/grandbiriyani.jpeg', imgIdx: 2 },
+    { name: 'Royal Wedding',   price: 320, meta: '24 dishes | live counters',  img: '/royal.jpg',          imgIdx: 0, pkgCategory: 'special'  },
+    { name: 'Classic Feast',   price: 220, meta: '16 dishes | full service',   img: '/spice.jpeg',         imgIdx: 1, pkgCategory: 'standard' },
+    { name: 'Premium Biryani', price: 280, meta: 'Chef special | fast bids',   img: '/grandbiriyani.jpeg', imgIdx: 2, pkgCategory: 'premium'  },
   ];
 
   return (
@@ -132,7 +128,11 @@ export default function CustomerDashboard() {
 
         <div className="package-rail">
           {packages.map((pack) => (
-            <button key={pack.name} className="package-card" type="button" onClick={() => navigate('/customer/new-request')}>
+            <button key={pack.name} className="package-card" type="button"
+              onClick={() => navigate('/customer/new-request', {
+                state: { packageCategory: pack.pkgCategory, packageTitle: pack.name }
+              })}
+            >
               <div className="package-card-img" style={{ background: FALLBACK_GRADIENTS[pack.imgIdx] }}>
                 <img
                   src={pack.img}

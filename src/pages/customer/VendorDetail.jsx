@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import { getVendor, getDistance } from '../../utils/data';
@@ -351,7 +351,7 @@ export default function VendorDetail() {
 
   useEffect(() => { if (!user || user.role !== 'customer') navigate('/'); }, [user, navigate]);
 
-  useEffect(() => {
+  const loadData = useCallback(() => {
     getVendor(id).then(v => {
       if (v) {
         setVendor({ ...v, distance: getDistance(12.9716, 77.5946, v.lat, v.lng) });
@@ -361,6 +361,15 @@ export default function VendorDetail() {
       setLoading(false);
     });
   }, [id, user?.id]);
+
+  useEffect(() => { loadData(); }, [loadData]);
+
+  // Reload vendor data when the tab regains focus (picks up vendor-side updates)
+  useEffect(() => {
+    const onFocus = () => loadData();
+    window.addEventListener('focus', onFocus);
+    return () => window.removeEventListener('focus', onFocus);
+  }, [loadData]);
 
   const handleWishlist = () => {
     const newList = toggleWishlist(user?.id || 'guest', id);
@@ -542,7 +551,8 @@ export default function VendorDetail() {
                 <p>This vendor hasn't set up packages. Post a request and they'll send a custom bid.</p>
               </div>
             ) : (
-              activePackages.map((pkg, i) => {
+              <>
+                {activePackages.map((pkg, i) => {
                 const meta = PACKAGE_META[pkg.category] || PACKAGE_META.custom;
                 return (
                   <div
@@ -556,7 +566,15 @@ export default function VendorDetail() {
                       cursor: 'pointer',
                       transition: 'transform 0.2s, box-shadow 0.2s',
                     }}
-                    onClick={() => navigate('/customer/new-request')}
+                    onClick={() => navigate('/customer/new-request', {
+                      state: {
+                        vendorId: vendor.id,
+                        vendorName: vendor.name,
+                        packageCategory: pkg.category,
+                        packageTitle: pkg.title,
+                        pricePerPlate: pkg.pricePerPlate,
+                      }
+                    })}
                     onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 12px 32px rgba(0,0,0,0.1)'; }}
                     onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = ''; }}
                   >
@@ -634,7 +652,37 @@ export default function VendorDetail() {
                     </div>
                   </div>
                 );
-              })
+              })}
+
+              {/* Build a custom package from this vendor's specific menu */}
+              <div
+                style={{
+                  background: 'rgba(255,107,0,0.06)',
+                  border: '1.5px dashed rgba(255,107,0,0.35)',
+                  borderRadius: '22px',
+                  padding: '18px',
+                  cursor: 'pointer',
+                  textAlign: 'center',
+                  transition: 'all 0.2s',
+                }}
+                onClick={() => navigate('/customer/custom-package', {
+                  state: {
+                    vendorId: vendor.id,
+                    vendorName: vendor.name,
+                    foodType: vendor.foodType || 'both',
+                    guests: 100,
+                  }
+                })}
+                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,107,0,0.1)'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,107,0,0.06)'; }}
+              >
+                <div style={{ fontSize: '1.8rem', marginBottom: '8px' }}>✏️</div>
+                <div style={{ fontWeight: 800, fontSize: '0.95rem', color: '#FF6B00' }}>Build a Custom Package</div>
+                <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '4px', lineHeight: 1.4 }}>
+                  Pick exactly what you want from {vendor.name}'s menu
+                </div>
+              </div>
+            </>
             )}
           </div>
         )}
@@ -670,11 +718,18 @@ export default function VendorDetail() {
 
         {/* ── CTA ── */}
         <div className="vd-cta">
-          <button className="btn btn-primary btn-block btn-lg" onClick={() => navigate('/customer/new-request')}>
-            🚀 Post a Request
-          </button>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button className="btn btn-primary btn-lg" style={{ flex: 2 }} onClick={() => navigate('/customer/new-request', {
+              state: { vendorId: vendor.id, vendorName: vendor.name }
+            })}>
+              🚀 Post a Request
+            </button>
+            <button className="btn btn-secondary btn-lg" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }} onClick={() => navigate(`/customer/chat/${vendor.id}`, { state: { vendorName: vendor.name }})}>
+              💬 Chat
+            </button>
+          </div>
           <p className="vd-cta-note">
-            Create a catering request and {vendor.name} will be notified if they cover your area.
+            Your request will go directly to {vendor.name}. They will send you a personalised bid.
           </p>
         </div>
       </div>
