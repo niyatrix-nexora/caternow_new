@@ -10,6 +10,7 @@ import {
 import { MapContainer, TileLayer, Marker, Circle } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import BananaLeaf from './BananaLeaf';
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -315,6 +316,13 @@ export default function ViewBids() {
                       pathOptions={{ color: '#E8590C', fillColor: '#E8590C', fillOpacity: 0.08, weight: 2, dashArray: '8 4' }}
                     />
                   </MapContainer>
+                </div>
+              )}
+              
+              {/* Banana Leaf Preview */}
+              {request.packageDishes && request.packageDishes.length > 0 && (
+                <div style={{ marginTop: '16px' }}>
+                  <BananaLeaf dishes={request.packageDishes} interactive={false} />
                 </div>
               )}
             </div>

@@ -212,6 +212,8 @@ export default function NewRequest() {
       foodType,
       menuNotes,
       packageType: selectedPackage?.title || 'Custom',
+      packageDishes: selectedPackage?.dishes || [],
+      packageCategory: selectedPackage?.category,
       lat: position[0],
       lng: position[1],
       customerId: user.id,

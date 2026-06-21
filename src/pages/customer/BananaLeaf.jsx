@@ -6,68 +6,69 @@ const MENU_IMG_MAP = {};
 MASTER_MENU.forEach(item => { if (item.name && item.image) MENU_IMG_MAP[item.name] = item.image; });
 
 const EXTRA_MAP = {
-  'Steamed Rice':      '/rice-real.png',
-  'Jeera Rice':        '/Jeera Rice.jpeg',
-  'Veg Biryani':       '/Vegetable Dum Biryani.jpeg',
-  'Chicken Biryani':   '/chicken biriyani.jpeg',
-  'Dal Makhani':       '/Dal Makhani.jpeg',
-  'Palak Paneer':      '/Palak Paneer.jpeg',
-  'Shahi Paneer':      '/Shahi Paneer.jpeg',
-  'Chana Masala':      '/Chana Masala.jpeg',
-  'Kadai Paneer':      '/Kadai Paneer.jpeg',
-  'Butter Chicken':    '/Butter Chicken.jpeg',
-  'Mutton Curry':      '/mutton curry.jpeg',
-  'Fish Curry':        '/fish curry.jpeg',
-  'Chicken Curry':     '/Chicken Curry.jpeg',
-  'Paneer Tikka':      '/Paneer Tikka.jpeg',
-  'Veg Spring Rolls':  '/Veg Spring Rolls.jpeg',
-  'Samosa':            '/dish-samosa.png',
-  'Hara Bhara Kabab':  '/Hara Bhara Kabab.jpeg',
-  'Chicken Tikka':     '/Chicken Tikka.jpeg',
-  'Seekh Kabab':       '/Chicken Seekh Kebab.jpeg',
-  'Tandoori Chicken':  '/Tandoori Chicken.jpeg',
-  'Chicken Lollipop':  '/Chicken Lollipop.jpeg',
-  'Butter Naan':       '/Butter Naan.jpeg',
-  'Paratha':           '/parota.jpeg',
-  'Roti':              '/TandooriRoti.jpeg',
-  'Gulab Jamun':       '/gulab jamun.jpeg',
-  'Kheer':             '/kheer.jpeg',
-  'Rasgulla':          '/rasamalai.jpeg',
-  'Kulfi':             '/kulfi.jpeg',
-  'Ice Cream':         '/icecream.jpeg',
-  'Rasmalai':          '/rasamalai.jpeg',
-  'Masala Lassi':      '/masala-lassi.jpeg',
-  'Buttermilk':        '/buttermilk.jpeg',
-  'Coconut Water':     '/coconut-water.jpeg',
-  'Fresh Juice':       '/lemonsoda.jpeg',
-  'Cold Drinks':       '/lemonsoda.jpeg',
-  'Mix Veg Curry':     '/Veg Kurma.jpeg',
-  'Prawn Masala':      '/Prawns Curry.jpeg',
-  'Prawn Cocktail':    '/Prawn Fry.jpeg',
-  'Fish Fingers':      '/Fish Fry.jpeg',
-  'Sambar':            '/sambar.jpeg',
-  'Rasam':             '/rasam.jpeg',
-  'Curd':              '/curd.jpeg',
-  'Raita':             '/dish-raita.png',
-  'Boondi Raita':      '/dish-raita.png',
-  'Mint Chutney':      '/dish-chutney.png',
-  'Pickle':            '/dish-chutney.png',
-  'Papad':             '/dish-naan.png',
-  'Green Salad':       '/dish-salad.png',
+  'Steamed Rice':      '/plateimg/rice-real.png',
+  'Jeera Rice':        '/plateimg/Jeera Rice.jpeg',
+  'Veg Biryani':       '/plateimg/Vegetable Dum Biryani.jpeg',
+  'Chicken Biryani':   '/plateimg/chicken biriyani.jpeg',
+  'Dal Makhani':       '/plateimg/Dal Makhani.jpeg',
+  'Palak Paneer':      '/plateimg/Palak Paneer.jpeg',
+  'Shahi Paneer':      '/plateimg/Shahi Paneer.jpeg',
+  'Chana Masala':      '/plateimg/Chana Masala.jpeg',
+  'Kadai Paneer':      '/plateimg/Kadai Paneer.jpeg',
+  'Butter Chicken':    '/plateimg/Butter Chicken.jpeg',
+  'Mutton Curry':      '/plateimg/mutton curry.jpeg',
+  'Fish Curry':        '/plateimg/fish curry.jpeg',
+  'Chicken Curry':     '/plateimg/Chicken Curry.jpeg',
+  'Paneer Tikka':      '/plateimg/Paneer Tikka.jpeg',
+  'Veg Spring Rolls':  '/plateimg/Veg Spring Rolls.jpeg',
+  'Samosa':            '/plateimg/dish-samosa.png',
+  'Hara Bhara Kabab':  '/plateimg/Hara Bhara Kabab.jpeg',
+  'Chicken Tikka':     '/plateimg/Chicken Tikka.jpeg',
+  'Seekh Kabab':       '/plateimg/Chicken Seekh Kebab.jpeg',
+  'Tandoori Chicken':  '/plateimg/Tandoori Chicken.jpeg',
+  'Chicken Lollipop':  '/plateimg/Chicken Lollipop.jpeg',
+  'Butter Naan':       '/plateimg/Butter Naan.jpeg',
+  'Paratha':           '/plateimg/parota.jpeg',
+  'Roti':              '/plateimg/TandooriRoti.jpeg',
+  'Gulab Jamun':       '/plateimg/gulab jamun.jpeg',
+  'Kheer':             '/plateimg/kheer.jpeg',
+  'Rasgulla':          '/plateimg/rasamalai.jpeg',
+  'Kulfi':             '/plateimg/kulfi.jpeg',
+  'Ice Cream':         '/plateimg/icecream.jpeg',
+  'Rasmalai':          '/plateimg/rasamalai.jpeg',
+  'Masala Lassi':      '/plateimg/masala-lassi.jpeg',
+  'Buttermilk':        '/plateimg/buttermilk.jpeg',
+  'Coconut Water':     '/plateimg/coconut-water.jpeg',
+  'Fresh Juice':       '/plateimg/lemonsoda.jpeg',
+  'Cold Drinks':       '/plateimg/lemonsoda.jpeg',
+  'Mix Veg Curry':     '/plateimg/Veg Kurma.jpeg',
+  'Prawn Masala':      '/plateimg/Prawns Curry.jpeg',
+  'Prawn Cocktail':    '/plateimg/Prawn Fry.jpeg',
+  'Fish Fingers':      '/plateimg/Fish Fry.jpeg',
+  'Sambar':            '/plateimg/sambar.jpeg',
+  'Rasam':             '/plateimg/rasam.jpeg',
+  'Curd':              '/plateimg/curd.jpeg',
+  'Raita':             '/plateimg/dish-raita.png',
+  'Boondi Raita':      '/plateimg/dish-raita.png',
+  'Mint Chutney':      '/plateimg/dish-chutney.png',
+  'Pickle':            '/plateimg/dish-chutney.png',
+  'Papad':             '/plateimg/dish-naan.png',
+  'Green Salad':       '/plateimg/dish-salad.png',
 };
 
 function getImg(name) {
-  return EXTRA_MAP[name] || MENU_IMG_MAP[name] || '/dish-dal.png';
+  const img = EXTRA_MAP[name] || MENU_IMG_MAP[name] || '/plateimg/dish-dal.png';
+  return img.startsWith('/plateimg/') ? img : `/plateimg${img}`;
 }
 
 function getFallback(name) {
   const n = name.toLowerCase();
-  if (/rice|biryani/.test(n)) return '/rice-real.png';
-  if (/naan|paratha|roti|bread/.test(n)) return '/dish-naan.png';
-  if (/chicken|mutton|fish|prawn/.test(n)) return '/dish-butter-chicken.png';
-  if (/gulab|rasgulla|kulfi|kheer|rasmalai|sweet/.test(n)) return '/dish-gulab.png';
-  if (/lassi|buttermilk|water|juice|drink|curd|raita/.test(n)) return '/dish-raita.png';
-  return '/dish-paneer.png';
+  if (/rice|biryani/.test(n)) return '/plateimg/rice-real.png';
+  if (/naan|paratha|roti|bread/.test(n)) return '/plateimg/dish-naan.png';
+  if (/chicken|mutton|fish|prawn/.test(n)) return '/plateimg/dish-butter-chicken.png';
+  if (/gulab|rasgulla|kulfi|kheer|rasmalai|sweet/.test(n)) return '/plateimg/dish-gulab.png';
+  if (/lassi|buttermilk|water|juice|drink|curd|raita/.test(n)) return '/plateimg/dish-raita.png';
+  return '/plateimg/dish-paneer.png';
 }
 
 // ── Zone classifier ───────────────────────────────────────────────────────────
@@ -214,7 +215,7 @@ export default function BananaLeaf({ dishes = [], interactive = false, onDishCli
 
         {/* Banana leaf */}
         <img
-          src="/banana-leaf-real.png"
+          src="/plateimg/banana-leaf-real.png"
           alt=""
           loading="eager"
           style={{
@@ -242,7 +243,7 @@ export default function BananaLeaf({ dishes = [], interactive = false, onDishCli
                 }}
               >
                 <img
-                  src="/rice-real.png"
+                  src="/plateimg/rice-real.png"
                   alt="Rice"
                   loading="eager"
                   style={{
