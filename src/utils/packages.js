@@ -1,6 +1,4 @@
-// ============================================================
-// CaterNow — Package System + Wishlist + Chat persistence
-// ============================================================
+import { supabase, isSupabaseConfigured } from './supabaseClient';
 
 const PKG_KEY  = (vendorId) => `caternow_packages_${vendorId}`;
 const WISH_KEY = (userId)   => `caternow_wishlist_${userId}`;
@@ -84,8 +82,17 @@ export function loadVendorPackages(vendorId) {
   return DEFAULT_PACKAGES.map(p => ({ ...p, id: `${vendorId}_${p.category}`, vendorId }));
 }
 
-export function saveVendorPackages(vendorId, packages) {
+export async function saveVendorPackages(vendorId, packages) {
   try { localStorage.setItem(PKG_KEY(vendorId), JSON.stringify(packages)); } catch { /* ignore */ }
+  if (isSupabaseConfigured()) {
+    const { error } = await supabase
+      .from('vendors')
+      .update({ menu: { packages } })
+      .eq('id', vendorId);
+    if (error) {
+      console.error('saveVendorPackages error:', error);
+    }
+  }
 }
 
 // ── Wishlist ──────────────────────────────────────────────────────────────────

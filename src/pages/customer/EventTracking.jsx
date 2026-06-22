@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
+import { getRequest, getBidsForRequest, getVendor } from '../../utils/data';
 
 const TRACKING_STEPS = [
   { id: 'confirmed', label: 'Order Confirmed', timeOffset: 0 },
@@ -24,16 +25,46 @@ export default function EventTracking() {
   }, [user, navigate]);
 
   useEffect(() => {
-    const req = requests.find(r => r.id === id);
-    if (req) {
-      setRequest(req);
-      const confirmedBid = bids.find(b => b.id === req.confirmedBidId) || bids.find(b => b.requestId === req.id && b.status === 'accepted');
-      if (confirmedBid) {
+    let isMounted = true;
+
+    async function loadTrackingData() {
+      try {
+        // 1. Find or fetch request
+        let req = requests.find(r => r.id === id);
+        if (!req) {
+          req = await getRequest(id);
+        }
+        if (!isMounted || !req) return;
+        setRequest(req);
+
+        // 2. Find or fetch confirmed bid
+        let confirmedBid = bids.find(b => b.id === req.confirmedBidId) || 
+                           bids.find(b => b.requestId === req.id && b.status === 'accepted');
+        if (!confirmedBid) {
+          const reqBids = await getBidsForRequest(id);
+          confirmedBid = reqBids.find(b => b.id === req.confirmedBidId) || 
+                         reqBids.find(b => b.status === 'accepted');
+        }
+        if (!isMounted || !confirmedBid) return;
         setBid(confirmedBid);
-        const v = vendors.find(v => v.id === confirmedBid.vendorId);
-        if (v) setVendor(v);
+
+        // 3. Find or fetch vendor
+        let v = vendors.find(vendor => vendor.id === confirmedBid.vendorId);
+        if (!v) {
+          v = await getVendor(confirmedBid.vendorId);
+        }
+        if (!isMounted || !v) return;
+        setVendor(v);
+      } catch (err) {
+        console.error('Failed to load tracking data:', err);
       }
     }
+
+    loadTrackingData();
+
+    return () => {
+      isMounted = false;
+    };
   }, [id, requests, bids, vendors]);
 
   if (!request || !bid || !vendor) {

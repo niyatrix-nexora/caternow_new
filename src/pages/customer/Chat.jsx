@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import { getChatMessages, saveChatMessages } from '../../utils/packages';
+import { getBid, getRequest, saveBidChat, subscribeToBid, isSupabaseConfigured } from '../../utils/data';
 
 // ── Offer card inside chat ────────────────────────────────────────────────────
 function OfferCard({ offer, onAccept, onCounter, isCustomer }) {
@@ -118,8 +119,10 @@ export default function Chat() {
   const navigate = useNavigate();
   const { user, bids, requests } = useApp();
 
-  const bid = bids.find(b => b.id === id);
-  const request = requests.find(r => r.id === bid?.requestId);
+  const [activeBid, setActiveBid] = useState(null);
+  const [activeRequest, setActiveRequest] = useState(null);
+  const bid = activeBid;
+  const request = activeRequest;
   const roomId = bid ? `${bid.requestId}_${bid.vendorId}` : id;
 
   const [messages, setMessages] = useState([]);
@@ -132,33 +135,77 @@ export default function Chat() {
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
 
+  // Initialize and load bid / request
+  useEffect(() => {
+    async function loadData() {
+      let b = bids.find(x => x.id === id);
+      if (!b) {
+        b = await getBid(id);
+      }
+      if (b) {
+        setActiveBid(b);
+        let r = requests.find(x => x.id === b.requestId);
+        if (!r) {
+          r = await getRequest(b.requestId);
+        }
+        if (r) {
+          setActiveRequest(r);
+        }
+      }
+    }
+    loadData();
+  }, [id, bids, requests]);
+
   // Load persisted messages on mount
   useEffect(() => {
-    const saved = getChatMessages(roomId);
-    if (saved.length > 0) {
-      setMessages(saved);
+    if (!bid) return;
+
+    const history = bid.chatHistory || [];
+    if (history.length > 0) {
+      setMessages(history);
     } else {
-      // Seed initial vendor message
-      const initial = [
-        {
-          id: 'init_1',
-          sender: 'vendor',
-          text: `Hi! I saw your catering request for ${request?.eventName || 'your event'}. I'd love to cater for you! 🍽️`,
-          time: '10:00 AM',
-          timestamp: new Date().toISOString(),
-        },
-        {
-          id: 'init_2',
-          sender: 'vendor',
-          text: `I can offer you a great deal for ${request?.plates || 'your'} guests. Want to see my packages?`,
-          time: '10:01 AM',
-          timestamp: new Date().toISOString(),
-        },
-      ];
-      setMessages(initial);
-      saveChatMessages(roomId, initial);
+      const saved = getChatMessages(roomId);
+      if (saved.length > 0) {
+        setMessages(saved);
+      } else {
+        // Seed initial vendor message
+        const initial = [
+          {
+            id: 'init_1',
+            sender: 'vendor',
+            text: `Hi! I saw your catering request for ${request?.eventName || 'your event'}. I'd love to cater for you! 🍽️`,
+            time: '10:00 AM',
+            timestamp: new Date().toISOString(),
+          },
+          {
+            id: 'init_2',
+            sender: 'vendor',
+            text: `I can offer you a great deal for ${request?.plates || 'your'} guests. Want to see my packages?`,
+            time: '10:01 AM',
+            timestamp: new Date().toISOString(),
+          },
+        ];
+        setMessages(initial);
+        saveBidChat(bid.id, initial, bid.notes || '');
+      }
     }
-  }, [roomId, request?.eventName, request?.plates]);
+  }, [bid, roomId, request]);
+
+  // Realtime subscription for the activeBid
+  useEffect(() => {
+    if (!bid || !bid.id) return;
+
+    const unsubscribe = subscribeToBid(bid.id, (updatedBid) => {
+      if (updatedBid && updatedBid.chatHistory) {
+        setMessages(updatedBid.chatHistory);
+      }
+      if (updatedBid) {
+        setActiveBid(updatedBid);
+      }
+    });
+
+    return () => unsubscribe();
+  }, [bid?.id]);
 
   useEffect(() => {
     if (!user || user.role !== 'customer') navigate('/');
@@ -168,30 +215,51 @@ export default function Chat() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isTyping]);
 
-  const persistAndSet = useCallback((msgs) => {
+  const persistAndSet = useCallback(async (msgs) => {
     setMessages(msgs);
-    saveChatMessages(roomId, msgs);
-  }, [roomId]);
+    if (bid) {
+      let latestBid = bid;
+      if (isSupabaseConfigured()) {
+        latestBid = await getBid(bid.id) || bid;
+      }
+      await saveBidChat(bid.id, msgs, latestBid.notes || '');
+    }
+  }, [bid]);
 
   const simulateVendorReply = useCallback((replyText, delay = 1500) => {
     setIsTyping(true);
-    setTimeout(() => {
+    setTimeout(async () => {
       setIsTyping(false);
-      setMessages(prev => {
-        const updated = [...prev, {
+      if (bid) {
+        const latestBid = isSupabaseConfigured() ? (await getBid(bid.id) || bid) : bid;
+        const currentMessages = latestBid.chatHistory || messages;
+        const newReply = {
           id: `v_${Date.now()}`,
           sender: 'vendor',
           text: replyText,
           time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
           timestamp: new Date().toISOString(),
-        }];
-        saveChatMessages(roomId, updated);
-        return updated;
-      });
+        };
+        const updated = [...currentMessages, newReply];
+        await saveBidChat(bid.id, updated, latestBid.notes || '');
+        setMessages(updated);
+      } else {
+        setMessages(prev => {
+          const updated = [...prev, {
+            id: `v_${Date.now()}`,
+            sender: 'vendor',
+            text: replyText,
+            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            timestamp: new Date().toISOString(),
+          }];
+          saveChatMessages(roomId, updated);
+          return updated;
+        });
+      }
     }, delay);
-  }, [roomId]);
+  }, [bid, messages, roomId]);
 
-  const handleSend = () => {
+  const handleSend = async () => {
     const text = inputText.trim();
     if (!text) return;
     const newMsg = {
@@ -201,7 +269,7 @@ export default function Chat() {
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       timestamp: new Date().toISOString(),
     };
-    persistAndSet([...messages, newMsg]);
+    await persistAndSet([...messages, newMsg]);
     setInputText('');
 
     // Smart vendor replies
@@ -219,7 +287,7 @@ export default function Chat() {
     }
   };
 
-  const handleSendOffer = () => {
+  const handleSendOffer = async () => {
     const price = parseInt(offerPrice);
     if (!price || price < 50) return;
 
@@ -241,7 +309,7 @@ export default function Chat() {
       timestamp: new Date().toISOString(),
     };
 
-    persistAndSet([...messages, offerMsg]);
+    await persistAndSet([...messages, offerMsg]);
     setOfferPrice('');
     setOfferNote('');
     setShowOfferPanel(false);
@@ -258,13 +326,13 @@ export default function Chat() {
     }
   };
 
-  const handleAcceptOffer = (offerId) => {
+  const handleAcceptOffer = async (offerId) => {
     const updated = messages.map(m =>
       m.type === 'offer' && m.offer?.id === offerId
         ? { ...m, offer: { ...m.offer, status: 'accepted' } }
         : m
     );
-    persistAndSet(updated);
+    await persistAndSet(updated);
     simulateVendorReply('Excellent! Your booking is confirmed. I\'ll contact you soon to finalize the details. 🎉🍽️', 1000);
   };
 

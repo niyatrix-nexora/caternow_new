@@ -452,21 +452,9 @@ export default function NewRequest() {
                           {pkg.title} Package
                         </div>
                         <div style={{ textAlign: 'right', flexShrink: 0, marginLeft: '8px' }}>
-                          {isCustom && customBudget > 0 ? (
-                            <>
-                              <div style={{ fontWeight: 900, fontSize: '1.1rem', color: meta.color }}>₹{customBudget}</div>
-                              <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>/plate</div>
-                            </>
-                          ) : pkg.price ? (
-                            <>
-                              <div style={{ fontWeight: 900, fontSize: '1.1rem', color: meta.color }}>₹{pkg.price}</div>
-                              <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>/plate</div>
-                            </>
-                          ) : (
-                            <div style={{ fontWeight: 700, fontSize: '0.82rem', color: meta.color }}>
-                              {isCustom && customDishes.length > 0 ? `${customDishes.length} dishes` : 'Build →'}
-                            </div>
-                          )}
+                          <div style={{ fontWeight: 700, fontSize: '0.82rem', color: meta.color }}>
+                            {isCustom ? (customDishes.length > 0 ? `${customDishes.length} dishes` : 'Build →') : `${pkg.dishes.length} dishes`}
+                          </div>
                         </div>
                       </div>
                       <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', lineHeight: 1.4, margin: '0 0 8px' }}>
@@ -649,24 +637,6 @@ export default function NewRequest() {
                 );
               })()}
 
-              {/* Price breakdown */}
-              {selectedPackage?.price && (
-                <div style={{ background: 'rgba(255,107,0,0.06)', borderRadius: '14px', padding: '14px', marginTop: '4px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
-                    <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>Package price</span>
-                    <span style={{ fontWeight: 700 }}>₹{selectedPackage.price}/plate</span>
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '8px', borderTop: '1px solid rgba(255,107,0,0.15)' }}>
-                    <span style={{ fontWeight: 700 }}>Estimated total</span>
-                    <span style={{ fontWeight: 900, fontSize: '1.1rem', color: '#FF6B00' }}>
-                      ₹{grandTotal.toLocaleString('en-IN')}
-                    </span>
-                  </div>
-                  <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '4px', textAlign: 'right' }}>
-                    ₹{basePrice}/plate × {guests} guests
-                  </div>
-                </div>
-              )}
             </div>
 
             <div style={{ textAlign: 'center', fontSize: '0.82rem', color: 'var(--text-muted)', marginBottom: '16px', lineHeight: 1.5 }}>

@@ -2,6 +2,7 @@
 // If Supabase is not configured, all operations use localStorage seamlessly.
 
 import { supabase, isSupabaseConfigured } from './supabaseClient';
+export { isSupabaseConfigured };
 import { isValidPhone, sanitizePhone, sanitizeText } from './security';
 
 const STORAGE_KEYS = {
@@ -127,6 +128,56 @@ function toCamel(obj) {
     const camelKey = key.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
     result[camelKey] = value;
   }
+
+  // Parse menuNotes JSON if present
+  if (result.menuNotes) {
+    try {
+      const trimmed = result.menuNotes.trim();
+      if (trimmed.startsWith('{') && trimmed.endsWith('}')) {
+        const parsed = JSON.parse(trimmed);
+        if (parsed && typeof parsed === 'object') {
+          result.packageType = parsed.packageType || result.packageType || 'Custom';
+          result.packageCategory = parsed.packageCategory || result.packageCategory || 'custom';
+          result.packageDishes = parsed.dishes || [];
+          result.menuNotesRaw = result.menuNotes;
+          result.menuNotes = parsed.notes || '';
+        }
+      }
+    } catch (e) {
+      // not JSON
+    }
+  }
+
+  // Parse bid notes JSON if present (to support chat history)
+  if (result.notes) {
+    try {
+      const trimmed = result.notes.trim();
+      if (trimmed.startsWith('{') && trimmed.endsWith('}')) {
+        const parsed = JSON.parse(trimmed);
+        if (parsed && typeof parsed === 'object') {
+          result.chatHistory = parsed.chatHistory || [];
+          result.notes = parsed.notes || '';
+          result.notesRaw = trimmed;
+        }
+      }
+    } catch (e) {
+      // not JSON
+    }
+  }
+  if (!result.chatHistory) {
+    result.chatHistory = [];
+  }
+
+  // Fallback for legacy requests: parse dishes from menuNotes by splitting on comma
+  if (result.id && result.id.startsWith('req_')) {
+    if (!result.packageDishes && result.menuNotes) {
+      result.packageDishes = result.menuNotes.split(',').map(s => s.trim()).filter(Boolean);
+    }
+    if (!result.packageType) {
+      result.packageType = 'Custom';
+    }
+  }
+
   return result;
 }
 
@@ -187,7 +238,7 @@ function normalizeRequestPayload(request) {
     eventDate,
     plates,
     foodType: normalizeFoodType(request.foodType),
-    menuNotes: sanitizeText(request.menuNotes || '', 500),
+    menuNotes: sanitizeText(request.menuNotes || '', 2000),
     lat,
     lng,
     packageType,
@@ -382,7 +433,19 @@ export async function getRequest(id) {
 }
 
 export async function createRequest(request) {
-  const normalized = normalizeRequestPayload(request);
+  // Serialize package information into menuNotes JSON
+  let menuNotes = request.menuNotes;
+  if (request.packageType || request.packageDishes) {
+    const payload = {
+      packageType: request.packageType || 'Custom',
+      packageCategory: request.packageCategory || 'custom',
+      dishes: request.packageDishes || [],
+      notes: typeof request.menuNotes === 'string' ? request.menuNotes : ''
+    };
+    menuNotes = JSON.stringify(payload);
+  }
+
+  const normalized = normalizeRequestPayload({ ...request, menuNotes });
   if (!normalized) return null;
 
   const newReq = {
@@ -482,7 +545,17 @@ export async function getVendors() {
   if (isSupabaseConfigured()) {
     const { data, error } = await supabase.from('vendors').select('*');
     if (error) { console.error('getVendors:', error); return []; }
-    return (data || []).map(toCamel);
+    const camels = (data || []).map(toCamel);
+    camels.forEach(v => {
+      if (v.menu && v.menu.packages) {
+        try {
+          localStorage.setItem(`caternow_packages_${v.id}`, JSON.stringify(v.menu.packages));
+        } catch (e) {
+          console.error('Failed to cache vendor packages in localStorage:', e);
+        }
+      }
+    });
+    return camels;
   }
   return JSON.parse(localStorage.getItem(STORAGE_KEYS.VENDORS) || '[]');
 }
@@ -491,7 +564,15 @@ export async function getVendor(id) {
   if (isSupabaseConfigured()) {
     const { data, error } = await supabase.from('vendors').select('*').eq('id', id).maybeSingle();
     if (error) return null;
-    return data ? toCamel(data) : null;
+    const v = data ? toCamel(data) : null;
+    if (v && v.menu && v.menu.packages) {
+      try {
+        localStorage.setItem(`caternow_packages_${v.id}`, JSON.stringify(v.menu.packages));
+      } catch (e) {
+        console.error('Failed to cache vendor packages in localStorage:', e);
+      }
+    }
+    return v;
   }
   const vendors = JSON.parse(localStorage.getItem(STORAGE_KEYS.VENDORS) || '[]');
   return vendors.find(v => v.id === id) || null;
@@ -504,7 +585,15 @@ export async function getVendorByPhone(phone) {
   if (isSupabaseConfigured()) {
     const { data, error } = await supabase.from('vendors').select('*').eq('phone', cleanPhone).maybeSingle();
     if (error) { console.error('getVendorByPhone:', error); return null; }
-    return data ? toCamel(data) : null;
+    const v = data ? toCamel(data) : null;
+    if (v && v.menu && v.menu.packages) {
+      try {
+        localStorage.setItem(`caternow_packages_${v.id}`, JSON.stringify(v.menu.packages));
+      } catch (e) {
+        console.error('Failed to cache vendor packages in localStorage:', e);
+      }
+    }
+    return v;
   }
 
   const vendors = JSON.parse(localStorage.getItem(STORAGE_KEYS.VENDORS) || '[]');
@@ -759,6 +848,81 @@ export async function updateBid(id, updates) {
     return bids[idx];
   }
   return null;
+}
+
+export async function getBid(id) {
+  if (isSupabaseConfigured()) {
+    const { data, error } = await supabase.from('bids').select('*').eq('id', id).maybeSingle();
+    if (error) return null;
+    return data ? toCamel(data) : null;
+  }
+  const bids = JSON.parse(localStorage.getItem(STORAGE_KEYS.BIDS) || '[]');
+  return bids.find(b => b.id === id) || null;
+}
+
+export async function getBidByRequestAndVendor(requestId, vendorId) {
+  if (isSupabaseConfigured()) {
+    const { data, error } = await supabase.from('bids').select('*').eq('request_id', requestId).eq('vendor_id', vendorId).maybeSingle();
+    if (error) return null;
+    return data ? toCamel(data) : null;
+  }
+  const bids = JSON.parse(localStorage.getItem(STORAGE_KEYS.BIDS) || '[]');
+  return bids.find(b => b.requestId === requestId && b.vendorId === vendorId) || null;
+}
+
+export async function saveBidChat(bidId, messages, originalNotes = '') {
+  const payload = JSON.stringify({
+    notes: originalNotes,
+    chatHistory: messages
+  });
+
+  // Always mirror to localStorage
+  try {
+    localStorage.setItem(`caternow_chat_${bidId}`, JSON.stringify(messages));
+  } catch { /* ignore */ }
+
+  if (isSupabaseConfigured()) {
+    const { error } = await supabase
+      .from('bids')
+      .update({ notes: payload })
+      .eq('id', bidId);
+    if (error) {
+      console.error('saveBidChat error:', error);
+    }
+  } else {
+    const bids = JSON.parse(localStorage.getItem(STORAGE_KEYS.BIDS) || '[]');
+    const idx = bids.findIndex(b => b.id === bidId);
+    if (idx !== -1) {
+      bids[idx].notes = payload;
+      localStorage.setItem(STORAGE_KEYS.BIDS, JSON.stringify(bids));
+    }
+  }
+}
+
+export function subscribeToBid(bidId, onUpdate) {
+  if (!isSupabaseConfigured() || !bidId) return () => {};
+
+  const channel = supabase
+    .channel(`bid_changes_${bidId}`)
+    .on(
+      'postgres_changes',
+      {
+        event: 'UPDATE',
+        schema: 'public',
+        table: 'bids',
+        filter: `id=eq.${bidId}`
+      },
+      (payload) => {
+        if (payload.new) {
+          onUpdate(toCamel(payload.new));
+        }
+      }
+    )
+    .subscribe();
+
+  return () => {
+    supabase.removeChannel(channel);
+  };
 }
 
 export async function acceptBid(bidId, customerAddons = [], couponCode = null, discountPercent = 0) {

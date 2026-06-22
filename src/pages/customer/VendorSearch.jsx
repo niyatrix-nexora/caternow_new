@@ -63,7 +63,6 @@ export default function VendorSearch() {
     .sort((a, b) => {
       if (sortBy === 'rating') return (b.rating || 0) - (a.rating || 0);
       if (sortBy === 'distance') return (a.distance || 0) - (b.distance || 0);
-      if (sortBy === 'price') return (getStartingPrice(a.id) || 999) - (getStartingPrice(b.id) || 999);
       return a.name.localeCompare(b.name);
     });
 
@@ -116,7 +115,6 @@ export default function VendorSearch() {
           <select className="sort-select" value={sortBy} onChange={e => setSortBy(e.target.value)}>
             <option value="rating">⭐ Top Rated</option>
             <option value="distance">📍 Nearest</option>
-            <option value="price">💰 Lowest Price</option>
             <option value="name">🔤 A–Z</option>
           </select>
         </div>
@@ -176,18 +174,6 @@ export default function VendorSearch() {
                       <div className="vendor-card-rating">
                         <span style={{ color: 'var(--warning)', fontSize: '0.82rem', letterSpacing: '-1px' }}>{ratingStars(vendor.rating)}</span>
                         <span style={{ marginLeft: '5px', fontSize: '0.78rem', color: 'var(--text-muted)' }}>{vendor.rating.toFixed(1)}</span>
-                      </div>
-                    )}
-                    {/* Starting price from packages */}
-                    {startingPrice && (
-                      <div style={{
-                        display: 'inline-flex', alignItems: 'center', gap: '4px',
-                        marginTop: '5px', padding: '3px 8px', borderRadius: '999px',
-                        background: 'rgba(5,150,105,0.1)', border: '1px solid rgba(5,150,105,0.2)',
-                      }}>
-                        <span style={{ fontSize: '0.68rem', color: '#059669', fontWeight: 700 }}>
-                          From ₹{startingPrice}/plate
-                        </span>
                       </div>
                     )}
                     {vendor.fssai && (

@@ -216,32 +216,6 @@ export default function CustomPackage() {
         )}
       </div>
 
-      {/* ── Budget bar ── */}
-      <div style={{ background: '#fff', borderBottom: '1px solid #f0f0f0', padding: '12px 16px' }}>
-        <div onClick={() => setShowBudget(v => !v)} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', marginBottom: showBudget ? '10px' : 0 }}>
-          <span style={{ fontWeight: 700, fontSize: '0.88rem', color: '#1a1a1a', flex: 1 }}>Your Budget per Plate</span>
-          {budget && <span style={{ fontWeight: 800, color: '#FF6B00', fontSize: '0.9rem' }}>₹{budget}/plate</span>}
-          <span style={{ color: '#9ca3af', fontSize: '0.8rem' }}>{showBudget ? '▲' : '▼'}</span>
-        </div>
-        {showBudget && (
-          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-            <div style={{ flex: 1, display: 'flex', alignItems: 'center', background: '#f8f8f8', border: '1.5px solid #eee', borderRadius: '12px', padding: '0 12px' }}>
-              <span style={{ color: '#FF6B00', fontWeight: 700, fontSize: '1rem', marginRight: '4px' }}>₹</span>
-              <input
-                type="number"
-                value={budget}
-                onChange={e => setBudget(e.target.value)}
-                placeholder="e.g. 350"
-                style={{ flex: 1, border: 'none', background: 'transparent', padding: '11px 0', fontSize: '0.95rem', fontWeight: 700, color: '#1a1a1a', fontFamily: 'inherit', outline: 'none' }}
-              />
-            </div>
-            <div style={{ fontSize: '0.78rem', color: '#9ca3af', flexShrink: 0, background: '#f0f0f0', padding: '8px 12px', borderRadius: '10px' }}>
-              × {guests}
-              {totalCost > 0 && <div style={{ color: '#059669', fontWeight: 700, fontSize: '0.72rem' }}>= ₹{totalCost.toLocaleString('en-IN')}</div>}
-            </div>
-          </div>
-        )}
-      </div>
 
       {/* ── Search bar ── */}
       <div style={{ padding: '10px 16px', background: '#fff', borderBottom: '1px solid #f0f0f0' }}>
@@ -348,31 +322,28 @@ export default function CustomPackage() {
         {selected.length > 0 && (
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', color: '#666', marginBottom: '10px' }}>
             <span>{selected.length} dish{selected.length !== 1 ? 'es' : ''} selected</span>
-            {budget && <span style={{ color: '#059669', fontWeight: 700 }}>₹{budget}/plate · Est. ₹{(parseInt(budget) * guests).toLocaleString('en-IN')}</span>}
           </div>
         )}
         <button
           onClick={() => {
-            if (selected.length === 0 || !budget) return;
-            navigate(-1, { state: { customDishes: selected, customBudget: parseInt(budget) || 0, vendorId, vendorName } });
+            if (selected.length === 0) return;
+            navigate(-1, { state: { customDishes: selected, customBudget: 0, vendorId, vendorName } });
           }}
-          disabled={selected.length === 0 || !budget}
+          disabled={selected.length === 0}
           style={{
             width: '100%', padding: '15px', borderRadius: '14px', border: 'none',
-            background: selected.length > 0 && budget ? 'linear-gradient(135deg, #FF6B00, #FF8C42)' : '#e5e7eb',
-            color: selected.length > 0 && budget ? '#fff' : '#9ca3af',
+            background: selected.length > 0 ? 'linear-gradient(135deg, #FF6B00, #FF8C42)' : '#e5e7eb',
+            color: selected.length > 0 ? '#fff' : '#9ca3af',
             fontWeight: 800, fontSize: '1rem',
-            cursor: selected.length > 0 && budget ? 'pointer' : 'not-allowed',
+            cursor: selected.length > 0 ? 'pointer' : 'not-allowed',
             fontFamily: 'inherit',
-            boxShadow: selected.length > 0 && budget ? '0 6px 20px rgba(255,107,0,0.3)' : 'none',
+            boxShadow: selected.length > 0 ? '0 6px 20px rgba(255,107,0,0.3)' : 'none',
             transition: 'all 0.2s',
           }}
         >
           {selected.length === 0
             ? 'Select dishes to build your thali'
-            : !budget
-            ? 'Enter your budget to continue'
-            : `Confirm ${selected.length} dishes — ₹${budget}/plate`}
+            : `Confirm ${selected.length} dishes`}
         </button>
       </div>
     </div>

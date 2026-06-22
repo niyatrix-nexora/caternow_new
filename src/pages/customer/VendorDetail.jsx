@@ -541,7 +541,7 @@ export default function VendorDetail() {
         {activeTab === 'packages' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginBottom: '24px' }}>
             <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>
-              Choose a package that fits your event. Price is <strong>per plate</strong> — final amount confirmed when vendor bids.
+              Choose a package that fits your event. Customise your request details — vendor will bid their best price.
             </p>
 
             {activePackages.length === 0 ? (
@@ -588,12 +588,6 @@ export default function VendorDetail() {
                             {(pkg.dishes || []).length} dishes included
                           </div>
                         </div>
-                      </div>
-                      <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                        <div style={{ fontSize: '1.5rem', fontWeight: 900, color: meta.color, lineHeight: 1 }}>
-                          ₹{pkg.pricePerPlate}
-                        </div>
-                        <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontWeight: 600 }}>/plate</div>
                       </div>
                     </div>
 

@@ -135,14 +135,14 @@ export default function CreatePackage() {
     updatePkg('addOns', current.includes(name) ? current.filter(a => a !== name) : [...current, name]);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     // Deduplicate before saving
     const clean = packages.map(p => ({
       ...p,
       dishes: [...new Set(p.dishes || [])],
       addOns: [...new Set(p.addOns || [])],
     }));
-    saveVendorPackages(user.id, clean);
+    await saveVendorPackages(user.id, clean);
     setPackages(clean);
     setSaved(true);
     setTimeout(() => setSaved(false), 2500);

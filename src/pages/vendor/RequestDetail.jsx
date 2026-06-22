@@ -6,7 +6,6 @@ import {
   createBid, 
   vendorAcceptRequest, 
   getDistance, 
-  MENU_CATALOGUE, 
   ADDON_SUGGESTIONS,
   subscribeToRequest,
   subscribeToBidsForRequest
@@ -15,6 +14,7 @@ import { sanitizeText } from '../../utils/security';
 import { MapContainer, TileLayer, Marker, Circle } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import BananaLeaf from '../customer/BananaLeaf';
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -23,51 +23,12 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
 });
 
-// ===== Menu Checklist Component =====
-function MenuPicker({ selected, onChange }) {
-  const categories = Object.entries(MENU_CATALOGUE);
-
-  const toggle = (item) => {
-    onChange(prev => prev.includes(item) ? prev.filter(i => i !== item) : [...prev, item]);
-  };
-
-  return (
-    <div className="menu-picker">
-      {categories.map(([cat, items]) => (
-        <div key={cat} className="menu-category">
-          <div className="menu-category-title">
-            {cat === 'starters' ? '🥗 Starters' : cat === 'mains' ? '🍛 Mains' : cat === 'desserts' ? '🍮 Desserts' : '🥤 Beverages'}
-          </div>
-          <div className="menu-items-grid">
-            {items.map(item => (
-              <label key={item} className={`menu-item-chip ${selected.includes(item) ? 'selected' : ''}`}>
-                <input
-                  type="checkbox"
-                  checked={selected.includes(item)}
-                  onChange={() => toggle(item)}
-                  style={{ display: 'none' }}
-                />
-                <span>{selected.includes(item) ? '✓ ' : ''}{item}</span>
-              </label>
-            ))}
-          </div>
-        </div>
-      ))}
-      {selected.length > 0 && (
-        <div className="menu-summary">
-          <span>📋 {selected.length} item{selected.length !== 1 ? 's' : ''} selected</span>
-        </div>
-      )}
-    </div>
-  );
-}
 
 export default function VendorRequestDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user, refresh, bids: allBids, requests } = useApp();
 
-  const [selectedMenuItems, setSelectedMenuItems] = useState([]);
   const [notes, setNotes] = useState('');
   const [error, setError] = useState('');
   const [submitted, setSubmitted] = useState(false);
@@ -191,9 +152,8 @@ export default function VendorRequestDetail() {
     if (submitting) return;
 
     if (!canBid) { setError('This request is no longer accepting bids.'); return; }
-    if (selectedMenuItems.length === 0) { setError('Please select at least one menu item'); return; }
 
-    const menuDetails = selectedMenuItems.join(', ');
+    const menuDetails = request.packageDishes?.join(', ') || 'Custom Package';
 
     if (!price || parseInt(price) < 50) return setError('Please enter a valid price (min ₹50)');
 
@@ -286,6 +246,62 @@ export default function VendorRequestDetail() {
             </MapContainer>
           </div>
         </div>
+
+        {/* Customer's Selected Menu Card */}
+        {request.packageDishes && request.packageDishes.length > 0 && (
+          <div className="card" style={{ marginBottom: '16px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1px solid var(--border)', paddingBottom: '12px' }}>
+              <h3 style={{ fontSize: '0.95rem', margin: 0, fontWeight: 800, color: 'var(--text)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span>📋</span> Customer's Menu Selection
+              </h3>
+              <span style={{
+                background: 'rgba(5, 150, 105, 0.1)',
+                color: 'var(--success)',
+                fontSize: '0.75rem',
+                fontWeight: '700',
+                padding: '4px 10px',
+                borderRadius: '10px',
+                border: '1px solid rgba(5, 150, 105, 0.2)'
+              }}>
+                {request.packageType || 'Custom'}
+              </span>
+            </div>
+
+            {/* Banana Leaf Plating Preview */}
+            <div style={{ marginBottom: '16px' }}>
+              <BananaLeaf dishes={request.packageDishes} interactive={false} />
+            </div>
+
+            {/* List of Dishes */}
+            <div style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: '6px',
+              padding: '12px',
+              background: 'var(--bg-elevated)',
+              borderRadius: 'var(--radius-md)'
+            }}>
+              {request.packageDishes.map((dish) => (
+                <span key={dish} style={{
+                  padding: '4px 10px',
+                  borderRadius: '999px',
+                  fontSize: '0.8rem',
+                  fontWeight: 600,
+                  background: 'var(--bg-card)',
+                  color: 'var(--text)',
+                  border: '1px solid var(--border)'
+                }}>
+                  🍲 {dish}
+                </span>
+              ))}
+            </div>
+            {request.menuNotes && (
+              <div style={{ marginTop: '12px', fontSize: '0.82rem', color: 'var(--text-secondary)', fontStyle: 'italic', borderTop: '1px solid var(--border)', paddingTop: '8px' }}>
+                Customer notes: "{request.menuNotes}"
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Bid submitted state */}
         {(existingBid || submitted) && (
@@ -445,12 +461,6 @@ export default function VendorRequestDetail() {
                   />
                 </div>
                 <p className="map-hint" style={{ marginTop: '4px' }}>Enter your price per plate for the {request.packageType} Package.</p>
-              </div>
-
-              {/* ===== MENU CHECKLIST ===== */}
-              <div className="form-group">
-                <label className="form-label">📋 Menu Offering — Select items</label>
-                <MenuPicker selected={selectedMenuItems} onChange={setSelectedMenuItems} />
               </div>
 
               {/* Additional Notes */}
