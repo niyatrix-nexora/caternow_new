@@ -3,11 +3,12 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import { getChatMessages, saveChatMessages } from '../../utils/packages';
 import { getBid, getBidByRequestAndVendor, getRequest, saveBidChat, subscribeToBid, isSupabaseConfigured } from '../../utils/data';
+import { Check, X, Clock, CheckCircle, IndianRupee, RotateCcw, Send, ArrowLeft } from 'lucide-react';
 
 // ── Offer card (vendor view) ──────────────────────────────────────────────────
 function OfferCard({ offer, onAccept, onCounter, isVendor }) {
   const statusColor = offer.status === 'accepted' ? '#059669' : offer.status === 'rejected' ? '#DC2626' : '#D97706';
-  const statusLabel = offer.status === 'accepted' ? '✅ Accepted' : offer.status === 'rejected' ? '✕ Rejected' : '⏳ Pending';
+  const statusLabel = offer.status === 'accepted' ? 'Accepted' : offer.status === 'rejected' ? 'Rejected' : 'Pending';
 
   return (
     <div style={{
@@ -16,7 +17,7 @@ function OfferCard({ offer, onAccept, onCounter, isVendor }) {
       borderRadius: '18px', padding: '16px', maxWidth: '280px', width: '100%',
     }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
-        <span style={{ fontSize: '1.1rem' }}>💰</span>
+        <IndianRupee size={16} style={{ color: '#FF6B00' }} />
         <span style={{ fontWeight: 800, fontSize: '0.85rem', color: '#FF6B00' }}>
           {offer.isCounter ? 'Counter Offer' : 'Customer Offer'}
         </span>
@@ -24,8 +25,12 @@ function OfferCard({ offer, onAccept, onCounter, isVendor }) {
           marginLeft: 'auto', fontSize: '0.68rem', fontWeight: 700,
           color: statusColor, background: `${statusColor}18`,
           padding: '2px 8px', borderRadius: '999px',
+          display: 'inline-flex', alignItems: 'center', gap: '4px'
         }}>
-          {statusLabel}
+          {offer.status === 'accepted' && <CheckCircle size={10} />}
+          {offer.status === 'rejected' && <X size={10} />}
+          {offer.status === 'pending' && <Clock size={10} />}
+          <span>{statusLabel}</span>
         </span>
       </div>
 
@@ -65,9 +70,10 @@ function OfferCard({ offer, onAccept, onCounter, isVendor }) {
               flex: 1, padding: '9px', borderRadius: '12px', border: 'none',
               background: 'linear-gradient(135deg, #059669, #047857)',
               color: '#fff', fontWeight: 700, fontSize: '0.82rem', cursor: 'pointer', fontFamily: 'inherit',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px'
             }}
           >
-            ✓ Accept
+            <Check size={14} /> Accept
           </button>
           <button
             onClick={() => onCounter(offer)}
@@ -76,9 +82,10 @@ function OfferCard({ offer, onAccept, onCounter, isVendor }) {
               border: '1.5px solid rgba(255,107,0,0.4)',
               background: 'transparent', color: '#FF6B00',
               fontWeight: 700, fontSize: '0.82rem', cursor: 'pointer', fontFamily: 'inherit',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px'
             }}
           >
-            ↩ Counter
+            <RotateCcw size={14} /> Counter
           </button>
         </div>
       )}
@@ -160,7 +167,7 @@ export default function VendorChat() {
           {
             id: 'init_1',
             sender: 'vendor',
-            text: `Hello! I've submitted my bid for your ${request?.eventName || 'event'}. I'm ready to provide excellent catering service! 🍽️`,
+            text: `Hello! I've submitted my bid for your ${request?.eventName || 'event'}. I'm ready to provide excellent catering service!`,
             time: '10:00 AM',
             timestamp: new Date().toISOString(),
           },
@@ -298,7 +305,7 @@ export default function VendorChat() {
         : m
     );
     await persistAndSet(updated);
-    simulateCustomerReply('I\'ve accepted your offer! Looking forward to working with you. 🎉', 1000);
+    simulateCustomerReply('I\'ve accepted your offer! Looking forward to working with you.', 1000);
   };
 
   const handleCounterOffer = (offer) => {
@@ -312,7 +319,9 @@ export default function VendorChat() {
     return (
       <div className="app-container">
         <div className="page-header">
-          <button className="back-btn" onClick={() => navigate(-1)}>←</button>
+          <button className="back-btn" onClick={() => navigate(-1)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <ArrowLeft size={18} />
+          </button>
           <h1>Chat</h1>
         </div>
         <div className="page" style={{ display: 'flex', justifyContent: 'center', paddingTop: 60 }}>
@@ -334,7 +343,9 @@ export default function VendorChat() {
         boxShadow: '0 4px 16px rgba(0,0,0,0.04)',
         position: 'sticky', top: 0, zIndex: 50,
       }}>
-        <button className="back-btn" onClick={() => navigate(-1)} style={{ flexShrink: 0 }}>←</button>
+        <button className="back-btn" onClick={() => navigate(-1)} style={{ flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <ArrowLeft size={18} />
+        </button>
         <div style={{
           width: '40px', height: '40px', borderRadius: '14px', flexShrink: 0,
           background: 'linear-gradient(135deg, #4F46E5, #7C3AED)',
@@ -358,9 +369,11 @@ export default function VendorChat() {
             background: showOfferPanel ? '#FF6B00' : 'rgba(255,107,0,0.1)',
             color: showOfferPanel ? '#fff' : '#FF6B00',
             fontWeight: 700, fontSize: '0.78rem', cursor: 'pointer', fontFamily: 'inherit',
+            display: 'flex', alignItems: 'center', gap: '4px'
           }}
         >
-          💰 Offer
+          <IndianRupee size={12} />
+          <span>Offer</span>
         </button>
       </div>
 
@@ -370,8 +383,9 @@ export default function VendorChat() {
           background: '#fff', borderBottom: '1px solid rgba(0,0,0,0.06)',
           padding: '16px', animation: 'fadeInUp 0.2s ease',
         }}>
-          <div style={{ fontWeight: 800, fontSize: '0.9rem', marginBottom: '12px', color: '#FF6B00' }}>
-            {counterOffer ? `↩ Counter (was ₹${counterOffer.pricePerPlate}/plate)` : '💰 Send Price Offer to Customer'}
+          <div style={{ fontWeight: 800, fontSize: '0.95rem', marginBottom: '12px', color: '#FF6B00', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <IndianRupee size={16} />
+            <span>{counterOffer ? `Counter Offer (was ₹${counterOffer.pricePerPlate}/plate)` : 'Send Price Offer to Customer'}</span>
           </div>
           <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
             <div style={{ flex: 1, position: 'relative' }}>
@@ -496,7 +510,7 @@ export default function VendorChat() {
             boxShadow: inputText.trim() ? '0 4px 12px rgba(255,107,0,0.3)' : 'none',
           }}
         >
-          ➤
+          <Send size={16} />
         </button>
       </div>
 

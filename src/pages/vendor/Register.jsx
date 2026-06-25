@@ -6,6 +6,7 @@ import { sanitizeText } from '../../utils/security';
 import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import { ChefHat, Check, MapPin, ArrowLeft } from 'lucide-react';
 
 // Fix Leaflet default marker icon
 delete L.Icon.Default.prototype._getIconUrl;
@@ -67,36 +68,43 @@ export default function VendorRegister() {
           setStep('location');
         },
         () => {
-          setPosition([12.9716, 77.5946]); // Bangalore fallback
+          // Default to Hyderabad center on failure
+          setPosition([17.3850, 78.4867]);
           setDetecting(false);
           setStep('location');
         },
-        { enableHighAccuracy: true, timeout: 5000 }
+        { timeout: 10000 }
       );
     } else {
-      setPosition([12.9716, 77.5946]);
+      setPosition([17.3850, 78.4867]);
       setDetecting(false);
       setStep('location');
     }
   };
 
   const handleFinalSubmit = async () => {
-    if (!position) return;
+    if (!position) {
+      setError('Please select your service base location on the map');
+      return;
+    }
+    
     setLoading(true);
     setError('');
 
     const vendorData = {
       phone,
-      id: `v_${phone}`,
-      name: sanitizeText(ownerName, 60),
-      businessName: sanitizeText(businessName, 80),
-      email: sanitizeText(email, 100),
-      fssai: sanitizeText(fssai, 20),
+      name: sanitizeText(businessName),
+      owner: sanitizeText(ownerName),
+      email: sanitizeText(email),
+      fssai: sanitizeText(fssai),
       foodType,
-      lat: position[0],
-      lng: position[1],
-      radius: 50,
-      role: 'vendor'
+      latitude: position[0],
+      longitude: position[1],
+      rating: 4.5,
+      reviewsCount: 1,
+      minOrder: 100,
+      role: 'vendor',
+      livePriceRange: '₹150 - ₹250',
     };
 
     const persisted = await upsertVendorProfile(vendorData);
@@ -115,7 +123,9 @@ export default function VendorRegister() {
   return (
     <div className="app-container" style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', padding: '24px' }}>
       <div className="text-center" style={{ marginBottom: '24px', marginTop: '20px' }}>
-        <h2 style={{ fontSize: '1.6rem', fontWeight: 700, marginBottom: '8px' }}>Partner with CaterNow 👨‍🍳</h2>
+        <h2 style={{ fontSize: '1.6rem', fontWeight: 700, marginBottom: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+          Partner with CaterNow <ChefHat size={24} style={{ color: 'var(--primary)' }} />
+        </h2>
         <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
           Complete your business profile to get catering requests.
         </p>
@@ -131,7 +141,9 @@ export default function VendorRegister() {
               disabled
               style={{ opacity: 0.7, background: 'var(--bg-card)' }}
             />
-            <p style={{ fontSize: '0.7rem', color: 'var(--success)', marginTop: '4px' }}>✓ Secured and verified</p>
+            <p style={{ fontSize: '0.75rem', color: 'var(--success)', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <Check size={14} /> Secured and verified
+            </p>
           </div>
 
           <div className="form-group" style={{ marginBottom: '16px' }}>
@@ -184,26 +196,29 @@ export default function VendorRegister() {
               <button
                 type="button"
                 className={`btn ${foodType === 'veg' ? 'btn-primary' : 'btn-secondary'}`}
-                style={{ flex: 1 }}
+                style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
                 onClick={() => setFoodType('veg')}
               >
-                Veg Only 🟢
+                <span>Veg Only</span>
+                <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', background: foodType === 'veg' ? 'white' : '#22c55e' }}></span>
               </button>
               <button
                 type="button"
                 className={`btn ${foodType === 'nonveg' ? 'btn-primary' : 'btn-secondary'}`}
-                style={{ flex: 1 }}
+                style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
                 onClick={() => setFoodType('nonveg')}
               >
-                Non-Veg 🔴
+                <span>Non-Veg</span>
+                <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', background: foodType === 'nonveg' ? 'white' : '#ef4444' }}></span>
               </button>
               <button
                 type="button"
                 className={`btn ${foodType === 'both' ? 'btn-primary' : 'btn-secondary'}`}
-                style={{ flex: 1 }}
+                style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
                 onClick={() => setFoodType('both')}
               >
-                Both 🟠
+                <span>Both</span>
+                <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', background: foodType === 'both' ? 'white' : '#f97316' }}></span>
               </button>
             </div>
           </div>
@@ -211,14 +226,16 @@ export default function VendorRegister() {
           {error && <p style={{ color: 'var(--danger)', fontSize: '0.85rem', marginBottom: '16px', textAlign: 'center' }}>{error}</p>}
 
           <button type="submit" className="btn btn-primary btn-block btn-lg" disabled={detecting}>
-            {detecting ? 'Detecting Location...' : 'Next: Setup Location →'}
+            {detecting ? 'Detecting Location...' : 'Next: Setup Location'}
           </button>
         </form>
       )}
 
       {step === 'location' && (
         <div className="animate-fade-in card" style={{ padding: '24px' }}>
-          <h3 style={{ fontSize: '1.2rem', marginBottom: '8px' }}>Set Service Base 📍</h3>
+          <h3 style={{ fontSize: '1.2rem', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            Set Service Base <MapPin size={20} style={{ color: 'var(--primary)' }} />
+          </h3>
           <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '16px' }}>
             Drag the map or tap to place the pin precisely on your business location. We use this to route nearby requests to you.
           </p>
@@ -243,9 +260,12 @@ export default function VendorRegister() {
           {error && <p style={{ color: 'var(--danger)', fontSize: '0.85rem', marginBottom: '16px', textAlign: 'center' }}>{error}</p>}
 
           <div style={{ display: 'flex', gap: '12px' }}>
-            <button className="btn btn-secondary" onClick={() => setStep('details')}>← Back</button>
-            <button className="btn btn-primary" style={{ flex: 1 }} onClick={handleFinalSubmit} disabled={loading}>
-              {loading ? 'Creating Account...' : 'Complete Setup ✅'}
+            <button className="btn btn-secondary" style={{ display: 'flex', alignItems: 'center', gap: '6px' }} onClick={() => setStep('details')}>
+              <ArrowLeft size={16} /> Back
+            </button>
+            <button className="btn btn-primary" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }} onClick={handleFinalSubmit} disabled={loading}>
+              <span>{loading ? 'Creating Account...' : 'Complete Setup'}</span>
+              {!loading && <Check size={18} />}
             </button>
           </div>
         </div>

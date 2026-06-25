@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate, NavLink } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
+import { Package, Inbox, Home, Calendar, IndianRupee, Menu } from 'lucide-react';
 
 export default function IncomingRequests() {
   const { user, requests, bids, loading } = useApp();
@@ -52,8 +53,8 @@ export default function IncomingRequests() {
                   </span>
                 </div>
                 {req.packageType && (
-                  <div className="card-meta-item">
-                    <span className="icon">📦</span>
+                  <div className="card-meta-item" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span className="icon" style={{ display: 'flex', alignItems: 'center' }}><Package size={14} /></span>
                     <span style={{ color: 'var(--success)', fontWeight: '700' }}>Package: {req.packageType}</span>
                   </div>
                 )}
@@ -62,7 +63,9 @@ export default function IncomingRequests() {
           ))
         ) : (
           <div className="empty-state">
-            <div className="empty-icon">📥</div>
+            <div className="empty-icon" style={{ display: 'flex', justifyContent: 'center', marginBottom: '8px' }}>
+              <Inbox size={40} style={{ color: 'var(--text-muted)' }} />
+            </div>
             <h3>No new requests</h3>
             <p>You have responded to all available requests.</p>
           </div>
@@ -71,23 +74,23 @@ export default function IncomingRequests() {
 
       <div className="bottom-nav">
         <NavLink to="/vendor" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} end>
-          <span className="nav-icon">🏠</span>
+          <Home size={20} className="nav-icon" />
           <span>Home</span>
         </NavLink>
         <NavLink to="/vendor/requests" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-          <span className="nav-icon">📥</span>
+          <Inbox size={20} className="nav-icon" />
           <span>Requests</span>
         </NavLink>
         <NavLink to="/vendor/bookings" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-          <span className="nav-icon">📅</span>
+          <Calendar size={20} className="nav-icon" />
           <span>Bookings</span>
         </NavLink>
         <NavLink to="/vendor/earnings" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-          <span className="nav-icon">💰</span>
+          <IndianRupee size={20} className="nav-icon" />
           <span>Earnings</span>
         </NavLink>
         <NavLink to="/vendor/profile" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-          <span className="nav-icon">☰</span>
+          <Menu size={20} className="nav-icon" />
           <span>More</span>
         </NavLink>
       </div>

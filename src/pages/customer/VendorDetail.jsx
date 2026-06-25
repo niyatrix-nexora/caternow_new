@@ -3,6 +3,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import { getVendor, getDistance } from '../../utils/data';
 import { loadVendorPackages, PACKAGE_META, toggleWishlist, isWishlisted } from '../../utils/packages';
+import { Heart, Star, Search, MapPin, PlusCircle, MessageSquare, Flame, Utensils, Leaf, CookingPot, ClipboardList, HelpCircle, Check, Phone, ArrowLeft, Pencil, X, Sparkles, CheckCircle2, Package } from 'lucide-react';
+import { Icon } from '../../utils/iconHelper';
 import {
   getVendorMenuForDisplay,
   getVendorLiveCounters,
@@ -88,7 +90,7 @@ function MenuTab({ vendor, packages }) {
   if (!displayMenu) {
     return (
       <div className="empty-state" style={{ padding: '32px 16px' }}>
-        <div className="empty-icon">🍽️</div>
+        <div className="empty-icon"><Utensils size={40} style={{ color: 'var(--text-muted)' }} /></div>
         <h3>Menu not configured</h3>
         <p>This vendor hasn't published their menu yet.</p>
       </div>
@@ -119,7 +121,7 @@ function MenuTab({ vendor, packages }) {
         background: hasFallback ? 'rgba(217,119,6,0.08)' : 'rgba(5,150,105,0.08)',
         border: `1px solid ${hasFallback ? 'rgba(217,119,6,0.2)' : 'rgba(5,150,105,0.2)'}`,
       }}>
-        <span style={{ fontSize: '1rem' }}>{hasFallback ? '📦' : '✅'}</span>
+        <span style={{ fontSize: '1rem' }}>{hasFallback ? <Package size={16} color="#D97706" /> : <CheckCircle2 size={16} color="#059669" />}</span>
         <div>
           <div style={{ fontSize: '0.75rem', fontWeight: 700, color: hasFallback ? '#D97706' : '#059669' }}>
             {hasFallback ? 'Menu from packages' : 'Vendor curated menu'}
@@ -131,22 +133,16 @@ function MenuTab({ vendor, packages }) {
       </div>
 
       {/* Search */}
-      <div style={{
-        display: 'flex', alignItems: 'center', gap: '8px',
-        background: 'var(--bg-input)', border: '1.5px solid var(--border)',
-        borderRadius: '12px', padding: '9px 12px', marginBottom: '10px',
-      }}>
-        <span style={{ opacity: 0.4 }}>🔍</span>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'var(--bg-elevated)', borderRadius: '12px', padding: '10px 14px', marginBottom: '10px' }}>
+        <Search size={16} style={{ opacity: 0.5 }} />
         <input
           value={search}
           onChange={e => setSearch(e.target.value)}
-          placeholder="Search dishes…"
-          style={{ flex: 1, border: 'none', background: 'transparent', color: 'var(--text)', fontSize: '0.85rem', outline: 'none', fontFamily: 'inherit' }}
+          placeholder="Search dishes..."
+          style={{ flex: 1, border: 'none', background: 'transparent', fontSize: '0.88rem', fontFamily: 'inherit', outline: 'none', color: 'var(--text)' }}
         />
-        {search && (
-          <button onClick={() => setSearch('')}
-            style={{ border: 'none', background: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '0.9rem', padding: 0 }}>✕</button>
-        )}
+        {search && <button onClick={() => setSearch('')}
+          style={{ border: 'none', background: 'none', color: 'var(--text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: 0 }}><X size={16} /></button>}
       </div>
 
       {/* Sub-category filter */}
@@ -160,7 +156,13 @@ function MenuTab({ vendor, packages }) {
             fontWeight: subFilter === f ? 700 : 500, fontSize: '0.75rem',
             cursor: 'pointer', fontFamily: 'inherit',
           }}>
-            {f === 'all' ? '🍽️ All' : f === 'veg' ? '🟢 Veg' : '🔴 Non-Veg'}
+            {f === 'all' ? (
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Utensils size={12} /> All</span>
+            ) : f === 'veg' ? (
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Leaf size={12} style={{ color: '#10b981' }} /> Veg</span>
+            ) : (
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Utensils size={12} style={{ color: '#ef4444' }} /> Non-Veg</span>
+            )}
           </button>
         ))}
       </div>
@@ -187,15 +189,18 @@ function MenuTab({ vendor, packages }) {
             fontSize: '0.7rem', fontWeight: activecat === cat ? 700 : 500,
             cursor: 'pointer', fontFamily: 'inherit',
           }}>
-            {CATEGORY_EMOJI[cat] || '🍽️'} {cat}
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+              <CookingPot size={14} style={{ color: 'var(--primary)' }} />
+              {cat}
+            </span>
           </button>
         ))}
       </div>
 
       {/* Empty */}
       {Object.keys(filteredMenu).length === 0 && (
-        <div className="empty-state" style={{ padding: '24px 16px' }}>
-          <div className="empty-icon" style={{ fontSize: '2rem' }}>🔍</div>
+        <div className="empty-state" style={{ padding: '32px 16px' }}>
+          <div className="empty-icon" style={{ display: 'flex', justifyContent: 'center' }}><Search size={32} style={{ color: 'var(--text-muted)' }} /></div>
           <p style={{ fontSize: '0.88rem' }}>No dishes match your search.</p>
         </div>
       )}
@@ -212,7 +217,9 @@ function MenuTab({ vendor, packages }) {
             padding: '12px 14px', borderBottom: '1px solid var(--border)',
             background: 'var(--bg-elevated)',
           }}>
-            <span style={{ fontSize: '1.1rem' }}>{CATEGORY_EMOJI[catLabel] || '🍽️'}</span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '24px', height: '24px', borderRadius: '50%', background: 'rgba(255,107,0,0.1)' }}>
+              <CookingPot size={14} style={{ color: 'var(--primary)' }} />
+            </span>
             <span style={{ fontWeight: 800, fontSize: '0.9rem', flex: 1 }}>{catLabel}</span>
             <span style={{
               fontSize: '0.65rem', fontWeight: 700, padding: '2px 8px', borderRadius: '999px',
@@ -294,7 +301,7 @@ function MenuTab({ vendor, packages }) {
             padding: '12px 14px', borderBottom: '1px solid var(--border)',
             background: 'rgba(234,88,12,0.06)',
           }}>
-            <span style={{ fontSize: '1.1rem' }}>🔥</span>
+            <Flame size={18} style={{ color: '#EA580C' }} />
             <span style={{ fontWeight: 800, fontSize: '0.9rem', flex: 1 }}>Live Counters</span>
             <span style={{
               fontSize: '0.65rem', fontWeight: 700, padding: '2px 8px', borderRadius: '999px',
@@ -328,7 +335,10 @@ function MenuTab({ vendor, packages }) {
               <span style={{
                 fontSize: '0.65rem', fontWeight: 700, padding: '3px 8px', borderRadius: '999px',
                 background: 'rgba(234,88,12,0.1)', border: '1px solid rgba(234,88,12,0.25)', color: '#EA580C',
-              }}>🔥 Live</span>
+                display: 'inline-flex', alignItems: 'center', gap: '3px'
+              }}>
+                <Flame size={10} /> Live
+              </span>
             </div>
           ))}
         </div>
@@ -384,7 +394,7 @@ export default function VendorDetail() {
     return (
       <div className="app-container">
         <div className="page-header">
-          <button className="back-btn" onClick={() => navigate('/customer/vendors')}>←</button>
+          <button className="back-btn" onClick={() => navigate('/customer/vendors')}><ArrowLeft size={20} /></button>
           <h1>Vendor Profile</h1>
         </div>
         <div className="page" style={{ display: 'flex', justifyContent: 'center', paddingTop: 60 }}>
@@ -398,13 +408,13 @@ export default function VendorDetail() {
     return (
       <div className="app-container">
         <div className="page-header">
-          <button className="back-btn" onClick={() => navigate('/customer/vendors')}>←</button>
+          <button className="back-btn" onClick={() => navigate('/customer/vendors')}><ArrowLeft size={20} /></button>
           <h1>Not Found</h1>
         </div>
         <div className="page">
           <div className="empty-state">
-            <div className="empty-icon">🔍</div>
-            <h3>Vendor not found</h3>
+            <div className="empty-icon"><Search size={32} style={{ color: 'var(--text-muted)' }} /></div>
+            <h3>No items found</h3>
             <p>This vendor may no longer be active.</p>
             <button className="btn btn-secondary mt-md" onClick={() => navigate('/customer/vendors')}>Back to Search</button>
           </div>
@@ -413,7 +423,7 @@ export default function VendorDetail() {
     );
   }
 
-  const foodLabel  = { veg: '🟢 Veg', nonveg: '🔴 Non-Veg', both: '🟠 Veg + Non-Veg' };
+  const foodLabel  = { veg: 'Veg', nonveg: 'Non-Veg', both: 'Veg + Non-Veg' };
   const badgeCls   = { veg: 'badge-veg', nonveg: 'badge-nonveg', both: 'badge-both' };
   const vendorImg  = VENDOR_IMAGE_MAP[vendor.name] || null;
   const activePackages = packages.filter(p => p.isActive);
@@ -426,7 +436,9 @@ export default function VendorDetail() {
     <div className="app-container">
       {/* ── Header ── */}
       <div className="page-header">
-        <button className="back-btn" onClick={() => navigate('/customer/vendors')}>←</button>
+        <button className="back-btn" onClick={() => navigate('/customer/vendors')} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <ArrowLeft size={20} />
+        </button>
         <h1>Vendor Profile</h1>
         <button
           onClick={handleWishlist}
@@ -440,7 +452,7 @@ export default function VendorDetail() {
           }}
           aria-label={wishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
         >
-          {wishlisted ? '❤️' : '🤍'}
+          {wishlisted ? <Heart size={18} fill="#DC2626" color="#DC2626" /> : <Heart size={18} color="var(--text-secondary)" />}
         </button>
       </div>
 
@@ -464,7 +476,9 @@ export default function VendorDetail() {
             <h2 className="vd-name">{vendor.name}</h2>
             <div className="vd-meta-row">
               <span className={`badge ${badgeCls[vendor.foodType]}`}>{foodLabel[vendor.foodType]}</span>
-              <span className="vd-dist">📍 {vendor.distance?.toFixed(1)} km away</span>
+              <span className="vd-dist" style={{ display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                <MapPin size={12} /> {vendor.distance?.toFixed(1)} km away
+              </span>
             </div>
             {vendor.rating > 0 && (
               <div className="vd-rating">
@@ -479,19 +493,19 @@ export default function VendorDetail() {
         {/* ── Stats ── */}
         <div className="vd-stats">
           <div className="vd-stat">
-            <span className="vd-stat-icon">📡</span>
+            <span className="vd-stat-icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><MapPin size={18} style={{ color: 'var(--primary)' }} /></span>
             <span className="vd-stat-value">{vendor.radius} km</span>
             <span className="vd-stat-label">Service Radius</span>
           </div>
           <div className="vd-stat-divider" />
           <div className="vd-stat">
-            <span className="vd-stat-icon">🍽️</span>
+            <span className="vd-stat-icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Utensils size={18} style={{ color: 'var(--primary)' }} /></span>
             <span className="vd-stat-value">{menuItemCount}</span>
             <span className="vd-stat-label">Menu Items</span>
           </div>
           <div className="vd-stat-divider" />
           <div className="vd-stat">
-            <span className="vd-stat-icon">📦</span>
+            <span className="vd-stat-icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><CookingPot size={18} style={{ color: 'var(--primary)' }} /></span>
             <span className="vd-stat-value">{activePackages.length}</span>
             <span className="vd-stat-label">Packages</span>
           </div>
@@ -501,7 +515,7 @@ export default function VendorDetail() {
         <div className="vd-info-card">
           {vendor.fssai && (
             <div className="vd-info-row">
-              <span className="vd-info-icon">✅</span>
+              <span className="vd-info-icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Check size={16} style={{ color: '#059669' }} /></span>
               <div>
                 <div className="vd-info-label">FSSAI License</div>
                 <div className="vd-info-value vd-fssai">{vendor.fssai}</div>
@@ -509,14 +523,14 @@ export default function VendorDetail() {
             </div>
           )}
           <div className="vd-info-row">
-            <span className="vd-info-icon">📞</span>
+            <span className="vd-info-icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Phone size={16} style={{ color: 'var(--primary)' }} /></span>
             <div>
               <div className="vd-info-label">Contact</div>
               <div className="vd-info-value">Available after booking</div>
             </div>
           </div>
           <div className="vd-info-row">
-            <span className="vd-info-icon">🍱</span>
+            <span className="vd-info-icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Utensils size={16} style={{ color: 'var(--primary)' }} /></span>
             <div>
               <div className="vd-info-label">Speciality</div>
               <div className="vd-info-value">{foodLabel[vendor.foodType]} Cuisine</div>
@@ -526,14 +540,14 @@ export default function VendorDetail() {
 
         {/* ── Tabs ── */}
         <div className="vd-tabs">
-          <button className={`vd-tab ${activeTab === 'packages' ? 'active' : ''}`} onClick={() => setActiveTab('packages')}>
-            📦 Packages
+          <button className={`vd-tab ${activeTab === 'packages' ? 'active' : ''}`} onClick={() => setActiveTab('packages')} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+            <CookingPot size={14} /> Packages
           </button>
-          <button className={`vd-tab ${activeTab === 'menu' ? 'active' : ''}`} onClick={() => setActiveTab('menu')}>
-            📋 Menu
+          <button className={`vd-tab ${activeTab === 'menu' ? 'active' : ''}`} onClick={() => setActiveTab('menu')} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+            <ClipboardList size={14} /> Menu
           </button>
-          <button className={`vd-tab ${activeTab === 'about' ? 'active' : ''}`} onClick={() => setActiveTab('about')}>
-            ℹ️ About
+          <button className={`vd-tab ${activeTab === 'about' ? 'active' : ''}`} onClick={() => setActiveTab('about')} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+            <HelpCircle size={14} /> About
           </button>
         </div>
 
@@ -545,10 +559,10 @@ export default function VendorDetail() {
             </p>
 
             {activePackages.length === 0 ? (
-              <div className="empty-state" style={{ padding: '32px 16px' }}>
-                <div className="empty-icon">📦</div>
-                <h3>No packages yet</h3>
-                <p>This vendor hasn't set up packages. Post a request and they'll send a custom bid.</p>
+              <div className="empty-state" style={{ padding: '40px 16px' }}>
+                <div className="empty-icon"><Utensils size={40} style={{ color: 'var(--text-muted)' }} /></div>
+                <h3>No packages available</h3>
+                <p>This vendor hasn't set up packages yet.</p>
               </div>
             ) : (
               <>
@@ -580,8 +594,8 @@ export default function VendorDetail() {
                   >
                     {/* Header */}
                     <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '10px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <span style={{ fontSize: '1.6rem' }}>{meta.emoji}</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <div style={{ fontSize: '1.6rem' }}>{meta.emoji}</div>
                         <div>
                           <div style={{ fontWeight: 800, fontSize: '1rem', color: meta.color }}>{pkg.title}</div>
                           <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '1px' }}>
@@ -626,11 +640,10 @@ export default function VendorDetail() {
                     </div>
 
                     {/* Add-ons preview */}
-                    {(pkg.addOns || []).length > 0 && (
-                      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '12px' }}>
-                        ✨ Add-ons: {(pkg.addOns || []).slice(0, 2).join(' · ')}{(pkg.addOns || []).length > 2 ? ` +${(pkg.addOns || []).length - 2} more` : ''}
+                      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <Sparkles size={12} style={{ color: 'var(--primary)' }} />
+                        <span>Add-ons: {(pkg.addOns || []).slice(0, 2).join(' · ')}{(pkg.addOns || []).length > 2 ? ` +${(pkg.addOns || []).length - 2} more` : ''}</span>
                       </div>
-                    )}
 
                     {/* CTA */}
                     <div style={{
@@ -670,7 +683,7 @@ export default function VendorDetail() {
                 onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,107,0,0.1)'; }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,107,0,0.06)'; }}
               >
-                <div style={{ fontSize: '1.8rem', marginBottom: '8px' }}>✏️</div>
+                <div style={{ marginBottom: '8px', display: 'flex', justifyContent: 'center', color: '#FF6B00' }}><Pencil size={24} /></div>
                 <div style={{ fontWeight: 800, fontSize: '0.95rem', color: '#FF6B00' }}>Build a Custom Package</div>
                 <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '4px', lineHeight: 1.4 }}>
                   Pick exactly what you want from {vendor.name}'s menu
@@ -688,17 +701,21 @@ export default function VendorDetail() {
         {activeTab === 'about' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
             <div className="card" style={{ padding: '16px' }}>
-              <div style={{ fontWeight: 700, marginBottom: '12px' }}>📋 Vendor Details</div>
+              <div style={{ fontWeight: 700, marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <ClipboardList size={18} style={{ color: 'var(--primary)' }} /> Vendor Details
+              </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 {[
-                  { icon: '🍱', label: 'Cuisine Type',   value: foodLabel[vendor.foodType] },
-                  { icon: '📡', label: 'Service Radius', value: `${vendor.radius} km` },
-                  { icon: '⭐', label: 'Rating',          value: vendor.rating > 0 ? `${vendor.rating.toFixed(1)} / 5.0` : 'Not rated yet' },
-                  { icon: '✅', label: 'FSSAI License',   value: vendor.fssai || 'Not provided' },
-                  { icon: '📞', label: 'Contact',         value: 'Available after booking confirmation' },
+                  { iconName: 'Utensils', label: 'Cuisine Type',   value: foodLabel[vendor.foodType] },
+                  { iconName: 'MapPin', label: 'Service Radius', value: `${vendor.radius} km` },
+                  { iconName: 'Star', label: 'Rating',          value: vendor.rating > 0 ? `${vendor.rating.toFixed(1)} / 5.0` : 'Not rated yet' },
+                  { iconName: 'Check', label: 'FSSAI License',   value: vendor.fssai || 'Not provided' },
+                  { iconName: 'Phone', label: 'Contact',         value: 'Available after booking confirmation' },
                 ].map(row => (
                   <div key={row.label} style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', paddingBottom: '10px', borderBottom: '1px solid var(--border)' }}>
-                    <span style={{ fontSize: '1rem', flexShrink: 0 }}>{row.icon}</span>
+                    <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '2px' }}>
+                      <Icon name={row.iconName} size={16} style={{ color: 'var(--primary)', flexShrink: 0 }} />
+                    </span>
                     <div>
                       <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '2px' }}>{row.label}</div>
                       <div style={{ fontSize: '0.88rem', fontWeight: 600 }}>{row.value}</div>
@@ -713,13 +730,13 @@ export default function VendorDetail() {
         {/* ── CTA ── */}
         <div className="vd-cta">
           <div style={{ display: 'flex', gap: '10px' }}>
-            <button className="btn btn-primary btn-lg" style={{ flex: 2 }} onClick={() => navigate('/customer/new-request', {
+            <button className="btn btn-primary btn-lg" style={{ flex: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }} onClick={() => navigate('/customer/new-request', {
               state: { vendorId: vendor.id, vendorName: vendor.name }
             })}>
-              🚀 Post a Request
+              <PlusCircle size={18} /> Post a Request
             </button>
             <button className="btn btn-secondary btn-lg" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }} onClick={() => navigate(`/customer/chat/${vendor.id}`, { state: { vendorName: vendor.name }})}>
-              💬 Chat
+              <MessageSquare size={16} /> Chat
             </button>
           </div>
           <p className="vd-cta-note">

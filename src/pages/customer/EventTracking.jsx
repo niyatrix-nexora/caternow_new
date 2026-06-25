@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
-import { getRequest, getBidsForRequest, getVendor } from '../../utils/data';
+import { getRequest, getBidsForRequest, getVendor, subscribeToRequest } from '../../utils/data';
+import { Calendar, Phone, Check, ArrowLeft } from 'lucide-react';
 
 const TRACKING_STEPS = [
   { id: 'confirmed', label: 'Order Confirmed', timeOffset: 0 },
@@ -19,6 +20,8 @@ export default function EventTracking() {
   const [request, setRequest] = useState(null);
   const [vendor, setVendor] = useState(null);
   const [bid, setBid] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     if (!user || user.role !== 'customer') navigate('/');
@@ -26,16 +29,33 @@ export default function EventTracking() {
 
   useEffect(() => {
     let isMounted = true;
+    let unsubRequest = () => {};
 
     async function loadTrackingData() {
       try {
+        setLoading(true);
+        setError('');
+
         // 1. Find or fetch request
         let req = requests.find(r => r.id === id);
         if (!req) {
           req = await getRequest(id);
         }
-        if (!isMounted || !req) return;
+        if (!isMounted) return;
+
+        if (!req) {
+          setError('Order request not found.');
+          setLoading(false);
+          return;
+        }
         setRequest(req);
+
+        // Subscribe to real-time updates for this request
+        unsubRequest = subscribeToRequest(id, (updated) => {
+          if (isMounted) {
+            setRequest(updated);
+          }
+        });
 
         // 2. Find or fetch confirmed bid
         let confirmedBid = bids.find(b => b.id === req.confirmedBidId) || 
@@ -45,7 +65,13 @@ export default function EventTracking() {
           confirmedBid = reqBids.find(b => b.id === req.confirmedBidId) || 
                          reqBids.find(b => b.status === 'accepted');
         }
-        if (!isMounted || !confirmedBid) return;
+        
+        if (!isMounted) return;
+
+        if (!confirmedBid) {
+          setLoading(false);
+          return;
+        }
         setBid(confirmedBid);
 
         // 3. Find or fetch vendor
@@ -53,10 +79,22 @@ export default function EventTracking() {
         if (!v) {
           v = await getVendor(confirmedBid.vendorId);
         }
-        if (!isMounted || !v) return;
+        
+        if (!isMounted) return;
+
+        if (!v) {
+          setError('Vendor details not found.');
+          setLoading(false);
+          return;
+        }
         setVendor(v);
+        setLoading(false);
       } catch (err) {
         console.error('Failed to load tracking data:', err);
+        if (isMounted) {
+          setError('Failed to load tracking details. Please try again.');
+          setLoading(false);
+        }
       }
     }
 
@@ -64,19 +102,66 @@ export default function EventTracking() {
 
     return () => {
       isMounted = false;
+      unsubRequest();
     };
   }, [id, requests, bids, vendors]);
 
-  if (!request || !bid || !vendor) {
+  if (loading) {
     return (
       <div className="app-container">
         <div className="page-header">
-          <button className="back-btn" onClick={() => navigate(-1)}>←</button>
+          <button className="back-btn" onClick={() => navigate(-1)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <ArrowLeft size={20} />
+          </button>
           <h1>Event Tracking</h1>
         </div>
         <div className="page" style={{ textAlign: 'center', padding: '40px 20px' }}>
           <div className="loading-spinner" />
           <p style={{ marginTop: '20px', color: 'var(--text-muted)' }}>Loading tracking details...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !request) {
+    return (
+      <div className="app-container">
+        <div className="page-header">
+          <button className="back-btn" onClick={() => navigate(-1)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <ArrowLeft size={20} />
+          </button>
+          <h1>Event Tracking</h1>
+        </div>
+        <div className="page" style={{ textAlign: 'center', padding: '40px 20px' }}>
+          <div style={{ color: 'var(--danger)', fontSize: '2rem', marginBottom: '12px' }}>⚠️</div>
+          <h3>Error</h3>
+          <p style={{ color: 'var(--text-muted)', marginBottom: '20px' }}>{error || 'Request not found'}</p>
+          <button className="btn btn-primary" onClick={() => navigate('/customer')}>
+            Go to Home
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!bid || !vendor) {
+    return (
+      <div className="app-container">
+        <div className="page-header">
+          <button className="back-btn" onClick={() => navigate(-1)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <ArrowLeft size={20} />
+          </button>
+          <h1>Event Tracking</h1>
+        </div>
+        <div className="page" style={{ textAlign: 'center', padding: '40px 20px' }}>
+          <div style={{ color: 'var(--primary)', fontSize: '2.5rem', marginBottom: '16px' }}>⏳</div>
+          <h3>Order Confirmed but Pending Setup</h3>
+          <p style={{ color: 'var(--text-secondary)', marginBottom: '24px', fontSize: '0.9rem' }}>
+            Tracking status is only available once a vendor's bid is accepted and confirmed. If you just completed payment, please wait a moment.
+          </p>
+          <button className="btn btn-primary" onClick={() => navigate('/customer')}>
+            Back to Dashboard
+          </button>
         </div>
       </div>
     );
@@ -93,15 +178,17 @@ export default function EventTracking() {
   return (
     <div className="app-container">
       <div className="page-header">
-        <button className="back-btn" onClick={() => navigate(-1)}>←</button>
+        <button className="back-btn" onClick={() => navigate(-1)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <ArrowLeft size={20} />
+        </button>
         <h1>Event Tracking</h1>
       </div>
 
       <div className="page">
         <div className="card" style={{ marginBottom: '20px' }}>
           <h3 style={{ marginBottom: '8px', fontSize: '1.1rem' }}>{request.eventName || 'Catering Order'}</h3>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '16px' }}>
-            📅 {formattedDate}
+          <p style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '16px' }}>
+            <Calendar size={14} style={{ color: 'var(--primary)' }} /> {formattedDate}
           </p>
 
           <div className="vendor-info" style={{ background: 'var(--surface-light)', padding: '12px', borderRadius: 'var(--radius-md)' }}>
@@ -115,7 +202,9 @@ export default function EventTracking() {
               </div>
             </div>
             <div>
-              <a href={`tel:${vendor.phone}`} className="btn btn-primary btn-sm" style={{ padding: '6px 12px', textDecoration: 'none' }}>📞 Call</a>
+              <a href={`tel:${vendor.phone}`} className="btn btn-primary btn-sm" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '6px 12px', textDecoration: 'none' }}>
+                <Phone size={12} /> Call
+              </a>
             </div>
           </div>
         </div>
@@ -165,7 +254,7 @@ export default function EventTracking() {
                     marginRight: '16px',
                     flexShrink: 0
                   }}>
-                    {isCompleted && '✓'}
+                    {isCompleted && <Check size={12} strokeWidth={3} />}
                   </div>
                   
                   {/* Content */}

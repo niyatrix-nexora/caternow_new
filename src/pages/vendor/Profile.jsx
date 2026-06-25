@@ -2,6 +2,11 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, NavLink } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import { saveVendorMenu, loadVendorMenu } from '../../utils/data';
+import { Icon } from '../../utils/iconHelper';
+import {
+  Mail, ClipboardList, Check, Clock, X, Utensils, Pencil, Save, RotateCcw,
+  Smartphone, LogOut, Home, Inbox, Calendar, DollarSign, Menu, CheckCircle, AlertTriangle
+} from 'lucide-react';
 
 // ─── Item pool per food type ──────────────────────────────────────────────────
 const ITEM_POOL = {
@@ -82,19 +87,19 @@ function mergeMenu(full, saved) {
 
 // Order of display in the UI
 const CATEGORY_META = {
-  starters:    { icon: '🥗', label: 'Starters' },
-  mainsVeg:    { icon: '🟢', label: 'Veg Mains' },
-  mainsNonveg: { icon: '🔴', label: 'Non-Veg Mains' },
-  breads:      { icon: '🍞', label: 'Breads & Rice' },
-  desserts:    { icon: '🍮', label: 'Desserts' },
-  beverages:   { icon: '🥤', label: 'Beverages' },
+  starters:    { icon: 'Salad', label: 'Starters' },
+  mainsVeg:    { icon: 'Leaf', label: 'Veg Mains' },
+  mainsNonveg: { icon: 'Flame', label: 'Non-Veg Mains' },
+  breads:      { icon: 'UtensilsCrossed', label: 'Breads & Rice' },
+  desserts:    { icon: 'Cake', label: 'Desserts' },
+  beverages:   { icon: 'Coffee', label: 'Beverages' },
 };
 
 const BID_STATUS = {
-  pending:  { cls: 'badge-bidding',   label: '⏳ Pending' },
-  accepted: { cls: 'badge-confirmed', label: '✅ Won' },
-  rejected: { cls: 'badge-cancelled', label: '✕ Rejected' },
-  hidden:   { cls: 'badge-cancelled', label: '👁 Hidden' },
+  pending:  { cls: 'badge-bidding',   label: 'Pending', icon: 'Clock' },
+  accepted: { cls: 'badge-confirmed', label: 'Won', icon: 'CheckCircle' },
+  rejected: { cls: 'badge-cancelled', label: 'Rejected', icon: 'X' },
+  hidden:   { cls: 'badge-cancelled', label: 'Hidden', icon: 'X' },
 };
 
 function getInitials(name, phone) {
@@ -141,7 +146,7 @@ export default function VendorProfile() {
   const [email, setEmail]             = useState('');
   const [fssai, setFssai]             = useState('');
   const [minPricePerPlate, setMinPricePerPlate] = useState(150);
-  const [saveFeedback, setSaveFeedback] = useState('');
+  const [saveFeedback, setSaveFeedback] = useState(null);
 
   useEffect(() => {
     if (!user || user.role !== 'vendor') navigate('/');
@@ -226,7 +231,7 @@ export default function VendorProfile() {
   const handleSaveProfile = () => {
     const trimmedEmail = email.trim();
     if (trimmedEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
-      setSaveFeedback('⚠️ Enter a valid email address.');
+      setSaveFeedback({ isError: true, msg: 'Enter a valid email address.' });
       return;
     }
     updateUser({ 
@@ -236,8 +241,8 @@ export default function VendorProfile() {
       fssai: fssai.trim(),
       minPricePerPlate: parseInt(minPricePerPlate) || 150
     });
-    setSaveFeedback('✅ Profile updated!');
-    setTimeout(() => setSaveFeedback(''), 2500);
+    setSaveFeedback({ isError: false, msg: 'Profile updated!' });
+    setTimeout(() => setSaveFeedback(null), 2500);
   };
 
   if (!user || !menu) return null;
@@ -250,7 +255,7 @@ export default function VendorProfile() {
       <div className="page-header">
         <div style={{ flex: 1 }}>
           <div className="logo" style={{ fontSize: '1.1rem' }}>
-            <span className="logo-icon" style={{ fontSize: '1.4rem' }}>🍽️</span>
+            <span className="logo-icon" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}><Utensils size={20} color="var(--primary)" /></span>
             <span className="logo-text">My Profile</span>
           </div>
         </div>
@@ -305,8 +310,8 @@ export default function VendorProfile() {
                   +91 {String(user.phone || '').replace(/\D/g,'').slice(-10).replace(/(\d{5})(\d{5})/,'$1 $2')}
                 </div>
                 {user.email && (
-                  <div style={{ fontSize: '0.78rem', color: vendorImg ? 'rgba(255,255,255,0.72)' : 'var(--text-muted)', marginTop: '2px' }}>
-                    ✉️ {user.email}
+                  <div style={{ fontSize: '0.78rem', color: vendorImg ? 'rgba(255,255,255,0.72)' : 'var(--text-muted)', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <Mail size={12} /> {user.email}
                   </div>
                 )}
                 <div
@@ -325,20 +330,20 @@ export default function VendorProfile() {
 
         {/* ── Stats ── */}
         <div className="vd-stats" style={{ marginBottom:'20px' }}>
-          <div className="vd-stat">
-            <span className="vd-stat-icon">📋</span>
+          <div className="vd-stat" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <ClipboardList size={20} style={{ color: 'var(--primary)', marginBottom: '4px' }} />
             <span className="vd-stat-value">{myBids.length}</span>
             <span className="vd-stat-label">Total Bids</span>
           </div>
           <div className="vd-stat-divider" />
-          <div className="vd-stat">
-            <span className="vd-stat-icon">✅</span>
+          <div className="vd-stat" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <CheckCircle size={20} style={{ color: 'var(--success)', marginBottom: '4px' }} />
             <span className="vd-stat-value">{wonBids.length}</span>
             <span className="vd-stat-label">Won</span>
           </div>
           <div className="vd-stat-divider" />
-          <div className="vd-stat">
-            <span className="vd-stat-icon">⏳</span>
+          <div className="vd-stat" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <Clock size={20} style={{ color: 'var(--warning)', marginBottom: '4px' }} />
             <span className="vd-stat-value">{pendingBids.length}</span>
             <span className="vd-stat-label">Pending</span>
           </div>
@@ -347,16 +352,19 @@ export default function VendorProfile() {
         {/* ── Tabs ── */}
         <div className="vd-tabs">
           <button className={`vd-tab ${activeTab === 'history' ? 'active' : ''}`}
-            onClick={() => setActiveTab('history')}>
-            📋 Bid History
+            onClick={() => setActiveTab('history')}
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+            <ClipboardList size={16} /> Bid History
           </button>
           <button className={`vd-tab ${activeTab === 'menu' ? 'active' : ''}`}
-            onClick={() => setActiveTab('menu')}>
-            🍽️ My Menu
+            onClick={() => setActiveTab('menu')}
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+            <Utensils size={16} /> My Menu
           </button>
           <button className={`vd-tab ${activeTab === 'account' ? 'active' : ''}`}
-            onClick={() => setActiveTab('account')}>
-            ✏️ Account
+            onClick={() => setActiveTab('account')}
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+            <Pencil size={16} /> Account
           </button>
         </div>
 
@@ -365,21 +373,23 @@ export default function VendorProfile() {
           <div style={{ display:'flex', flexDirection:'column', gap:'12px' }}>
             {myBids.length === 0 ? (
               <div className="empty-state">
-                <div className="empty-icon">📋</div>
+                <div className="empty-icon" style={{ display: 'flex', justifyContent: 'center' }}>
+                  <ClipboardList size={40} style={{ color: 'var(--text-muted)' }} />
+                </div>
                 <h3>No bids yet</h3>
                 <p>Your submitted bids and outcomes will appear here.</p>
                 <button className="btn btn-primary mt-md" onClick={() => navigate('/vendor')}>View Requests</button>
               </div>
             ) : (
               [...myBids].reverse().map((bid, i) => {
-                const s = BID_STATUS[bid.status] || { cls:'badge-pending', label: bid.status };
+                const s = BID_STATUS[bid.status] || { cls:'badge-pending', label: bid.status, icon: 'Clock' };
                 return (
                   <div key={bid.id} className="history-card"
                     onClick={() => navigate(`/vendor/request/${bid.requestId}`)}
                     style={{ animationDelay:`${i * 0.04}s` }}>
                     <div className="history-card-left">
-                      <div className={`history-status-dot ${bid.status}`}>
-                        {bid.status === 'accepted' ? '✅' : bid.status === 'pending' ? '⏳' : '✕'}
+                      <div className={`history-status-dot ${bid.status}`} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        {bid.status === 'accepted' ? <Check size={10} style={{ color: 'white' }} /> : bid.status === 'pending' ? <Clock size={10} style={{ color: 'white' }} /> : <X size={10} style={{ color: 'white' }} />}
                       </div>
                     </div>
                     <div className="history-card-body">
@@ -393,7 +403,10 @@ export default function VendorProfile() {
                       </div>
                     </div>
                     <div className="history-card-right">
-                      <span className={`badge ${s.cls}`} style={{ fontSize:'0.65rem' }}>{s.label}</span>
+                      <span className={`badge ${s.cls}`} style={{ fontSize:'0.65rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                        <Icon name={s.icon} size={10} />
+                        {s.label}
+                      </span>
                     </div>
                   </div>
                 );
@@ -410,8 +423,8 @@ export default function VendorProfile() {
               <p style={{ fontSize:'0.8rem', color:'var(--text-muted)', margin:0 }}>
                 <strong style={{ color:'var(--primary-light)' }}>{enabledCount}</strong> of {totalCount} items offered
               </p>
-              <p style={{ fontSize:'0.72rem', color:'var(--text-muted)', margin:0 }}>
-                Toggle · edit ₹ price · ✏️ rename
+              <p style={{ fontSize:'0.72rem', color:'var(--text-muted)', margin:0, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                Toggle · edit ₹ price · <Pencil size={10} /> rename
               </p>
             </div>
 
@@ -426,11 +439,13 @@ export default function VendorProfile() {
               return (
                 <div key={cat} className="vm-category" style={{ marginBottom: '10px' }}>
                   {/* Category header — tap to open/close */}
-                  <button className="vm-cat-header" onClick={toggle}>
-                    <span className="vm-cat-icon">{meta.icon}</span>
-                    <span className="vm-cat-label">{meta.label}</span>
-                    <span className="vm-cat-count">{enabled}/{rows.length}</span>
-                    <span className="vm-cat-arrow">{isOpen ? '▲' : '▼'}</span>
+                  <button className="vm-cat-header" onClick={toggle} style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+                    <span className="vm-cat-icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <Icon name={meta.icon} size={18} style={{ color: 'var(--primary)' }} />
+                    </span>
+                    <span className="vm-cat-label" style={{ marginLeft: '10px' }}>{meta.label}</span>
+                    <span className="vm-cat-count" style={{ marginLeft: 'auto' }}>{enabled}/{rows.length}</span>
+                    <span className="vm-cat-arrow" style={{ marginLeft: '10px' }}>{isOpen ? '▲' : '▼'}</span>
                   </button>
 
                   {/* Items — shown when open */}
@@ -457,7 +472,7 @@ export default function VendorProfile() {
                             <span className="vm-toggle-knob" />
                           </button>
 
-                          {/* Item name — tap ✏️ to rename */}
+                          {/* Item name — tap Pencil to rename */}
                           {renamingItem?.cat === cat && renamingItem?.name === row.name ? (
                             <div style={{ display: 'flex', alignItems: 'center', gap: '5px', flex: 1, minWidth: 0 }}>
                               <input
@@ -487,7 +502,7 @@ export default function VendorProfile() {
                                   fontSize: '0.75rem', display: 'flex', alignItems: 'center',
                                   justifyContent: 'center', flexShrink: 0,
                                 }}
-                              >✓</button>
+                              ><Check size={14} /></button>
                               <button
                                 onClick={() => { setRenamingItem(null); setRenameValue(''); }}
                                 title="Cancel"
@@ -498,7 +513,7 @@ export default function VendorProfile() {
                                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                                   flexShrink: 0,
                                 }}
-                              >✕</button>
+                              ><X size={14} /></button>
                             </div>
                           ) : (
                             <div style={{ display: 'flex', alignItems: 'center', gap: '5px', flex: 1, minWidth: 0 }}>
@@ -518,10 +533,11 @@ export default function VendorProfile() {
                                   color: 'var(--text-muted)', fontSize: '0.75rem', padding: '2px 4px',
                                   borderRadius: '6px', flexShrink: 0, opacity: 0.6,
                                   transition: 'opacity 0.15s, color 0.15s',
+                                  display: 'flex', alignItems: 'center', justifyContent: 'center'
                                 }}
                                 onMouseEnter={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.color = 'var(--primary)'; }}
                                 onMouseLeave={e => { e.currentTarget.style.opacity = '0.6'; e.currentTarget.style.color = 'var(--text-muted)'; }}
-                              >✏️</button>
+                              ><Pencil size={12} /></button>
                             </div>
                           )}
 
@@ -550,11 +566,22 @@ export default function VendorProfile() {
 
             {/* Save / Reset */}
             <div style={{ display:'flex', gap:'10px', marginTop:'20px' }}>
-              <button className="btn btn-primary" style={{ flex:1 }} onClick={handleSave}>
-                {saved ? '✅ Saved!' : '💾 Save Menu'}
+              <button className="btn btn-primary" style={{ flex:1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }} onClick={handleSave}>
+                {saved ? (
+                  <>
+                    <Check size={18} />
+                    <span>Saved!</span>
+                  </>
+                ) : (
+                  <>
+                    <Save size={18} />
+                    <span>Save Menu</span>
+                  </>
+                )}
               </button>
-              <button className="btn btn-secondary" style={{ flex:1 }} onClick={handleReset}>
-                ↺ Reset
+              <button className="btn btn-secondary" style={{ flex:1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }} onClick={handleReset}>
+                <RotateCcw size={18} />
+                <span>Reset</span>
               </button>
             </div>
             <p style={{ fontSize:'0.7rem', color:'var(--text-muted)', textAlign:'center', marginTop:'10px' }}>
@@ -602,45 +629,57 @@ export default function VendorProfile() {
               <input className="form-input" type="text"
                 value={'+91 ' + String(user.phone || '').replace(/\D/g,'').slice(-10).replace(/(\d{5})(\d{5})/,'$1 $2')}
                 disabled style={{ opacity: 0.5, cursor: 'not-allowed' }} />
-              <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '4px' }}>📱 Phone number is used for login and cannot be changed.</p>
+              <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <Smartphone size={12} /> Phone number is used for login and cannot be changed.
+              </p>
             </div>
             {saveFeedback && (
-              <p style={{ fontSize: '0.82rem', color: saveFeedback.startsWith('⚠️') ? 'var(--warning)' : 'var(--success)', margin: 0 }}>
-                {saveFeedback}
+              <p style={{
+                fontSize: '0.82rem',
+                color: saveFeedback.isError ? 'var(--warning)' : 'var(--success)',
+                margin: 0,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px'
+              }}>
+                {saveFeedback.isError ? <AlertTriangle size={14} /> : <CheckCircle size={14} />}
+                {saveFeedback.msg}
               </p>
             )}
-            <button className="btn btn-primary btn-block" onClick={handleSaveProfile}>💾 Save Profile</button>
+            <button className="btn btn-primary btn-block" onClick={handleSaveProfile} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+              <Save size={18} /> Save Profile
+            </button>
           </div>
         )}
 
         {/* ── Logout ── */}
         <div style={{ marginTop:'32px', paddingBottom:'8px' }}>
           <button className="btn btn-secondary btn-block" onClick={logout}
-            style={{ borderColor:'rgba(239,68,68,0.3)', color:'var(--danger)' }}>
-            🚪 Logout
+            style={{ borderColor:'rgba(239,68,68,0.3)', color:'var(--danger)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+            <LogOut size={18} /> Logout
           </button>
         </div>
       </div>
 
       <div className="bottom-nav">
         <NavLink to="/vendor" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} end>
-          <span className="nav-icon">🏠</span>
+          <Home size={20} className="nav-icon" />
           <span>Home</span>
         </NavLink>
         <NavLink to="/vendor/requests" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-          <span className="nav-icon">📥</span>
+          <Inbox size={20} className="nav-icon" />
           <span>Requests</span>
         </NavLink>
         <NavLink to="/vendor/bookings" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-          <span className="nav-icon">📅</span>
+          <Calendar size={20} className="nav-icon" />
           <span>Bookings</span>
         </NavLink>
         <NavLink to="/vendor/earnings" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-          <span className="nav-icon">💰</span>
+          <DollarSign size={20} className="nav-icon" />
           <span>Earnings</span>
         </NavLink>
         <NavLink to="/vendor/profile" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-          <span className="nav-icon">☰</span>
+          <Menu size={20} className="nav-icon" />
           <span>More</span>
         </NavLink>
       </div>

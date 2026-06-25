@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
+import { Utensils } from 'lucide-react';
 
 export default function Splash() {
   const navigate = useNavigate();
@@ -40,12 +41,11 @@ export default function Splash() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            fontSize: '2.8rem',
             margin: '0 auto 20px',
             boxShadow: '0 20px 60px rgba(255,107,0,0.4)',
           }}
         >
-          🍽️
+          <Utensils size={44} color="#fff" />
         </div>
         <h1
           style={{

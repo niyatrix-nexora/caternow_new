@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate, NavLink } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
+import { Home, Inbox, Calendar, IndianRupee, Menu } from 'lucide-react';
 
 export default function VendorEarnings() {
   const { user, requests, bids } = useApp();
@@ -98,23 +99,23 @@ export default function VendorEarnings() {
 
       <div className="bottom-nav">
         <NavLink to="/vendor" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} end>
-          <span className="nav-icon">🏠</span>
+          <Home size={20} className="nav-icon" />
           <span>Home</span>
         </NavLink>
         <NavLink to="/vendor/requests" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-          <span className="nav-icon">📥</span>
+          <Inbox size={20} className="nav-icon" />
           <span>Requests</span>
         </NavLink>
         <NavLink to="/vendor/bookings" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-          <span className="nav-icon">📅</span>
+          <Calendar size={20} className="nav-icon" />
           <span>Bookings</span>
         </NavLink>
         <NavLink to="/vendor/earnings" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-          <span className="nav-icon">💰</span>
+          <IndianRupee size={20} className="nav-icon" />
           <span>Earnings</span>
         </NavLink>
         <NavLink to="/vendor/profile" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-          <span className="nav-icon">☰</span>
+          <Menu size={20} className="nav-icon" />
           <span>More</span>
         </NavLink>
       </div>

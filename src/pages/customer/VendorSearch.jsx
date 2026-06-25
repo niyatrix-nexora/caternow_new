@@ -3,6 +3,7 @@ import { useNavigate, NavLink } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import { getVendors, getDistance } from '../../utils/data';
 import { loadVendorPackages, toggleWishlist } from '../../utils/packages';
+import { Heart, Search, X, MapPin, Check, Home, PlusCircle, User, Utensils, Leaf, Sparkles, Star } from 'lucide-react';
 
 const VENDOR_IMAGE_MAP = {
   'Spice Garden Kitchen': '/spice.jpeg',
@@ -52,7 +53,7 @@ export default function VendorSearch() {
     } catch { /* ignore */ }
   }, [user?.id]);
 
-  const foodTypeLabel = { veg: '🟢 Veg', nonveg: '🔴 Non-Veg', both: '🟠 Both' };
+  const foodTypeLabel = { veg: 'Veg', nonveg: 'Non-Veg', both: 'Both' };
 
   const filtered = vendors
     .filter(v => {
@@ -83,39 +84,47 @@ export default function VendorSearch() {
     <div className="app-container">
       <div className="page-header">
         <div style={{ flex: 1 }}>
-          <div className="logo" style={{ fontSize: '1.1rem' }}>
-            <span className="logo-icon" style={{ fontSize: '1.4rem' }}>🍽️</span>
+          <div className="logo" style={{ fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Utensils size={24} style={{ color: 'var(--primary)' }} />
             <span className="logo-text">Explore Vendors</span>
           </div>
         </div>
       </div>
 
       <div className="page">
-        {/* Search bar */}
-        <div className="vendor-search-bar">
-          <span className="search-icon">🔍</span>
+        <div className="vendor-search-bar" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 14px', background: 'var(--bg-elevated)', borderRadius: '12px', marginBottom: '14px' }}>
+          <Search size={18} style={{ opacity: 0.5 }} />
           <input
             className="vendor-search-input"
+            style={{ flex: 1, border: 'none', background: 'transparent', outline: 'none', color: 'var(--text)', fontFamily: 'inherit', fontSize: '0.88rem' }}
             placeholder="Search vendors, cuisine..."
             value={query}
             onChange={e => setQuery(e.target.value)}
           />
-          {query && <button className="search-clear" onClick={() => setQuery('')}>✕</button>}
+          {query && <button className="search-clear" onClick={() => setQuery('')} style={{ border: 'none', background: 'none', color: 'var(--text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: 0 }}><X size={16} /></button>}
         </div>
 
         {/* Filters */}
         <div className="filter-row">
           <div className="filter-chips">
             {['all', 'veg', 'nonveg', 'both'].map(f => (
-              <button key={f} className={`filter-chip ${foodFilter === f ? 'active' : ''}`} onClick={() => setFoodFilter(f)}>
-                {f === 'all' ? '🍽️ All' : foodTypeLabel[f]}
+              <button key={f} className={`filter-chip ${foodFilter === f ? 'active' : ''}`} onClick={() => setFoodFilter(f)} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                {f === 'all' ? (
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Utensils size={12} /> All</span>
+                ) : f === 'veg' ? (
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Leaf size={12} style={{ color: '#10b981' }} /> Veg</span>
+                ) : f === 'nonveg' ? (
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Utensils size={12} style={{ color: '#ef4444' }} /> Non-Veg</span>
+                ) : (
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Sparkles size={12} style={{ color: '#f59e0b' }} /> Both</span>
+                )}
               </button>
             ))}
           </div>
           <select className="sort-select" value={sortBy} onChange={e => setSortBy(e.target.value)}>
-            <option value="rating">⭐ Top Rated</option>
-            <option value="distance">📍 Nearest</option>
-            <option value="name">🔤 A–Z</option>
+            <option value="rating">Top Rated</option>
+            <option value="distance">Nearest</option>
+            <option value="name">A–Z</option>
           </select>
         </div>
 
@@ -130,8 +139,8 @@ export default function VendorSearch() {
             <div className="loading-spinner" />
           </div>
         ) : filtered.length === 0 ? (
-          <div className="empty-state">
-            <div className="empty-icon">🔍</div>
+          <div className="empty-state" style={{ padding: '32px 16px', textAlign: 'center' }}>
+            <div className="empty-icon" style={{ display: 'flex', justifyContent: 'center' }}><Search size={32} style={{ color: 'var(--text-muted)' }} /></div>
             <h3>No vendors found</h3>
             <p>Try a different search term or filter.</p>
           </div>
@@ -168,7 +177,9 @@ export default function VendorSearch() {
                       <span className={`badge ${vendor.foodType === 'veg' ? 'badge-veg' : vendor.foodType === 'nonveg' ? 'badge-nonveg' : 'badge-both'}`}>
                         {foodTypeLabel[vendor.foodType] || vendor.foodType}
                       </span>
-                      <span className="vendor-card-dist">📍 {vendor.distance?.toFixed(1)} km</span>
+                      <span className="vendor-card-dist" style={{ display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                        <MapPin size={10} /> {vendor.distance?.toFixed(1)} km
+                      </span>
                     </div>
                     {vendor.rating > 0 && (
                       <div className="vendor-card-rating">
@@ -177,7 +188,9 @@ export default function VendorSearch() {
                       </div>
                     )}
                     {vendor.fssai && (
-                      <div style={{ fontSize: '0.72rem', color: 'var(--success)', marginTop: '4px' }}>✅ FSSAI Verified</div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.72rem', color: 'var(--success)', marginTop: '4px' }}>
+                        <Check size={12} /> FSSAI Verified
+                      </div>
                     )}
                   </div>
 
@@ -194,7 +207,7 @@ export default function VendorSearch() {
                       }}
                       aria-label="Toggle wishlist"
                     >
-                      {isWished ? '❤️' : '🤍'}
+                      {isWished ? <Heart size={16} fill="#DC2626" color="#DC2626" /> : <Heart size={16} color="var(--text-secondary)" />}
                     </button>
                     <div className="vendor-card-radius">Serves {vendor.radius} km</div>
                     <div style={{ color: 'var(--primary-light)', fontSize: '1rem' }}>›</div>
@@ -208,16 +221,16 @@ export default function VendorSearch() {
 
       <div className="bottom-nav">
         <NavLink to="/customer" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} end>
-          <span className="nav-icon">🏠</span><span>Home</span>
+          <span className="nav-icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Home size={20} /></span><span>Home</span>
         </NavLink>
         <NavLink to="/customer/new-request" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-          <span className="nav-icon">➕</span><span>New</span>
+          <span className="nav-icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><PlusCircle size={20} /></span><span>New</span>
         </NavLink>
         <NavLink to="/customer/vendors" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-          <span className="nav-icon">🔍</span><span>Vendors</span>
+          <span className="nav-icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Search size={20} /></span><span>Vendors</span>
         </NavLink>
         <NavLink to="/customer/profile" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-          <span className="nav-icon">👤</span><span>Profile</span>
+          <span className="nav-icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><User size={20} /></span><span>Profile</span>
         </NavLink>
       </div>
     </div>

@@ -6,19 +6,19 @@
 
 // ── Category-level fallback images (already in /public/images) ─────
 const CAT_IMG = {
-  'Veg Starters':                '/images/dish-paneer.png',
-  'Non-Veg Starters':            '/images/dish-samosa.png',
-  'Veg Curries':                 '/images/dish-paneer.png',
-  'Non-Veg Curries':             '/images/dish-butter-chicken.png',
-  'Rice Items':                  '/images/rice-real.png',
-  'Biryanis':                    '/images/dish-biryani.png',
-  'South Indian Specials':       '/images/dish-dal.png',
-  'Indian Breads':               '/images/dish-naan.png',
-  'Salads & Accompaniments':     '/images/dish-raita.png',
-  'Desserts & Sweets':           '/images/dish-gulab.png',
-  'Beverages':                   '/images/dish-raita.png',
-  'Live Counters':               '/images/dish-chutney.png',
-  'Add-ons':                     '/images/garnish.png',
+  'Veg Starters':                '/plateimg/dish-paneer.png',
+  'Non-Veg Starters':            '/plateimg/dish-samosa.png',
+  'Veg Curries':                 '/plateimg/dish-paneer.png',
+  'Non-Veg Curries':             '/plateimg/dish-butter-chicken.png',
+  'Rice Items':                  '/plateimg/rice-real.png',
+  'Biryanis':                    '/plateimg/Vegetable Dum Biryani.png',
+  'South Indian Specials':       '/plateimg/dish-dal.png',
+  'Indian Breads':               '/plateimg/dish-naan.png',
+  'Salads & Accompaniments':     '/plateimg/dish-raita.png',
+  'Desserts & Sweets':           '/plateimg/dish-gulab.png',
+  'Beverages':                   '/plateimg/dish-raita.png',
+  'Live Counters':               '/plateimg/dish-chutney.png',
+  'Add-ons':                     '/plateimg/banana-leaf-real.png',
 };
 
 export const MASTER_MENU = [
@@ -103,15 +103,15 @@ export const MASTER_MENU = [
   { id: 'ib-08', name: 'Poori',          category: 'Indian Breads',          subCategory: 'veg',     type: 'menu_item',    isActive: true, isGlobal: true, image: '/images/poori.jpeg',                  price: 30  },
 
   // ── Salads & Accompaniments ────────────────────────────────
-  { id: 'sa-01', name: 'Green Salad',       category: 'Salads & Accompaniments', subCategory: 'veg', type: 'menu_item',    isActive: true, isGlobal: true, image: '/images/dish-salad.png',              price: 50  },
-  { id: 'sa-02', name: 'Onion Salad',       category: 'Salads & Accompaniments', subCategory: 'veg', type: 'menu_item',    isActive: true, isGlobal: true, image: '/images/dish-salad.png',              price: 40  },
-  { id: 'sa-03', name: 'Cucumber Salad',    category: 'Salads & Accompaniments', subCategory: 'veg', type: 'menu_item',    isActive: true, isGlobal: true, image: '/images/dish-salad.png',              price: 45  },
-  { id: 'sa-04', name: 'Boondi Raita',      category: 'Salads & Accompaniments', subCategory: 'veg', type: 'menu_item',    isActive: true, isGlobal: true, image: '/images/dish-raita.png',              price: 55  },
-  { id: 'sa-05', name: 'Vegetable Raita',   category: 'Salads & Accompaniments', subCategory: 'veg', type: 'menu_item',    isActive: true, isGlobal: true, image: '/images/dish-raita.png',              price: 60  },
+  { id: 'sa-01', name: 'Green Salad',       category: 'Salads & Accompaniments', subCategory: 'veg', type: 'menu_item',    isActive: true, isGlobal: true, image: '/plateimg/dish-salad.png',              price: 50  },
+  { id: 'sa-02', name: 'Onion Salad',       category: 'Salads & Accompaniments', subCategory: 'veg', type: 'menu_item',    isActive: true, isGlobal: true, image: '/plateimg/dish-salad.png',              price: 40  },
+  { id: 'sa-03', name: 'Cucumber Salad',    category: 'Salads & Accompaniments', subCategory: 'veg', type: 'menu_item',    isActive: true, isGlobal: true, image: '/plateimg/dish-salad.png',              price: 45  },
+  { id: 'sa-04', name: 'Boondi Raita',      category: 'Salads & Accompaniments', subCategory: 'veg', type: 'menu_item',    isActive: true, isGlobal: true, image: '/plateimg/dish-raita.png',              price: 55  },
+  { id: 'sa-05', name: 'Vegetable Raita',   category: 'Salads & Accompaniments', subCategory: 'veg', type: 'menu_item',    isActive: true, isGlobal: true, image: '/plateimg/dish-raita.png',              price: 60  },
   { id: 'sa-09', name: 'Curd',              category: 'Salads & Accompaniments', subCategory: 'veg', type: 'menu_item',    isActive: true, isGlobal: true, image: '/images/curd.jpeg',                   price: 30  },
-  { id: 'sa-06', name: 'Mint Chutney',      category: 'Salads & Accompaniments', subCategory: 'veg', type: 'menu_item',    isActive: true, isGlobal: true, image: '/images/dish-chutney.png',            price: 30  },
-  { id: 'sa-07', name: 'Pickle',            category: 'Salads & Accompaniments', subCategory: 'veg', type: 'menu_item',    isActive: true, isGlobal: true, image: '/images/dish-chutney.png',            price: 20  },
-  { id: 'sa-08', name: 'Papad',             category: 'Salads & Accompaniments', subCategory: 'veg', type: 'menu_item',    isActive: true, isGlobal: true, image: '/images/dish-naan.png',               price: 15  },
+  { id: 'sa-06', name: 'Mint Chutney',      category: 'Salads & Accompaniments', subCategory: 'veg', type: 'menu_item',    isActive: true, isGlobal: true, image: '/plateimg/dish-chutney.png',            price: 30  },
+  { id: 'sa-07', name: 'Pickle',            category: 'Salads & Accompaniments', subCategory: 'veg', type: 'menu_item',    isActive: true, isGlobal: true, image: '/plateimg/dish-chutney.png',            price: 20  },
+  { id: 'sa-08', name: 'Papad',             category: 'Salads & Accompaniments', subCategory: 'veg', type: 'menu_item',    isActive: true, isGlobal: true, image: '/plateimg/dish-naan.png',               price: 15  },
 
   // ── Desserts & Sweets ──────────────────────────────────────
   { id: 'ds-01', name: 'Gulab Jamun',        category: 'Desserts & Sweets',    subCategory: 'veg',   type: 'menu_item',    isActive: true, isGlobal: true, image: '/images/gulab jamun.jpeg',            price: 80  },
@@ -128,30 +128,30 @@ export const MASTER_MENU = [
   { id: 'bv-02', name: 'Fresh Lime Soda',  category: 'Beverages', subCategory: 'na', type: 'menu_item', isActive: true, isGlobal: true, image: '/images/lemonsoda.jpeg',       price: 40 },
   { id: 'bv-03', name: 'Tea',              category: 'Beverages', subCategory: 'na', type: 'menu_item', isActive: true, isGlobal: true, image: '/images/tea.jpeg',             price: 20 },
   { id: 'bv-04', name: 'Coffee',           category: 'Beverages', subCategory: 'na', type: 'menu_item', isActive: true, isGlobal: true, image: '/images/coffee.jpeg',          price: 30 },
-  { id: 'bv-05', name: 'Masala Lassi',     category: 'Beverages', subCategory: 'na', type: 'menu_item', isActive: true, isGlobal: true, image: '/images/masala-lassi.jpeg',    price: 65 },
+  { id: 'bv-05', name: 'Masala Lassi',     category: 'Beverages', subCategory: 'na', type: 'menu_item', isActive: true, isGlobal: true, image: '/images/Masala Lassi.jpeg',    price: 65 },
   { id: 'bv-06', name: 'Buttermilk',       category: 'Beverages', subCategory: 'na', type: 'menu_item', isActive: true, isGlobal: true, image: '/images/buttermilk.jpeg',      price: 35 },
   { id: 'bv-07', name: 'Coconut Water',    category: 'Beverages', subCategory: 'na', type: 'menu_item', isActive: true, isGlobal: true, image: '/images/coconut-water.jpeg',   price: 50 },
   { id: 'bv-08', name: 'Mineral Water',    category: 'Beverages', subCategory: 'na', type: 'menu_item', isActive: true, isGlobal: true, image: '/images/water.jpeg',           price: 20 },
 
   // ── Live Counters ──────────────────────────────────────────
-  { id: 'lc-01', name: 'Live Dosa Counter',       category: 'Live Counters',        subCategory: 'na',      type: 'live_counter', isActive: true, isGlobal: true, image: '/images/dish-naan.png',           price: 120 },
-  { id: 'lc-02', name: 'Live Chaat Counter',       category: 'Live Counters',        subCategory: 'na',      type: 'live_counter', isActive: true, isGlobal: true, image: '/images/dish-samosa.png',         price: 100 },
-  { id: 'lc-03', name: 'Live Pani Puri Counter',   category: 'Live Counters',        subCategory: 'na',      type: 'live_counter', isActive: true, isGlobal: true, image: '/images/dish-salad.png',          price: 90  },
-  { id: 'lc-04', name: 'Live Pasta Counter',       category: 'Live Counters',        subCategory: 'na',      type: 'live_counter', isActive: true, isGlobal: true, image: '/images/dish-salad.png',          price: 130 },
-  { id: 'lc-05', name: 'Live Jalebi Counter',      category: 'Live Counters',        subCategory: 'na',      type: 'live_counter', isActive: true, isGlobal: true, image: '/images/dish-gulab.png',          price: 80  },
-  { id: 'lc-06', name: 'Live BBQ Counter',         category: 'Live Counters',        subCategory: 'na',      type: 'live_counter', isActive: true, isGlobal: true, image: '/images/dish-butter-chicken.png', price: 200 },
-  { id: 'lc-07', name: 'Live Mocktail Counter',    category: 'Live Counters',        subCategory: 'na',      type: 'live_counter', isActive: true, isGlobal: true, image: '/images/dish-raita.png',          price: 150 },
-  { id: 'lc-08', name: 'Live Ice Cream Counter',   category: 'Live Counters',        subCategory: 'na',      type: 'live_counter', isActive: true, isGlobal: true, image: '/images/dish-kheer.png',          price: 120 },
+  { id: 'lc-01', name: 'Live Dosa Counter',       category: 'Live Counters',        subCategory: 'na',      type: 'live_counter', isActive: true, isGlobal: true, image: '/plateimg/dish-naan.png',           price: 120 },
+  { id: 'lc-02', name: 'Live Chaat Counter',       category: 'Live Counters',        subCategory: 'na',      type: 'live_counter', isActive: true, isGlobal: true, image: '/plateimg/dish-samosa.png',         price: 100 },
+  { id: 'lc-03', name: 'Live Pani Puri Counter',   category: 'Live Counters',        subCategory: 'na',      type: 'live_counter', isActive: true, isGlobal: true, image: '/plateimg/dish-salad.png',          price: 90  },
+  { id: 'lc-04', name: 'Live Pasta Counter',       category: 'Live Counters',        subCategory: 'na',      type: 'live_counter', isActive: true, isGlobal: true, image: '/plateimg/dish-salad.png',          price: 130 },
+  { id: 'lc-05', name: 'Live Jalebi Counter',      category: 'Live Counters',        subCategory: 'na',      type: 'live_counter', isActive: true, isGlobal: true, image: '/plateimg/dish-gulab.png',          price: 80  },
+  { id: 'lc-06', name: 'Live BBQ Counter',         category: 'Live Counters',        subCategory: 'na',      type: 'live_counter', isActive: true, isGlobal: true, image: '/plateimg/dish-butter-chicken.png', price: 200 },
+  { id: 'lc-07', name: 'Live Mocktail Counter',    category: 'Live Counters',        subCategory: 'na',      type: 'live_counter', isActive: true, isGlobal: true, image: '/plateimg/dish-raita.png',          price: 150 },
+  { id: 'lc-08', name: 'Live Ice Cream Counter',   category: 'Live Counters',        subCategory: 'na',      type: 'live_counter', isActive: true, isGlobal: true, image: '/images/icecream.jpeg',               price: 120 },
 
   // ── Add-ons ────────────────────────────────────────────────
-  { id: 'ao-01', name: 'Welcome Drink Service',    category: 'Add-ons',             subCategory: 'na',      type: 'addon',        isActive: true, isGlobal: true, image: '/images/dish-raita.png',          price: 25  },
-  { id: 'ao-02', name: 'Premium Dessert Counter',  category: 'Add-ons',             subCategory: 'na',      type: 'addon',        isActive: true, isGlobal: true, image: '/images/dish-gulab.png',          price: 80  },
-  { id: 'ao-03', name: 'Mocktail Station',          category: 'Add-ons',             subCategory: 'na',      type: 'addon',        isActive: true, isGlobal: true, image: '/images/dish-raita.png',          price: 60  },
-  { id: 'ao-04', name: 'Waiter Service',            category: 'Add-ons',             subCategory: 'na',      type: 'addon',        isActive: true, isGlobal: true, image: '/images/garnish.png',             price: 30  },
-  { id: 'ao-05', name: 'Live Counter Setup',        category: 'Add-ons',             subCategory: 'na',      type: 'addon',        isActive: true, isGlobal: true, image: '/images/garnish.png',             price: 50  },
-  { id: 'ao-06', name: 'Banana Leaf Service',       category: 'Add-ons',             subCategory: 'na',      type: 'addon',        isActive: true, isGlobal: true, image: '/images/banana-leaf-real.png',    price: 20  },
-  { id: 'ao-07', name: 'Extra Serving Staff',       category: 'Add-ons',             subCategory: 'na',      type: 'addon',        isActive: true, isGlobal: true, image: '/images/garnish.png',             price: 40  },
-  { id: 'ao-08', name: 'Disposable Plates Setup',  category: 'Add-ons',             subCategory: 'na',      type: 'addon',        isActive: true, isGlobal: true, image: '/images/garnish.png',             price: 15  },
+  { id: 'ao-01', name: 'Welcome Drink Service',    category: 'Add-ons',             subCategory: 'na',      type: 'addon',        isActive: true, isGlobal: true, image: '/plateimg/dish-raita.png',          price: 25  },
+  { id: 'ao-02', name: 'Premium Dessert Counter',  category: 'Add-ons',             subCategory: 'na',      type: 'addon',        isActive: true, isGlobal: true, image: '/plateimg/dish-gulab.png',          price: 80  },
+  { id: 'ao-03', name: 'Mocktail Station',          category: 'Add-ons',             subCategory: 'na',      type: 'addon',        isActive: true, isGlobal: true, image: '/plateimg/dish-raita.png',          price: 60  },
+  { id: 'ao-04', name: 'Waiter Service',            category: 'Add-ons',             subCategory: 'na',      type: 'addon',        isActive: true, isGlobal: true, image: '/plateimg/banana-leaf-real.png',    price: 30  },
+  { id: 'ao-05', name: 'Live Counter Setup',        category: 'Add-ons',             subCategory: 'na',      type: 'addon',        isActive: true, isGlobal: true, image: '/plateimg/banana-leaf-real.png',    price: 50  },
+  { id: 'ao-06', name: 'Banana Leaf Service',       category: 'Add-ons',             subCategory: 'na',      type: 'addon',        isActive: true, isGlobal: true, image: '/plateimg/banana-leaf-real.png',    price: 20  },
+  { id: 'ao-07', name: 'Extra Serving Staff',       category: 'Add-ons',             subCategory: 'na',      type: 'addon',        isActive: true, isGlobal: true, image: '/plateimg/banana-leaf-real.png',    price: 40  },
+  { id: 'ao-08', name: 'Disposable Plates Setup',  category: 'Add-ons',             subCategory: 'na',      type: 'addon',        isActive: true, isGlobal: true, image: '/plateimg/banana-leaf-real.png',    price: 15  },
 ];
 
 // ── Category order for display ─────────────────────────────
@@ -170,29 +170,32 @@ export const CATEGORY_ORDER = [
   'Add-ons',
 ];
 
-// ── Category emoji map ─────────────────────────────────────
-export const CATEGORY_EMOJI = {
-  'Veg Starters':          '🥗',
-  'Non-Veg Starters':      '🍗',
-  'Veg Curries':           '🍛',
-  'Non-Veg Curries':       '🍖',
-  'Rice Items':            '🍚',
-  'Biryanis':              '🫕',
-  'South Indian Specials': '🥘',
-  'Indian Breads':         '🫓',
-  'Desserts & Sweets':     '🍮',
-  'Beverages':             '🥤',
-  'Live Counters':         '🔥',
-  'Add-ons':               '✨',
+// ── Category icon map ─────────────────────────────────────
+export const CATEGORY_ICON = {
+  'Veg Starters':          'Salad',
+  'Non-Veg Starters':      'Drumstick',
+  'Veg Curries':           'Soup',
+  'Non-Veg Curries':       'Utensils',
+  'Rice Items':            'CookingPot',
+  'Biryanis':              'CookingPot',
+  'South Indian Specials': 'Soup',
+  'Indian Breads':         'Utensils',
+  'Desserts & Sweets':     'Cake',
+  'Beverages':             'Coffee',
+  'Live Counters':         'Flame',
+  'Add-ons':               'Sparkles',
 };
+
+// Fallback alias for backward compatibility
+export const CATEGORY_EMOJI = CATEGORY_ICON;
 
 // ── Get image for an item (with category fallback) ─────────
 export function getDishImage(item) {
-  if (!item) return '/dish-paneer.png';
+  if (!item) return '/plateimg/dish-paneer.png';
   // If image is set and is a known-good path (not a broken external filename), use it
   if (item.image) return item.image;
   // Fall back to category image
-  return CAT_IMG[item.category] || '/dish-paneer.png';
+  return CAT_IMG[item.category] || '/plateimg/dish-paneer.png';
 }
 
 // ── Global package templates ───────────────────────────────

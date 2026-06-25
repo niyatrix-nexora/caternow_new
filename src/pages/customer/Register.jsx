@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import { createCustomer } from '../../utils/data';
 import { sanitizeText } from '../../utils/security';
+import { User, Check } from 'lucide-react';
 
 export default function CustomerRegister() {
   const [name, setName] = useState('');
@@ -55,7 +56,9 @@ export default function CustomerRegister() {
   return (
     <div className="app-container" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', minHeight: '100vh', padding: '24px' }}>
       <div className="text-center" style={{ marginBottom: '40px' }}>
-        <h2 style={{ fontSize: '1.6rem', fontWeight: 700, marginBottom: '8px' }}>Complete Registration 👤</h2>
+        <h2 style={{ fontSize: '1.6rem', fontWeight: 700, marginBottom: '8px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+          Complete Registration <User size={24} style={{ color: 'var(--primary)' }} />
+        </h2>
         <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
           Secure your account and personalize your experience.
         </p>
@@ -70,7 +73,9 @@ export default function CustomerRegister() {
             disabled
             style={{ opacity: 0.7, background: 'var(--bg-card)' }}
           />
-          <p style={{ fontSize: '0.7rem', color: 'var(--success)', marginTop: '4px' }}>✓ Secured and verified</p>
+          <p style={{ fontSize: '0.7rem', color: 'var(--success)', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <Check size={12} strokeWidth={3} /> Secured and verified
+          </p>
         </div>
 
         <div className="form-group" style={{ marginBottom: '16px' }}>

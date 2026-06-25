@@ -5,6 +5,7 @@ import { RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth';
 import { auth } from '../utils/firebase';
 import { sanitizePhone, isValidPhone } from '../utils/security';
 import { getCustomer, getCustomerById } from '../utils/data';
+import { Utensils, Lock, Shield, RotateCw } from 'lucide-react';
 
 // Helper: create a fresh invisible reCAPTCHA verifier
 function setupRecaptcha() {
@@ -290,8 +291,8 @@ export default function Login() {
 
       {/* Logo */}
       <div className="text-center" style={{ marginBottom: '48px' }}>
-        <div className="logo" style={{ justifyContent: 'center', marginBottom: '8px' }}>
-          <span className="logo-icon">🍽️</span>
+        <div className="logo" style={{ justifyContent: 'center', marginBottom: '8px', alignItems: 'center', gap: '8px' }}>
+          <Utensils size={24} style={{ color: 'var(--primary)' }} />
           <span className="logo-text">CaterNow</span>
         </div>
         <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
@@ -353,7 +354,9 @@ export default function Login() {
       {/* OTP Step */}
       {step === 'otp' && (
         <form onSubmit={handleOtpSubmit} className="animate-fade-in">
-          <h2 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: '8px' }}>Verify OTP 🔐</h2>
+          <h2 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: '8px', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+            Verify OTP <Lock size={20} style={{ color: 'var(--primary)' }} />
+          </h2>
           <p style={{ color: 'var(--text-secondary)', marginBottom: '8px', fontSize: '0.9rem' }}>
             We sent a code to <strong>+91 {phone}</strong>
           </p>
@@ -362,6 +365,7 @@ export default function Login() {
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
+            gap: '6px',
             padding: '8px 12px',
             background: 'rgba(37, 99, 235, 0.08)',
             borderRadius: 'var(--radius-sm)',
@@ -369,7 +373,8 @@ export default function Login() {
             fontSize: '0.75rem',
             color: 'var(--text-muted)',
           }}>
-            <span>🛡️ Enter the 6-digit OTP sent to your phone</span>
+            <Shield size={14} style={{ color: 'var(--primary)', flexShrink: 0 }} />
+            <span>Enter the 6-digit OTP sent to your phone</span>
           </div>
 
           <div className="otp-inputs" onPaste={handleOtpPaste}>
@@ -415,9 +420,21 @@ export default function Login() {
               className={`btn btn-block ${otpTimer > 0 ? 'btn-secondary' : 'btn-primary'}`}
               onClick={handleResendOtp}
               disabled={otpTimer > 0 || loading}
-              style={{ opacity: otpTimer > 0 ? 0.6 : 1 }}
+              style={{
+                opacity: otpTimer > 0 ? 0.6 : 1,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '6px'
+              }}
             >
-              {otpTimer > 0 ? `Resend (${otpTimer}s)` : '🔄 Resend OTP'}
+              {otpTimer > 0 ? (
+                `Resend (${otpTimer}s)`
+              ) : (
+                <>
+                  <RotateCw size={14} /> Resend OTP
+                </>
+              )}
             </button>
           </div>
         </form>

@@ -6,10 +6,10 @@ const CHAT_KEY = (roomId)   => `caternow_chat_${roomId}`;
 
 // ── Package category metadata ─────────────────────────────────────────────────
 export const PACKAGE_META = {
-  standard: { emoji: '🌿', color: '#059669', bg: 'rgba(5,150,105,0.09)',  border: 'rgba(5,150,105,0.22)',  label: 'Standard' },
-  special:  { emoji: '⭐', color: '#D97706', bg: 'rgba(217,119,6,0.09)',  border: 'rgba(217,119,6,0.22)',  label: 'Special'  },
-  premium:  { emoji: '👑', color: '#7C3AED', bg: 'rgba(124,58,237,0.09)', border: 'rgba(124,58,237,0.22)', label: 'Premium'  },
-  custom:   { emoji: '✏️', color: '#FF6B00', bg: 'rgba(255,107,0,0.09)',  border: 'rgba(255,107,0,0.22)',  label: 'Custom'   },
+  standard: { iconName: 'Leaf', color: '#059669', bg: 'rgba(5,150,105,0.09)',  border: 'rgba(5,150,105,0.22)',  label: 'Standard' },
+  special:  { iconName: 'Star', color: '#D97706', bg: 'rgba(217,119,6,0.09)',  border: 'rgba(217,119,6,0.22)',  label: 'Special'  },
+  premium:  { iconName: 'Crown', color: '#7C3AED', bg: 'rgba(124,58,237,0.09)', border: 'rgba(124,58,237,0.22)', label: 'Premium'  },
+  custom:   { iconName: 'Pencil', color: '#FF6B00', bg: 'rgba(255,107,0,0.09)',  border: 'rgba(255,107,0,0.22)',  label: 'Custom'   },
 };
 
 // ── Default package templates (uses global master menu names) ─────────────────

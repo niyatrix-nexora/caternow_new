@@ -17,17 +17,22 @@ import {
   loadVendorDishPrices,
   saveVendorDishPrices,
 } from '../../utils/masterMenu';
+import { Icon } from '../../utils/iconHelper';
+import {
+  Utensils, Flame, Sparkles, Save, Search, Check, CheckCircle, X, Pencil, ArrowLeft,
+  Home, Inbox, Calendar, IndianRupee, Menu
+} from 'lucide-react';
 
 const SUB_DOT = {
-  veg:       { color: '#16a34a', label: '🟢 Veg' },
-  'non-veg': { color: '#dc2626', label: '🔴 Non-Veg' },
+  veg:       { color: '#16a34a', label: 'Veg' },
+  'non-veg': { color: '#dc2626', label: 'Non-Veg' },
   na:        { color: '#9ca3af', label: '—' },
 };
 
 const TAB_CONFIG = [
-  { key: 'menu',   label: 'Menu Items',    emoji: '🍽️', getItems: getMenuItems  },
-  { key: 'live',   label: 'Live Counters', emoji: '🔥', getItems: getLiveCounters },
-  { key: 'addons', label: 'Add-ons',       emoji: '✨', getItems: getAddons     },
+  { key: 'menu',   label: 'Menu Items',    iconName: 'Utensils', getItems: getMenuItems  },
+  { key: 'live',   label: 'Live Counters', iconName: 'Flame', getItems: getLiveCounters },
+  { key: 'addons', label: 'Add-ons',       iconName: 'Sparkles', getItems: getAddons     },
 ];
 
 // ── Edit-name modal ────────────────────────────────────────
@@ -124,8 +129,12 @@ function EditDishModal({ item, customName, customPrice, onSave, onClose }) {
               background: 'linear-gradient(135deg,#FF6B00,#FF8C42)',
               color: '#fff', fontWeight: 800, fontSize: '0.88rem',
               cursor: 'pointer', fontFamily: 'inherit',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
             }}
-          >✅ Save</button>
+          >
+            <Check size={18} />
+            <span>Save</span>
+          </button>
         </div>
       </div>
     </div>
@@ -182,7 +191,7 @@ function DishCard({ item, isOn, customName, customPrice, onToggle, onEdit }) {
         }}>
           {dName}
           {customName && customName !== item.name && (
-            <span style={{ fontSize: '0.6rem', marginLeft: 5, color: '#FF6B00', fontWeight: 700 }}>✎</span>
+            <Pencil size={10} style={{ marginLeft: 5, color: '#FF6B00', display: 'inline-block' }} />
           )}
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
@@ -206,7 +215,9 @@ function DishCard({ item, isOn, customName, customPrice, onToggle, onEdit }) {
             cursor: 'pointer', fontSize: '0.85rem',
           }}
           title="Edit display name & price"
-        >✎</button>
+        >
+          <Pencil size={14} style={{ color: 'var(--text-secondary)' }} />
+        </button>
 
         {/* Toggle */}
         <div
@@ -314,11 +325,13 @@ export default function MenuManagement() {
       {/* ── Header ── */}
       <div className="page-header" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '12px', paddingBottom: '12px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', width: '100%' }}>
-          <button className="back-btn" onClick={() => navigate('/vendor')}>←</button>
-          <div style={{ flex: 1 }}>
-            <h1 style={{ margin: 0, fontSize: '1.1rem' }}>Menu Management</h1>
-            <p style={{ margin: 0, fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '2px' }}>
-              {totalSelected} dish{totalSelected !== 1 ? 'es' : ''} active · tap ✎ to rename a dish
+          <button className="back-btn" onClick={() => navigate('/vendor')} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <ArrowLeft size={18} />
+          </button>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <h1 style={{ fontSize: '1.25rem', margin: 0, fontWeight: 800 }}>Manage Menu</h1>
+            <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)', margin: '2px 0 0', display: 'flex', alignItems: 'center', gap: '4px' }}>
+              {totalSelected} dish{totalSelected !== 1 ? 'es' : ''} active · tap <Pencil size={9} /> to rename a dish
             </p>
           </div>
           <button
@@ -333,7 +346,15 @@ export default function MenuManagement() {
               boxShadow: saved ? '0 4px 12px rgba(5,150,105,0.3)' : '0 4px 12px rgba(255,107,0,0.3)',
             }}
           >
-            {saved ? '✅ Saved!' : '💾 Save'}
+            {saved ? (
+              <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
+                <CheckCircle size={16} /> Saved!
+              </span>
+            ) : (
+              <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
+                <Save size={16} /> Save
+              </span>
+            )}
           </button>
         </div>
 
@@ -350,10 +371,10 @@ export default function MenuManagement() {
                 color: tab === t.key ? '#FF6B00' : 'var(--text-muted)',
                 fontWeight: tab === t.key ? 800 : 500, fontSize: '0.7rem',
                 cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.2s',
-                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px',
+                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px',
               }}
             >
-              <span style={{ fontSize: '1rem' }}>{t.emoji}</span>
+              <Icon name={t.iconName} size={16} />
               <span>{t.label}</span>
             </button>
           ))}
@@ -369,7 +390,7 @@ export default function MenuManagement() {
             background: 'var(--bg-input)', border: '1.5px solid var(--border)',
             borderRadius: '12px', padding: '8px 12px',
           }}>
-            <span style={{ fontSize: '0.9rem', opacity: 0.5 }}>🔍</span>
+            <Search size={16} style={{ color: 'var(--text-muted)' }} />
             <input
               value={search}
               onChange={e => setSearch(e.target.value)}
@@ -381,8 +402,8 @@ export default function MenuManagement() {
             />
             {search && (
               <button onClick={() => setSearch('')}
-                style={{ border: 'none', background: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '0.9rem', padding: 0 }}>
-                ✕
+                style={{ border: 'none', background: 'none', color: 'var(--text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: 0 }}>
+                <X size={14} />
               </button>
             )}
           </div>
@@ -397,8 +418,8 @@ export default function MenuManagement() {
               }}
             >
               <option value="all">All</option>
-              <option value="veg">🟢 Veg</option>
-              <option value="non-veg">🔴 Non-Veg</option>
+              <option value="veg">Veg</option>
+              <option value="non-veg">Non-Veg</option>
             </select>
           )}
         </div>
@@ -412,8 +433,12 @@ export default function MenuManagement() {
               border: '1.5px solid #FF6B00', background: 'rgba(255,107,0,0.08)',
               color: '#FF6B00', fontWeight: 700, fontSize: '0.75rem',
               cursor: 'pointer', fontFamily: 'inherit',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px'
             }}
-          >✓ Select All Visible</button>
+          >
+            <Check size={14} />
+            <span>Select All</span>
+          </button>
           <button
             onClick={() => clearAll(filtered)}
             style={{
@@ -421,14 +446,20 @@ export default function MenuManagement() {
               border: '1.5px solid var(--border)', background: 'var(--bg-card)',
               color: 'var(--text-muted)', fontWeight: 700, fontSize: '0.75rem',
               cursor: 'pointer', fontFamily: 'inherit',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px'
             }}
-          >✕ Deselect All</button>
+          >
+            <X size={14} />
+            <span>Deselect All</span>
+          </button>
         </div>
 
         {/* ── Empty state ── */}
         {Object.keys(grouped).length === 0 && (
           <div className="empty-state">
-            <div className="empty-icon">🔍</div>
+            <div className="empty-icon" style={{ display: 'flex', justifyContent: 'center', marginBottom: '8px' }}>
+              <Search size={40} style={{ color: 'var(--text-muted)' }} />
+            </div>
             <h3>No dishes found</h3>
             <p>Try a different search term.</p>
           </div>
@@ -438,7 +469,7 @@ export default function MenuManagement() {
         {Object.entries(grouped).map(([cat, items]) => {
           const catSelected = items.filter(i => enabledIds.has(i.id)).length;
           const isCollapsed = collapsed[cat];
-          const emoji = CATEGORY_EMOJI[cat] || '🍽️';
+          const emoji = CATEGORY_EMOJI[cat] || 'Utensils';
 
           return (
             <div key={cat} style={{
@@ -456,7 +487,9 @@ export default function MenuManagement() {
                   background: 'var(--bg-elevated)',
                 }}
               >
-                <span style={{ fontSize: '1.2rem' }}>{emoji}</span>
+                <span style={{ display: 'flex', alignItems: 'center' }}>
+                  <Icon name={emoji} size={20} style={{ color: 'var(--primary)' }} />
+                </span>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontWeight: 800, fontSize: '0.9rem', color: 'var(--text)' }}>{cat}</div>
                   <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', marginTop: '1px' }}>
@@ -501,8 +534,10 @@ export default function MenuManagement() {
           <div style={{
             textAlign: 'center', fontSize: '0.78rem', color: 'var(--text-muted)',
             padding: '12px', marginTop: '4px',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px'
           }}>
-            💡 Tap <strong>Save</strong> to publish your menu
+            <Sparkles size={14} style={{ color: 'var(--primary)' }} />
+            <span>Tap <strong>Save</strong> to publish your menu</span>
           </div>
         )}
       </div>
@@ -510,19 +545,24 @@ export default function MenuManagement() {
       {/* ── Bottom nav ── */}
       <div className="bottom-nav">
         <NavLink to="/vendor" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} end>
-          <span className="nav-icon">🏠</span><span>Home</span>
+          <Home size={20} className="nav-icon" />
+          <span>Home</span>
         </NavLink>
         <NavLink to="/vendor/requests" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-          <span className="nav-icon">📥</span><span>Requests</span>
+          <Inbox size={20} className="nav-icon" />
+          <span>Requests</span>
         </NavLink>
         <NavLink to="/vendor/bookings" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-          <span className="nav-icon">📅</span><span>Bookings</span>
+          <Calendar size={20} className="nav-icon" />
+          <span>Bookings</span>
         </NavLink>
         <NavLink to="/vendor/earnings" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-          <span className="nav-icon">💰</span><span>Earnings</span>
+          <IndianRupee size={20} className="nav-icon" />
+          <span>Earnings</span>
         </NavLink>
         <NavLink to="/vendor/profile" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-          <span className="nav-icon">☰</span><span>More</span>
+          <Menu size={20} className="nav-icon" />
+          <span>More</span>
         </NavLink>
       </div>
 

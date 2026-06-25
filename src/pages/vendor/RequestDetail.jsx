@@ -8,13 +8,15 @@ import {
   getDistance, 
   ADDON_SUGGESTIONS,
   subscribeToRequest,
-  subscribeToBidsForRequest
+  subscribeToBidsForRequest,
+  updateRequest
 } from '../../utils/data';
 import { sanitizeText } from '../../utils/security';
 import { MapContainer, TileLayer, Marker, Circle } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import BananaLeaf from '../customer/BananaLeaf';
+import { Utensils, Package, ClipboardList, CheckCircle, MessageSquare, Sparkles, Zap, Send } from 'lucide-react';
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -204,7 +206,7 @@ export default function VendorRequestDetail() {
               boxShadow: '0 4px 12px rgba(255,107,0,0.3)',
             }}
           >
-            💬 Chat
+            <MessageSquare size={16} /> Chat
           </button>
         )}
       </div>
@@ -222,13 +224,13 @@ export default function VendorRequestDetail() {
               <span className="icon">#</span>
               <span>Req ID: {request.id?.split('_')[1]}</span>
             </div>
-            <div className="card-meta-item">
-              <span className="icon">🍽️</span>
+            <div className="card-meta-item" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span className="icon" style={{ display: 'flex', alignItems: 'center' }}><Utensils size={16} /></span>
               <span>{request.plates} plates · {foodLabel[request.foodType]}</span>
             </div>
             {request.packageType && (
-              <div className="card-meta-item">
-                <span className="icon">📦</span>
+              <div className="card-meta-item" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span className="icon" style={{ display: 'flex', alignItems: 'center' }}><Package size={16} /></span>
                 <span style={{ color: 'var(--success)', fontWeight: '700' }}>Package: {request.packageType}</span>
               </div>
             )}
@@ -252,7 +254,7 @@ export default function VendorRequestDetail() {
           <div className="card" style={{ marginBottom: '16px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1px solid var(--border)', paddingBottom: '12px' }}>
               <h3 style={{ fontSize: '0.95rem', margin: 0, fontWeight: 800, color: 'var(--text)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <span>📋</span> Customer's Menu Selection
+                <ClipboardList size={18} style={{ color: 'var(--primary)' }} /> Customer's Menu Selection
               </h3>
               <span style={{
                 background: 'rgba(5, 150, 105, 0.1)',
@@ -291,7 +293,7 @@ export default function VendorRequestDetail() {
                   color: 'var(--text)',
                   border: '1px solid var(--border)'
                 }}>
-                  🍲 {dish}
+                  {dish}
                 </span>
               ))}
             </div>
@@ -307,7 +309,9 @@ export default function VendorRequestDetail() {
         {(existingBid || submitted) && (
           <div className="card" style={{ borderColor: 'var(--success)', background: 'rgba(5, 150, 105, 0.08)' }}>
             <div style={{ textAlign: 'center', padding: '16px 0' }}>
-              <div style={{ fontSize: '2rem', marginBottom: '8px' }}>✅</div>
+              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '12px' }}>
+                <CheckCircle size={40} style={{ color: 'var(--success)' }} />
+              </div>
               <h3 style={{ color: 'var(--success)', marginBottom: '4px' }}>Bid Submitted</h3>
               <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
                 {isBidAccepted
@@ -327,8 +331,8 @@ export default function VendorRequestDetail() {
                   </span>
                 )}
               </div>
-              <button className="btn btn-outline btn-block mt-md" onClick={() => navigate(`/vendor/chat/${request.id}`)}>
-                💬 Chat with Customer
+              <button className="btn btn-outline btn-block mt-md" onClick={() => navigate(`/vendor/chat/${request.id}`)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                <MessageSquare size={16} /> Chat with Customer
               </button>
               {isBidAccepted && request.customerPhone && (
                 <div style={{ marginTop: '12px' }}>
@@ -336,6 +340,62 @@ export default function VendorRequestDetail() {
                   <a href={`tel:${formatPhoneHref(request.customerPhone)}`} style={{ color: 'var(--success)', fontWeight: 700, textDecoration: 'none' }}>
                     {formatPhone(request.customerPhone)}
                   </a>
+                </div>
+              )}
+
+              {/* ── Order Progress Tracker for Vendor ── */}
+              {isBidAccepted && (
+                <div style={{
+                  marginTop: '16px',
+                  padding: '16px',
+                  background: 'var(--bg-elevated)',
+                  border: '1px solid var(--border)',
+                  borderRadius: 'var(--radius-md)',
+                  textAlign: 'left',
+                }}>
+                  <h4 style={{ margin: '0 0 12px 0', fontSize: '0.9rem', fontWeight: 800, color: 'var(--text)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <ClipboardList size={16} style={{ color: 'var(--primary)' }} /> Update Order Progress
+                  </h4>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    {[
+                      { id: 'confirmed', label: 'Order Confirmed' },
+                      { id: 'preparing', label: 'Preparing' },
+                      { id: 'cooking', label: 'Cooking in Progress' },
+                      { id: 'on_the_way', label: 'On the Way' },
+                      { id: 'delivered', label: 'Delivered' }
+                    ].map((step) => {
+                      const isActive = (request.trackingStatus || 'confirmed') === step.id;
+                      return (
+                        <button
+                          key={step.id}
+                          type="button"
+                          onClick={async () => {
+                            await updateRequest(request.id, { trackingStatus: step.id });
+                            await refresh();
+                          }}
+                          style={{
+                            width: '100%',
+                            padding: '10px 14px',
+                            borderRadius: '10px',
+                            border: '1px solid',
+                            borderColor: isActive ? 'var(--primary)' : 'var(--border)',
+                            background: isActive ? 'var(--primary)' : 'var(--bg-card)',
+                            color: isActive ? 'white' : 'var(--text)',
+                            fontWeight: 600,
+                            fontSize: '0.82rem',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s ease',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                          }}
+                        >
+                          <span>{step.label}</span>
+                          {isActive && <CheckCircle size={14} style={{ color: 'white' }} />}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
               )}
 
@@ -365,7 +425,7 @@ export default function VendorRequestDetail() {
                     textAlign: 'left',
                   }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '10px' }}>
-                      <span style={{ fontSize: '1rem' }}>✨</span>
+                      <Sparkles size={16} style={{ color: 'var(--primary-light)' }} />
                       <span style={{ fontSize: '0.83rem', fontWeight: 700, color: 'var(--primary-light)' }}>
                         Customer Requested Extras
                       </span>
@@ -397,8 +457,8 @@ export default function VendorRequestDetail() {
                         </span>
                       </div>
                     )}
-                    <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '10px', marginBottom: 0 }}>
-                      💬 Discuss and confirm pricing for these extras when you contact the customer.
+                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '10px', marginBottom: 0, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <MessageSquare size={12} /> Discuss and confirm pricing for these extras when you contact the customer.
                     </p>
                   </div>
                 );
@@ -423,23 +483,23 @@ export default function VendorRequestDetail() {
                   borderRadius: 'var(--radius-md)',
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                    <span style={{ fontSize: '1.2rem' }}>⚡</span>
+                    <Zap size={18} style={{ color: 'var(--success)' }} />
                     <span style={{ fontWeight: 700, color: 'var(--success)', fontSize: '0.9rem' }}>Live Capacity Tip</span>
                   </div>
                   {user.livePriceRange && (
                     <>
                       <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: 0 }}>
-                        🚀 Reminder: You are offering service in the <strong>₹{user.livePriceRange}</strong> range today.
+                        Reminder: You are offering service in the <strong>₹{user.livePriceRange}</strong> range today.
                       </p>
                       <button 
                         type="button"
                         className="btn btn-ghost btn-sm"
-                        style={{ color: 'var(--primary)', padding: 0, fontWeight: 700, fontSize: '0.75rem', marginTop: '8px' }}
+                        style={{ color: 'var(--primary)', padding: 0, fontWeight: 700, fontSize: '0.75rem', marginTop: '8px', display: 'flex', alignItems: 'center', gap: '4px' }}
                         onClick={() => {
                           setNotes(prev => `Today I'm offering a special price range of ₹${user.livePriceRange}. ${prev}`);
                         }}
                       >
-                        ⚡ Mention my range in bid
+                        <Zap size={12} /> Mention my range in bid
                       </button>
                     </>
                   )}
@@ -479,8 +539,13 @@ export default function VendorRequestDetail() {
                 <p style={{ color: 'var(--danger)', fontSize: '0.85rem', marginBottom: '16px' }}>{error}</p>
               )}
 
-              <button type="submit" className="btn btn-primary btn-block btn-lg" disabled={submitting}>
-                {submitting ? 'Submitting...' : '🚀 Submit Bid'}
+              <button type="submit" className="btn btn-primary btn-block btn-lg" disabled={submitting} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                {submitting ? 'Submitting...' : (
+                  <>
+                    <Send size={18} />
+                    <span>Submit Bid</span>
+                  </>
+                )}
               </button>
 
               <button type="button" className="btn btn-secondary btn-block mt-md" onClick={() => navigate('/vendor')}>

@@ -11,6 +11,12 @@ import { MapContainer, TileLayer, Marker, Circle } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import BananaLeaf from './BananaLeaf';
+import {
+  Check, X, Clock, IndianRupee, RotateCw, Send, MessageSquare, Utensils,
+  CookingPot, MapPin, Sparkles, AlertTriangle, Search, Trash2, Eye, EyeOff,
+  CheckCircle2, Zap, PartyPopper, FileText, ShoppingCart, Plus, ArrowLeft,
+  FolderOpen
+} from 'lucide-react';
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -231,12 +237,14 @@ export default function ViewBids() {
     .filter(s => addedons.includes(s.item))
     .reduce((sum, s) => sum + s.price, 0);
 
-  const foodLabel = { veg: '🟢 Veg', nonveg: '🔴 Non-Veg', both: '🟠 Veg + Non-Veg' };
+  const foodLabel = { veg: 'Veg', nonveg: 'Non-Veg', both: 'Veg + Non-Veg' };
 
   return (
     <div className="app-container">
       <div className="page-header">
-        <button className="back-btn" onClick={() => navigate('/customer')}>←</button>
+        <button className="back-btn" onClick={() => navigate('/customer')} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <ArrowLeft size={20} />
+        </button>
         <h1>Request Details</h1>
         {/* Chat button — visible when there's an accepted bid */}
         {acceptedBid && (
@@ -251,7 +259,7 @@ export default function ViewBids() {
               boxShadow: '0 4px 12px rgba(255,107,0,0.3)',
             }}
           >
-            💬 Chat
+            <MessageSquare size={14} /> Chat
           </button>
         )}
       </div>
@@ -262,18 +270,18 @@ export default function ViewBids() {
             {/* Request Summary Card */}
             <div className="card" style={{ marginBottom: '16px' }}>
               <div className="card-meta">
-                <div className="card-meta-item">
-                  <span className="icon">🆔</span>
+                <div className="card-meta-item" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <FileText size={16} style={{ color: 'var(--primary)', flexShrink: 0 }} />
                   <span>{request.id?.split('_')[1]}</span>
                 </div>
-                <div className="card-meta-item">
-                  <span className="icon">🍽️</span>
+                <div className="card-meta-item" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Utensils size={16} style={{ color: 'var(--primary)', flexShrink: 0 }} />
                   <span>{request.plates} plates · {foodLabel[request.foodType]}</span>
                 </div>
                 {request.packageType && (
                   <div className="card-meta-item" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '4px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <span className="icon">📦</span>
+                      <CookingPot size={16} style={{ color: 'var(--primary)', flexShrink: 0 }} />
                       <div style={{ display: 'flex', flexDirection: 'column' }}>
                         <span style={{ color: 'var(--success)', fontWeight: '800', fontSize: '1.2rem' }}>
                           {request.packageType} Package
@@ -290,8 +298,8 @@ export default function ViewBids() {
                   </div>
                 )}
                 {request.status !== 'cancelled' && (
-                  <div className="card-meta-item">
-                    <span className="icon">📡</span>
+                  <div className="card-meta-item" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <MapPin size={16} style={{ color: 'var(--primary)', flexShrink: 0 }} />
                     <span>Search radius: {request.currentRadius} km · {nearbyCount} vendors in range</span>
                   </div>
                 )}
@@ -329,9 +337,9 @@ export default function ViewBids() {
 
             {/* ===== CANCELLED: Recovery UI ===== */}
             {request.status === 'cancelled' && (
-              <div className="card" style={{ borderColor: 'var(--warning)', background: 'rgba(217,119,6,0.07)', textAlign: 'center', padding: '28px 20px' }}>
-                <div style={{ fontSize: '2rem', marginBottom: '10px' }}>🗂️</div>
-                <h3 style={{ color: 'var(--warning)', marginBottom: '8px' }}>Request Cancelled</h3>
+              <div className="card" style={{ borderColor: 'var(--warning)', background: 'rgba(217,119,6,0.07)', textAlign: 'center', padding: '28px 20px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
+                <FolderOpen size={32} style={{ color: 'var(--warning)' }} />
+                <h3 style={{ color: 'var(--warning)', margin: 0 }}>Request Cancelled</h3>
                 <p style={{ color: 'var(--text-secondary)', fontSize: '0.88rem', marginBottom: '20px' }}>
                   This request was cancelled. You can restore it to review existing bids or wait for new ones.
                 </p>
@@ -345,17 +353,19 @@ export default function ViewBids() {
                   onClick={handleRestore}
                   disabled={restoring}
                 >
-                  {restoring ? '⏳ Restoring...' : '🔄 Restore Request'}
+                  {restoring ? 'Restoring...' : (
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}><RotateCw size={14} /> Restore Request</span>
+                  )}
                 </button>
               </div>
             )}
 
             {/* ===== CONFIRMED ===== */}
             {request.status === 'confirmed' && acceptedBid && (
-              <div className="card" style={{ borderColor: 'var(--success)', background: 'rgba(5, 150, 105, 0.08)' }}>
-                <div style={{ textAlign: 'center', padding: '8px 0' }}>
-                  <div style={{ fontSize: '2rem', marginBottom: '8px' }}>✅</div>
-                  <h3 style={{ color: 'var(--success)', marginBottom: '4px' }}>Order Confirmed!</h3>
+              <div className="card" style={{ borderColor: 'var(--success)', background: 'rgba(5, 150, 105, 0.08)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
+                <div style={{ textAlign: 'center', padding: '8px 0', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+                  <CheckCircle2 size={32} style={{ color: 'var(--success)' }} />
+                  <h3 style={{ color: 'var(--success)', margin: 0 }}>Order Confirmed!</h3>
                   <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
                     {acceptedVendor?.name || 'Selected vendor'} will cater your event
                   </p>
@@ -394,7 +404,7 @@ export default function ViewBids() {
                         border: '1px solid rgba(232,89,12,0.28)', borderRadius: 'var(--radius-md)', textAlign: 'left'
                       }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '10px' }}>
-                          <span style={{ fontSize: '1rem' }}>✨</span>
+                          <Sparkles size={16} style={{ color: 'var(--primary-light)' }} />
                           <span style={{ fontSize: '0.83rem', fontWeight: 700, color: 'var(--primary-light)' }}>
                             Your Requested Extras
                           </span>
@@ -422,8 +432,8 @@ export default function ViewBids() {
                             </span>
                           </div>
                         )}
-                        <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '10px', marginBottom: 0 }}>
-                          💬 Discuss and confirm pricing for these extras when you contact the vendor.
+                        <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '10px', marginBottom: 0, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <MessageSquare size={12} /> Discuss and confirm pricing for these extras when you contact the vendor.
                         </p>
                       </div>
                     );
@@ -435,44 +445,44 @@ export default function ViewBids() {
                       <button
                         className="btn btn-primary"
                         onClick={() => navigate(`/customer/chat/${acceptedBid.id}`)}
-                        style={{ background: 'linear-gradient(135deg, #FF6B00, #FF8C42)' }}
+                        style={{ background: 'linear-gradient(135deg, #FF6B00, #FF8C42)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
                       >
-                        💬 Chat with Vendor
+                        <MessageSquare size={16} /> Chat with Vendor
                       </button>
                       <button
                         className="btn btn-primary"
                         onClick={() => navigate(`/customer/tracking/${id}`)}
-                        style={{ background: 'linear-gradient(135deg, #059669, #047857)' }}
+                        style={{ background: 'linear-gradient(135deg, #059669, #047857)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
                       >
-                        📍 Track Order
+                        <MapPin size={16} /> Track Order
                       </button>
                       <button
                         className="btn btn-danger btn-sm"
-                        style={{ opacity: 0.75 }}
+                        style={{ opacity: 0.75, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
                         onClick={() => setShowCancelBidConfirm(true)}
                         disabled={processing}
                       >
-                        ✕ Cancel Order
+                        <X size={14} /> Cancel Order
                       </button>
                     </div>
                   ) : (
                     <div style={{ marginTop: '14px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                      <p style={{ fontSize: '0.83rem', color: 'var(--warning)', margin: 0, fontWeight: 600 }}>
-                        ⚠️ What would you like to do?
+                      <p style={{ fontSize: '0.83rem', color: 'var(--warning)', margin: 0, fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <AlertTriangle size={14} /> What would you like to do?
                       </p>
                       {/* Option 1: Switch vendor — unconfirms, reopens other bids */}
                       <button
                         className="btn btn-secondary btn-sm"
-                        style={{ width: '100%' }}
+                        style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
                         onClick={handleCancelSelectedBid}
                         disabled={processing}
                       >
-                        {processing ? '⏳ Working…' : '🔄 Choose a Different Vendor'}
+                        {processing ? 'Working…' : <><RotateCw size={14} /> Choose a Different Vendor</>}
                       </button>
                       {/* Option 2: Cancel entire request — can be restored later */}
                       <button
                         className="btn btn-danger btn-sm"
-                        style={{ width: '100%' }}
+                        style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
                         onClick={async () => {
                           if (processing) return;
                           setProcessing(true);
@@ -485,7 +495,7 @@ export default function ViewBids() {
                         }}
                         disabled={processing}
                       >
-                        {processing ? '⏳ Cancelling…' : '🗑️ Cancel Entire Request'}
+                        {processing ? 'Cancelling…' : <><Trash2 size={14} /> Cancel Entire Request</>}
                       </button>
                       <button
                         className="btn btn-ghost btn-sm"
@@ -495,8 +505,8 @@ export default function ViewBids() {
                       >
                         Keep Order
                       </button>
-                      <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0 }}>
-                        💡 Cancelled requests can be restored from your dashboard.
+                      <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <HelpCircle size={12} /> Cancelled requests can be restored from your dashboard.
                       </p>
                     </div>
                   )}
@@ -506,14 +516,14 @@ export default function ViewBids() {
 
             {/* ===== SEARCHING ===== */}
             {request.status === 'searching' && (
-              <div className="card" style={{ textAlign: 'center', padding: '32px' }}>
-                <div style={{ fontSize: '2rem', marginBottom: '12px' }} className="animate-pulse">🔍</div>
-                <h3 style={{ marginBottom: '8px' }}>Searching for Vendors...</h3>
-                <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '16px' }}>
+              <div className="card" style={{ textAlign: 'center', padding: '32px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
+                <Search size={32} className="animate-pulse" style={{ color: 'var(--primary)' }} />
+                <h3 style={{ margin: 0 }}>Searching for Vendors...</h3>
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', margin: 0 }}>
                   Looking within {request.currentRadius} km of your event
                 </p>
-                <button className="btn btn-secondary btn-sm" onClick={handleExpandRadius}>
-                  📡 Expand to {request.currentRadius + 10} km
+                <button className="btn btn-secondary btn-sm" onClick={handleExpandRadius} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                  <MapPin size={14} /> Expand to {request.currentRadius + 10} km
                 </button>
               </div>
             )}
@@ -521,9 +531,10 @@ export default function ViewBids() {
             {/* ===== AI ADD-ON SUGGESTIONS ===== */}
             {(request.status === 'bidding' || request.status === 'searching') && (
               <div className="addon-panel">
-                <div className="addon-panel-header">
-                  <span>✨ AI Add-on Suggestions</span>
-                  <span className="addon-badge">Smart</span>
+                <div className="addon-panel-header" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <Sparkles size={16} style={{ color: 'var(--primary)' }} />
+                  <span>AI Add-on Suggestions</span>
+                  <span className="addon-badge" style={{ marginLeft: 'auto' }}>Smart</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
                    <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: 0 }}>
@@ -545,16 +556,17 @@ export default function ViewBids() {
                         key={s.item}
                         className={`addon-chip ${selected ? 'selected' : ''}`}
                         onClick={() => toggleAddon(s.item)}
+                        style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}
                       >
-                        {selected ? '✓ ' : '+ '}{s.item}
+                        {selected ? <Check size={11} strokeWidth={3} /> : <Plus size={11} />}{s.item}
                         <span className="addon-chip-price">+₹{s.price}/plate</span>
                       </button>
                     );
                   })}
                 </div>
                 {addedons.length > 0 && (
-                  <div className="addon-total">
-                    🛒 Total added: <strong>+₹{perPlateTotal.toLocaleString('en-IN')}/plate</strong>
+                  <div className="addon-total" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <ShoppingCart size={14} /> Total added: <strong>+₹{perPlateTotal.toLocaleString('en-IN')}/plate</strong>
                   </div>
                 )}
               </div>
@@ -569,10 +581,10 @@ export default function ViewBids() {
                   {hiddenBids.length > 0 && (
                     <button
                       className="btn btn-secondary btn-sm"
-                      style={{ fontSize: '0.72rem', padding: '4px 10px' }}
+                      style={{ fontSize: '0.72rem', padding: '4px 10px', display: 'flex', alignItems: 'center', gap: '4px' }}
                       onClick={() => setShowHidden(p => !p)}
                     >
-                      {showHidden ? '🙈 Hide them' : `👁 Show ${hiddenBids.length} hidden`}
+                      {showHidden ? <><EyeOff size={12} /> Hide them</> : <><Eye size={12} /> Show {hiddenBids.length} hidden</>}
                     </button>
                   )}
                 </div>
@@ -597,8 +609,8 @@ export default function ViewBids() {
                           <div style={{ flex: 1 }}>
                             <div className="vendor-name">{vendor?.name || 'Vendor'}</div>
                             <div className="vendor-distance">
-                              <span className="distance-badge">📍 {bid.distance?.toFixed(1) || '?'} km away</span>
-                              {vendor?.rating && <span style={{ marginLeft: '8px', color: 'var(--warning)', fontSize: '0.8rem' }}>⭐ {vendor.rating}</span>}
+                              <span className="distance-badge" style={{ display: 'inline-flex', alignItems: 'center', gap: '3px' }}><MapPin size={10} /> {bid.distance?.toFixed(1) || '?'} km away</span>
+                              {vendor?.rating && <span style={{ marginLeft: '8px', color: 'var(--warning)', fontSize: '0.8rem', display: 'inline-flex', alignItems: 'center', gap: '3px' }}><Star size={10} fill="currentColor" /> {vendor.rating}</span>}
                             </div>
                           </div>
                           {user.livePriceRange && (
@@ -612,7 +624,7 @@ export default function ViewBids() {
                               border: '1px solid rgba(232,89,12,0.3)',
                               alignSelf: 'center'
                             }}>
-                              ⚡ TODAY: ₹{user.livePriceRange}
+                              <Zap size={10} fill="currentColor" /> TODAY: ₹{user.livePriceRange}
                             </div>
                           )}
                         </div>
@@ -639,19 +651,19 @@ export default function ViewBids() {
                         )}
 
                         <div className="card-actions">
-                          <button className="btn btn-outline btn-sm" style={{ flex: 1 }} onClick={() => navigate(`/customer/chat/${bid.id}`)}>
-                            💬 Chat
+                          <button className="btn btn-outline btn-sm" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }} onClick={() => navigate(`/customer/chat/${bid.id}`)}>
+                            <MessageSquare size={14} /> Chat
                           </button>
-                          <button className="btn btn-success btn-sm" style={{ flex: 1 }} onClick={() => navigate(`/customer/payment/${bid.id}`)} disabled={processing}>
-                            ✓ Accept Bid
+                          <button className="btn btn-success btn-sm" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }} onClick={() => navigate(`/customer/payment/${bid.id}`)} disabled={processing}>
+                            <Check size={14} strokeWidth={3} /> Accept Bid
                           </button>
                           <button
                             className="btn btn-secondary btn-sm hide-btn"
-                            style={{ flex: 0 }}
+                            style={{ flex: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                             onClick={() => handleHide(bid.id)}
                             title="Hide this bid — you can un-hide it later"
                           >
-                            👁 
+                            <Eye size={14} /> 
                           </button>
                         </div>
                       </div>
@@ -674,7 +686,7 @@ export default function ViewBids() {
                             <div>
                               <div className="vendor-name" style={{ opacity: 0.7 }}>{vendor?.name || 'Vendor'}</div>
                               <div className="vendor-distance">
-                                <span className="distance-badge">📍 {bid.distance?.toFixed(1) || '?'} km away</span>
+                                <span className="distance-badge" style={{ display: 'inline-flex', alignItems: 'center', gap: '3px' }}><MapPin size={10} /> {bid.distance?.toFixed(1) || '?'} km away</span>
                               </div>
                             </div>
                           </div>
@@ -689,12 +701,12 @@ export default function ViewBids() {
                             </div>
                           </div>
                           <div className="card-actions">
-                            <button className="btn btn-success btn-sm" style={{ flex: 1 }} onClick={() => handleAccept(bid.id)} disabled={processing}>
-                              ✓ Accept
-                            </button>
-                            <button className="btn btn-secondary btn-sm" style={{ flex: 1 }} onClick={() => handleUnhide(bid.id)}>
-                              👁 Un-hide
-                            </button>
+                             <button className="btn btn-success btn-sm" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }} onClick={() => handleAccept(bid.id)} disabled={processing}>
+                               <Check size={14} strokeWidth={3} /> Accept
+                             </button>
+                             <button className="btn btn-secondary btn-sm" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }} onClick={() => handleUnhide(bid.id)}>
+                               <Eye size={14} /> Un-hide
+                             </button>
                           </div>
                         </div>
                       );
@@ -709,8 +721,8 @@ export default function ViewBids() {
                         ? `All active bids are hidden. Tap "Show ${hiddenBids.length} hidden" above to review them.`
                         : 'All bids have been reviewed.'}
                     </p>
-                    <button className="btn btn-secondary btn-sm mt-md" onClick={handleExpandRadius}>
-                      📡 Expand search to {request.currentRadius + 10} km
+                    <button className="btn btn-secondary btn-sm mt-md" onClick={handleExpandRadius} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', margin: '12px auto' }}>
+                      <MapPin size={14} /> Expand search to {request.currentRadius + 10} km
                     </button>
                   </div>
                 )}
@@ -739,7 +751,9 @@ export default function ViewBids() {
       {showCancelConfirm && (
         <div className="overlay">
           <div className="overlay-content">
-            <div className="overlay-icon">⚠️</div>
+            <div className="overlay-icon" style={{ display: 'flex', justifyContent: 'center', color: 'var(--warning)', marginBottom: '12px' }}>
+              <AlertTriangle size={48} />
+            </div>
             <h2>Cancel Request?</h2>
             <p>This request will be paused. You can restore it anytime from your dashboard and review bids again.</p>
             <button
@@ -765,7 +779,9 @@ export default function ViewBids() {
       {showConfirm && (
         <div className="overlay">
           <div className="overlay-content">
-            <div className="overlay-icon">🎉</div>
+            <div className="overlay-icon" style={{ display: 'flex', justifyContent: 'center', color: 'var(--success)', marginBottom: '12px' }}>
+              <PartyPopper size={48} />
+            </div>
             <h2>Order Confirmed!</h2>
             <p><strong>{displayVendor?.name || 'Vendor'}</strong> will cater your event.</p>
             {displayVendor?.phone && (
@@ -777,11 +793,9 @@ export default function ViewBids() {
               </p>
             )}
             <p>Your mobile: <strong>{formatPhone(user.phone)}</strong></p>
-            {addedons.length > 0 && (
-              <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginTop: '8px' }}>
-                📝 Mention your add-ons ({addedons.join(', ')}) when you call the vendor.
-              </p>
-            )}
+                <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginTop: '8px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <FileText size={14} /> <span>Mention your add-ons ({addedons.join(', ')}) when you call the vendor.</span>
+                </div>
             <button className="btn btn-primary btn-block" onClick={() => { setShowConfirm(false); navigate('/customer'); }}>
               Back to Dashboard
             </button>

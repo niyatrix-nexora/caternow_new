@@ -5,6 +5,7 @@ import { RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth';
 import { auth } from '../../utils/firebase';
 import { sanitizePhone, isValidPhone } from '../../utils/security';
 import { getVendor, getVendorByPhone } from '../../utils/data';
+import { ChefHat, Rocket, Lock, ShieldAlert, RotateCw } from 'lucide-react';
 
 // Helper: create a fresh invisible reCAPTCHA verifier
 function setupRecaptcha() {
@@ -264,8 +265,8 @@ export default function VendorLogin() {
       )}
 
       <div className="text-center" style={{ marginBottom: '48px' }}>
-        <div className="logo" style={{ justifyContent: 'center', marginBottom: '8px' }}>
-          <span className="logo-icon">👨‍🍳</span>
+        <div className="logo" style={{ justifyContent: 'center', marginBottom: '8px', alignItems: 'center', gap: '8px' }}>
+          <ChefHat size={24} style={{ color: 'var(--primary)' }} />
           <span className="logo-text">CaterNow Vendor</span>
         </div>
         <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
@@ -275,7 +276,9 @@ export default function VendorLogin() {
 
       {step === 'phone' && (
         <form onSubmit={handlePhoneSubmit} className="animate-fade-in">
-          <h2 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: '8px' }}>Vendor Portal 🚀</h2>
+          <h2 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: '8px', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+            Vendor Portal <Rocket size={20} style={{ color: 'var(--primary)' }} />
+          </h2>
           <p style={{ color: 'var(--text-secondary)', marginBottom: '32px', fontSize: '0.9rem' }}>
             Enter your business number to access your dashboard
           </p>
@@ -318,7 +321,9 @@ export default function VendorLogin() {
 
       {step === 'otp' && (
         <form onSubmit={handleOtpSubmit} className="animate-fade-in">
-          <h2 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: '8px' }}>Verify OTP 🔐</h2>
+          <h2 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: '8px', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+            Verify OTP <Lock size={20} style={{ color: 'var(--primary)' }} />
+          </h2>
           <p style={{ color: 'var(--text-secondary)', marginBottom: '8px', fontSize: '0.9rem' }}>
             We sent a code to <strong>+91 {phone}</strong>
           </p>
@@ -334,7 +339,7 @@ export default function VendorLogin() {
             fontSize: '0.75rem',
             color: 'var(--text-muted)',
           }}>
-            <span>🛡️ Enter the 6-digit OTP sent to your phone</span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}><ShieldAlert size={14} style={{ color: 'var(--primary)' }} /> Enter the 6-digit OTP sent to your phone</span>
           </div>
 
           <div className="otp-inputs" onPaste={handleOtpPaste}>
@@ -371,7 +376,11 @@ export default function VendorLogin() {
               onClick={handleResendOtp}
               disabled={otpTimer > 0 || loading}
             >
-              {otpTimer > 0 ? `Resend (${otpTimer}s)` : '🔄 Resend OTP'}
+              {otpTimer > 0 ? `Resend (${otpTimer}s)` : (
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                  <RotateCw size={14} /> Resend OTP
+                </span>
+              )}
             </button>
           </div>
         </form>

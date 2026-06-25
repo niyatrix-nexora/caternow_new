@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate, NavLink } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
+import { Calendar, Utensils, IndianRupee, Phone, ArrowRight, Home, Inbox, Menu } from 'lucide-react';
 
 export default function VendorBookings() {
   const { user, requests, bids } = useApp();
@@ -31,7 +32,9 @@ export default function VendorBookings() {
       <div className="page" style={{ paddingBottom: '80px' }}>
         {bookings.length === 0 ? (
           <div className="empty-state">
-            <div className="empty-icon">📅</div>
+            <div className="empty-icon" style={{ display: 'flex', justifyContent: 'center', marginBottom: '8px' }}>
+              <Calendar size={40} style={{ color: 'var(--text-muted)' }} />
+            </div>
             <h3>No Confirmed Bookings Yet</h3>
             <p>Your confirmed catering orders will appear here once customers accept your bids.</p>
           </div>
@@ -49,25 +52,32 @@ export default function VendorBookings() {
                   </div>
                   
                   <div className="card-meta" style={{ marginTop: '12px' }}>
-                    <div className="card-meta-item">
-                      <span className="icon">📅</span>
+                    <div className="card-meta-item" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span className="icon" style={{ display: 'flex', alignItems: 'center' }}><Calendar size={14} /></span>
                       <span>{eventDate.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
                     </div>
-                    <div className="card-meta-item">
-                      <span className="icon">🍽️</span>
+                    <div className="card-meta-item" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span className="icon" style={{ display: 'flex', alignItems: 'center' }}><Utensils size={14} /></span>
                       <span>{request.plates} plates · {request.foodType === 'veg' ? 'Veg' : request.foodType === 'nonveg' ? 'Non-Veg' : 'Veg + Non-Veg'}</span>
                     </div>
-                    <div className="card-meta-item">
-                      <span className="icon">💰</span>
+                    <div className="card-meta-item" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span className="icon" style={{ display: 'flex', alignItems: 'center' }}><IndianRupee size={14} /></span>
                       <span style={{ color: 'var(--success)', fontWeight: '700' }}>Total ₹{bid.totalPrice?.toLocaleString('en-IN')}</span>
                     </div>
                   </div>
 
                   <div style={{ marginTop: '16px', paddingTop: '12px', borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                      {request.customerPhone ? '📞 Contact Customer' : 'View Details'}
+                    <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      {request.customerPhone ? (
+                        <>
+                          <Phone size={14} />
+                          <span>Contact Customer</span>
+                        </>
+                      ) : (
+                        <span>View Details</span>
+                      )}
                     </span>
-                    <span style={{ color: 'var(--primary-light)', fontSize: '1.2rem' }}>→</span>
+                    <ArrowRight size={16} style={{ color: 'var(--primary-light)' }} />
                   </div>
                 </div>
               );
@@ -78,23 +88,23 @@ export default function VendorBookings() {
 
       <div className="bottom-nav">
         <NavLink to="/vendor" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} end>
-          <span className="nav-icon">🏠</span>
+          <Home size={20} className="nav-icon" />
           <span>Home</span>
         </NavLink>
         <NavLink to="/vendor/requests" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-          <span className="nav-icon">📥</span>
+          <Inbox size={20} className="nav-icon" />
           <span>Requests</span>
         </NavLink>
         <NavLink to="/vendor/bookings" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-          <span className="nav-icon">📅</span>
+          <Calendar size={20} className="nav-icon" />
           <span>Bookings</span>
         </NavLink>
         <NavLink to="/vendor/earnings" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-          <span className="nav-icon">💰</span>
+          <IndianRupee size={20} className="nav-icon" />
           <span>Earnings</span>
         </NavLink>
         <NavLink to="/vendor/profile" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-          <span className="nav-icon">☰</span>
+          <Menu size={20} className="nav-icon" />
           <span>More</span>
         </NavLink>
       </div>

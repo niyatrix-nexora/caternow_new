@@ -7,6 +7,10 @@ import {
   subscribeToAllRequests 
 } from '../../utils/data';
 import { loadVendorPackages, PACKAGE_META } from '../../utils/packages';
+import { Icon } from '../../utils/iconHelper';
+import { 
+  Utensils, Zap, Pencil, CheckCircle, Package, Inbox, Home, Calendar, IndianRupee, Menu 
+} from 'lucide-react';
 
 const VENDOR_IMAGE_MAP = {
   'Spice Garden Kitchen': '/spice.jpeg',
@@ -179,8 +183,8 @@ export default function VendorDashboard() {
                   </div>
                 );
               })()}
-              <div>
-                <span className="logo-icon" style={{ fontSize: '1.4rem' }}>🍽️</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Utensils size={24} style={{ color: 'var(--primary)' }} />
                 <span className="logo-text">CaterNow Vendor</span>
               </div>
             </div>
@@ -223,7 +227,7 @@ export default function VendorDashboard() {
             <div style={{ padding: '16px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: isEditingCapacity ? '12px' : '0' }}>
                 <h3 style={{ fontSize: '0.95rem', margin: 0, color: 'var(--primary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <span>⚡</span> Today's Price Range
+                  <Zap size={18} style={{ color: 'var(--primary)' }} /> Today's Price Range
                 </h3>
                 {!isEditingCapacity && (
                   <button 
@@ -232,9 +236,9 @@ export default function VendorDashboard() {
                       setLivePriceRange(user.livePriceRange || '');
                       setIsEditingCapacity(true);
                     }}
-                    style={{ padding: '4px', color: 'var(--text-muted)' }}
+                    style={{ padding: '4px', color: 'var(--text-muted)', display: 'flex', alignItems: 'center' }}
                   >
-                    ✏️
+                    <Pencil size={14} />
                   </button>
                 )}
               </div>
@@ -248,8 +252,8 @@ export default function VendorDashboard() {
                     </div>
                   </div>
                   {showSuccess && (
-                    <p style={{ color: 'var(--success)', fontSize: '0.7rem', marginTop: '12px', fontWeight: '600', animation: 'fadeIn 0.3s' }}>
-                      ✓ Price range updated!
+                    <p style={{ color: 'var(--success)', fontSize: '0.75rem', marginTop: '12px', fontWeight: '600', animation: 'fadeIn 0.3s', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <CheckCircle size={12} /> Price range updated!
                     </p>
                   )}
                 </div>
@@ -320,9 +324,11 @@ export default function VendorDashboard() {
                 background: 'linear-gradient(135deg, #FF6B00, #FF8C42)',
                 color: '#fff', fontWeight: 700, fontSize: '0.78rem',
                 cursor: 'pointer', fontFamily: 'inherit',
+                display: 'flex', alignItems: 'center', gap: '4px'
               }}
             >
-              ✏️ Manage
+              <Pencil size={12} />
+              <span>Manage</span>
             </button>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
@@ -340,7 +346,7 @@ export default function VendorDashboard() {
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-                    <span style={{ fontSize: '1.3rem' }}>{meta.emoji}</span>
+                    <span style={{ display: 'flex', alignItems: 'center' }}><Icon name={meta.iconName} size={16} style={{ color: meta.color }} /></span>
                     <span style={{ fontWeight: 800, fontSize: '0.82rem', color: meta.color }}>{meta.label}</span>
                   </div>
                   <div style={{ fontWeight: 900, fontSize: '1.1rem', color: meta.color }}>
@@ -361,7 +367,9 @@ export default function VendorDashboard() {
                   cursor: 'pointer', color: 'var(--text-muted)', fontSize: '0.85rem',
                 }}
               >
-                <div style={{ fontSize: '1.5rem', marginBottom: '6px' }}>📦</div>
+                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '6px' }}>
+                  <Package size={32} style={{ color: 'var(--text-muted)' }} />
+                </div>
                 No packages set up yet — tap to create
               </div>
             )}
@@ -391,8 +399,8 @@ export default function VendorDashboard() {
                     </span>
                   </div>
                   {req.packageType && (
-                    <div className="card-meta-item">
-                      <span className="icon">📦</span>
+                    <div className="card-meta-item" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span className="icon" style={{ display: 'flex', alignItems: 'center' }}><Package size={14} /></span>
                       <span style={{ color: 'var(--success)', fontWeight: '700' }}>Package: {req.packageType}</span>
                     </div>
                   )}
@@ -409,7 +417,9 @@ export default function VendorDashboard() {
 
         {newRequests.length === 0 && myBids.length === 0 && !loading && (
           <div className="empty-state">
-            <div className="empty-icon">...</div>
+            <div className="empty-icon" style={{ display: 'flex', justifyContent: 'center', marginBottom: '8px' }}>
+              <Inbox size={40} style={{ color: 'var(--text-muted)' }} />
+            </div>
             <h3>{user.isOnDuty !== false ? 'No requests nearby' : 'You are Off Duty'}</h3>
             <p>{user.isOnDuty !== false ? 'When customers near you create catering requests, they will appear here.' : 'Turn on your duty status to receive new catering requests.'}</p>
           </div>
@@ -443,23 +453,23 @@ export default function VendorDashboard() {
 
       <div className="bottom-nav">
         <NavLink to="/vendor" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} end>
-          <span className="nav-icon">🏠</span>
+          <Home size={20} className="nav-icon" />
           <span>Home</span>
         </NavLink>
         <NavLink to="/vendor/requests" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-          <span className="nav-icon">📥</span>
+          <Inbox size={20} className="nav-icon" />
           <span>Requests</span>
         </NavLink>
         <NavLink to="/vendor/bookings" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-          <span className="nav-icon">📅</span>
+          <Calendar size={20} className="nav-icon" />
           <span>Bookings</span>
         </NavLink>
         <NavLink to="/vendor/earnings" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-          <span className="nav-icon">💰</span>
+          <IndianRupee size={20} className="nav-icon" />
           <span>Earnings</span>
         </NavLink>
         <NavLink to="/vendor/profile" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-          <span className="nav-icon">☰</span>
+          <Menu size={20} className="nav-icon" />
           <span>More</span>
         </NavLink>
       </div>

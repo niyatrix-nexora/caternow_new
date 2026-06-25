@@ -3,11 +3,12 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import { getChatMessages, saveChatMessages } from '../../utils/packages';
 import { getBid, getRequest, saveBidChat, subscribeToBid, isSupabaseConfigured } from '../../utils/data';
+import { Check, X, Clock, IndianRupee, RotateCw, Send } from 'lucide-react';
 
 // ── Offer card inside chat ────────────────────────────────────────────────────
 function OfferCard({ offer, onAccept, onCounter, isCustomer }) {
   const statusColor = offer.status === 'accepted' ? '#059669' : offer.status === 'rejected' ? '#DC2626' : '#D97706';
-  const statusLabel = offer.status === 'accepted' ? '✅ Accepted' : offer.status === 'rejected' ? '✕ Rejected' : '⏳ Pending';
+  const statusLabel = offer.status === 'accepted' ? 'Accepted' : offer.status === 'rejected' ? 'Rejected' : 'Pending';
 
   return (
     <div style={{
@@ -19,7 +20,7 @@ function OfferCard({ offer, onAccept, onCounter, isCustomer }) {
       width: '100%',
     }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
-        <span style={{ fontSize: '1.1rem' }}>💰</span>
+        <IndianRupee size={16} style={{ color: '#FF6B00', flexShrink: 0 }} />
         <span style={{ fontWeight: 800, fontSize: '0.85rem', color: '#FF6B00' }}>
           {offer.isCounter ? 'Counter Offer' : 'Price Offer'}
         </span>
@@ -27,7 +28,11 @@ function OfferCard({ offer, onAccept, onCounter, isCustomer }) {
           marginLeft: 'auto', fontSize: '0.68rem', fontWeight: 700,
           color: statusColor, background: `${statusColor}18`,
           padding: '2px 8px', borderRadius: '999px',
+          display: 'inline-flex', alignItems: 'center', gap: '4px'
         }}>
+          {offer.status === 'accepted' && <Check size={11} strokeWidth={3} />}
+          {offer.status === 'rejected' && <X size={11} strokeWidth={3} />}
+          {offer.status === 'pending' && <Clock size={11} />}
           {statusLabel}
         </span>
       </div>
@@ -77,10 +82,10 @@ function OfferCard({ offer, onAccept, onCounter, isCustomer }) {
               flex: 1, padding: '9px', borderRadius: '12px', border: 'none',
               background: 'linear-gradient(135deg, #059669, #047857)',
               color: '#fff', fontWeight: 700, fontSize: '0.82rem', cursor: 'pointer',
-              fontFamily: 'inherit',
+              fontFamily: 'inherit', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px'
             }}
           >
-            ✓ Accept
+            <Check size={14} strokeWidth={3} /> Accept
           </button>
           <button
             onClick={() => onCounter(offer)}
@@ -89,10 +94,10 @@ function OfferCard({ offer, onAccept, onCounter, isCustomer }) {
               border: '1.5px solid rgba(255,107,0,0.4)',
               background: 'transparent', color: '#FF6B00',
               fontWeight: 700, fontSize: '0.82rem', cursor: 'pointer',
-              fontFamily: 'inherit',
+              fontFamily: 'inherit', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px'
             }}
           >
-            ↩ Counter
+            <RotateCw size={12} /> Counter
           </button>
         </div>
       )}
@@ -173,7 +178,7 @@ export default function Chat() {
           {
             id: 'init_1',
             sender: 'vendor',
-            text: `Hi! I saw your catering request for ${request?.eventName || 'your event'}. I'd love to cater for you! 🍽️`,
+            text: `Hi! I saw your catering request for ${request?.eventName || 'your event'}. I'd love to cater for you!`,
             time: '10:00 AM',
             timestamp: new Date().toISOString(),
           },
@@ -281,7 +286,7 @@ export default function Chat() {
     } else if (lower.includes('menu') || lower.includes('food') || lower.includes('dish')) {
       simulateVendorReply('I can customize the menu based on your preferences. What cuisine do you prefer — North Indian, South Indian, or a mix?');
     } else if (lower.includes('confirm') || lower.includes('book') || lower.includes('ok') || lower.includes('deal')) {
-      simulateVendorReply('Great! I\'ll send you a formal offer card. Please review and accept it to confirm the booking. 🎉');
+      simulateVendorReply('Great! I\'ll send you a formal offer card. Please review and accept it to confirm the booking.');
     } else {
       simulateVendorReply('Thanks for your message! I\'ll get back to you shortly. Feel free to ask about pricing or menu options.');
     }
@@ -320,7 +325,7 @@ export default function Chat() {
     if (diff < -50) {
       simulateVendorReply(`₹${price}/plate is a bit low for me. My minimum is ₹${Math.max(150, (bid?.pricePerPlate || 320) - 30)}. Can we meet in the middle?`, 2000);
     } else if (diff < 0) {
-      simulateVendorReply(`₹${price}/plate works for me! I'll accept your offer. Looking forward to catering your event! 🎊`, 1800);
+      simulateVendorReply(`₹${price}/plate works for me! I'll accept your offer. Looking forward to catering your event!`, 1800);
     } else {
       simulateVendorReply(`Thank you for the offer! ₹${price}/plate is accepted. I'll prepare everything for your event.`, 1500);
     }
@@ -333,7 +338,7 @@ export default function Chat() {
         : m
     );
     await persistAndSet(updated);
-    simulateVendorReply('Excellent! Your booking is confirmed. I\'ll contact you soon to finalize the details. 🎉🍽️', 1000);
+    simulateVendorReply('Excellent! Your booking is confirmed. I\'ll contact you soon to finalize the details.', 1000);
   };
 
   const handleCounterOffer = (offer) => {
@@ -392,9 +397,10 @@ export default function Chat() {
             background: showOfferPanel ? '#FF6B00' : 'rgba(255,107,0,0.1)',
             color: showOfferPanel ? '#fff' : '#FF6B00',
             fontWeight: 700, fontSize: '0.78rem', cursor: 'pointer', fontFamily: 'inherit',
+            display: 'flex', alignItems: 'center', gap: '4px'
           }}
         >
-          💰 Offer
+          <IndianRupee size={12} /> Offer
         </button>
       </div>
 
@@ -404,8 +410,9 @@ export default function Chat() {
           background: '#fff', borderBottom: '1px solid rgba(0,0,0,0.06)',
           padding: '16px', animation: 'fadeInUp 0.2s ease',
         }}>
-          <div style={{ fontWeight: 800, fontSize: '0.9rem', marginBottom: '12px', color: '#FF6B00' }}>
-            {counterOffer ? `↩ Counter Offer (was ₹${counterOffer.pricePerPlate}/plate)` : '💰 Send Price Offer'}
+          <div style={{ fontWeight: 800, fontSize: '0.9rem', marginBottom: '12px', color: '#FF6B00', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <IndianRupee size={16} />
+            {counterOffer ? `Counter Offer (was ₹${counterOffer.pricePerPlate}/plate)` : 'Send Price Offer'}
           </div>
           <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
             <div style={{ flex: 1, position: 'relative' }}>
@@ -532,7 +539,7 @@ export default function Chat() {
             boxShadow: inputText.trim() ? '0 4px 12px rgba(255,107,0,0.3)' : 'none',
           }}
         >
-          ➤
+          <Send size={18} />
         </button>
       </div>
 

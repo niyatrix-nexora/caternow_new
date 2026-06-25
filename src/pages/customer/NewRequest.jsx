@@ -4,6 +4,8 @@ import { useApp } from '../../context/AppContext';
 import { createRequest, getVendorsInRadius } from '../../utils/data';
 import { PACKAGE_META } from '../../utils/packages';
 import BananaLeaf from './BananaLeaf';
+import { Icon } from '../../utils/iconHelper';
+import { Leaf, Utensils, Sparkle } from 'lucide-react';
 import { MapContainer, TileLayer, Marker, Circle, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -64,7 +66,7 @@ function getPackages(foodType) {
       price: 220,
       description: 'Full course meal · 2 starters · 3 mains · breads · 2 desserts · beverage',
       dishes: buildDishes(ft, 'standard'),
-      icon: '🌿',
+      iconName: 'Leaf',
     },
     {
       category: 'special',
@@ -72,7 +74,7 @@ function getPackages(foodType) {
       price: 320,
       description: 'Premium ingredients · live counters · 3 starters · 4 mains · 3 desserts · 2 beverages',
       dishes: buildDishes(ft, 'special'),
-      icon: '⭐',
+      iconName: 'Star',
     },
     {
       category: 'premium',
@@ -80,7 +82,7 @@ function getPackages(foodType) {
       price: 550,
       description: 'Luxury gourmet spread · 5+ starters · 6+ mains · unlimited desserts · live counters',
       dishes: buildDishes(ft, 'premium'),
-      icon: '👑',
+      iconName: 'Crown',
     },
     {
       category: 'custom',
@@ -88,7 +90,7 @@ function getPackages(foodType) {
       price: null,
       description: 'Fully customizable menu. Discuss directly with vendors to get the best deal.',
       dishes: [],
-      icon: '✏️',
+      iconName: 'Pencil',
     },
   ];
 }
@@ -273,7 +275,7 @@ export default function NewRequest() {
                 boxShadow: active ? '0 0 0 4px rgba(255,107,0,0.2)' : 'none',
                 transition: 'all 0.3s',
               }}>
-                {done ? '✓' : num}
+                {done ? <Icon name="Check" size={12} strokeWidth={3} /> : num}
               </div>
               <div style={{ fontSize: '0.6rem', fontWeight: 700, color: active ? '#FF6B00' : done ? '#FF6B00' : 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.3px' }}>
                 {label}
@@ -285,8 +287,9 @@ export default function NewRequest() {
 
       <div className="page" style={{ paddingBottom: '90px' }}>
         {error && (
-          <div style={{ background: '#FEE2E2', color: '#991B1B', padding: '12px 16px', borderRadius: '14px', marginBottom: '16px', fontSize: '0.88rem', fontWeight: 500 }}>
-            ⚠️ {error}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#FEE2E2', color: '#991B1B', padding: '12px 16px', borderRadius: '14px', marginBottom: '16px', fontSize: '0.88rem', fontWeight: 500 }}>
+            <Icon name="AlertTriangle" size={16} style={{ flexShrink: 0 }} />
+            <span>{error}</span>
           </div>
         )}
 
@@ -297,7 +300,7 @@ export default function NewRequest() {
             background: 'rgba(232,89,12,0.08)', border: '1.5px solid rgba(232,89,12,0.25)',
             borderRadius: '16px', padding: '12px 16px', marginBottom: '16px',
           }}>
-            <span style={{ fontSize: '1.4rem' }}>🎯</span>
+            <Icon name="Target" size={24} style={{ color: 'var(--primary)', flexShrink: 0 }} />
             <div style={{ flex: 1 }}>
               <div style={{ fontWeight: 800, fontSize: '0.88rem', color: 'var(--primary)' }}>
                 Requesting from {fromVendorName}
@@ -331,7 +334,7 @@ export default function NewRequest() {
             background: 'rgba(5,150,105,0.07)', border: '1.5px solid rgba(5,150,105,0.2)',
             borderRadius: '16px', padding: '10px 14px', marginBottom: '16px',
           }}>
-            <span style={{ fontSize: '1.2rem' }}>📦</span>
+            <Icon name="Utensils" size={20} style={{ color: '#059669', flexShrink: 0 }} />
             <div style={{ flex: 1 }}>
               <div style={{ fontWeight: 800, fontSize: '0.85rem', color: '#059669' }}>
                 {selectedPackage.title} Package pre-selected
@@ -365,7 +368,7 @@ export default function NewRequest() {
             <div className="form-group">
               <label className="form-label">Food Type</label>
               <div style={{ display: 'flex', gap: '8px' }}>
-                {[['veg', '🟢 Veg'], ['nonveg', '🔴 Non-Veg'], ['both', '🟠 Both']].map(([val, label]) => (
+                {[['veg', 'Veg'], ['nonveg', 'Non-Veg'], ['both', 'Both']].map(([val, label]) => (
                   <button
                     key={val}
                     onClick={() => { setFoodType(val); setSelectedPackage(null); }}
@@ -375,8 +378,12 @@ export default function NewRequest() {
                       color: foodType === val ? '#fff' : 'var(--text-secondary)',
                       fontWeight: 700, fontSize: '0.8rem', cursor: 'pointer', transition: 'all 0.2s',
                       boxShadow: foodType === val ? '0 4px 12px rgba(255,107,0,0.25)' : 'none',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center'
                     }}
                   >
+                    {val === 'veg' && <Leaf size={14} style={{ marginRight: '6px', color: foodType === val ? '#fff' : '#10b981' }} />}
+                    {val === 'nonveg' && <Utensils size={14} style={{ marginRight: '6px', color: foodType === val ? '#fff' : '#ef4444' }} />}
+                    {val === 'both' && <Sparkle size={14} style={{ marginRight: '6px', color: foodType === val ? '#fff' : '#f59e0b' }} />}
                     {label}
                   </button>
                 ))}
@@ -399,12 +406,15 @@ export default function NewRequest() {
                 )}
               </div>
               <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '6px' }}>
-                📍 Tap map to set venue · {vendorCount} vendors found nearby
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                <Icon name="MapPin" size={12} style={{ color: 'var(--primary)' }} />
+                Tap map to set venue · {vendorCount} vendors found nearby
+              </span>
               </p>
             </div>
 
-            <button className="btn btn-primary btn-block btn-lg" onClick={handleNext}>
-              Next: Choose Package →
+            <button className="btn btn-primary btn-block btn-lg" onClick={handleNext} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+              Next: Choose Package <Icon name="ArrowRight" size={16} />
             </button>
           </div>
         )}
@@ -445,7 +455,9 @@ export default function NewRequest() {
                       transform: isSelected ? 'scale(1.01)' : 'scale(1)',
                     }}
                   >
-                    <span style={{ fontSize: '2rem', flexShrink: 0, marginTop: '2px' }}>{pkg.icon}</span>
+                    <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: isSelected ? meta.color : 'var(--text-muted)', flexShrink: 0, marginTop: '2px' }}>
+                      <Icon name={meta.iconName} size={28} />
+                    </span>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '4px' }}>
                         <div style={{ fontWeight: 800, fontSize: '1rem', color: isSelected ? meta.color : 'var(--text)' }}>
@@ -492,7 +504,7 @@ export default function NewRequest() {
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       transition: 'all 0.2s',
                     }}>
-                      {isSelected && <span style={{ color: '#fff', fontSize: '0.7rem', fontWeight: 900 }}>✓</span>}
+                      {isSelected && <Icon name="Check" size={12} strokeWidth={3} style={{ color: '#fff' }} />}
                     </div>
                   </button>
                 );
@@ -512,11 +524,21 @@ export default function NewRequest() {
                     color: showLeafPreview ? '#fff' : '#16a34a',
                     fontWeight: 700, fontSize: '0.9rem', cursor: 'pointer',
                     fontFamily: 'inherit', marginBottom: '12px',
-                    border: '1.5px solid rgba(34,197,94,0.3)',
-                    transition: 'all 0.2s',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px'
                   }}
                 >
-                  {showLeafPreview ? '✕ Hide Leaf Preview' : '🍃 Preview on Banana Leaf'}
+                  {showLeafPreview ? (
+                    <>
+                      <Icon name="X" size={16} /> Hide Leaf Preview
+                    </>
+                  ) : (
+                    <>
+                      <Icon name="Leaf" size={16} /> Preview on Banana Leaf
+                    </>
+                  )}
                 </button>
 
                 {showLeafPreview && (
@@ -567,7 +589,7 @@ export default function NewRequest() {
               }}>
                 <div style={{ textAlign: 'center', marginBottom: '8px' }}>
                   <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#22c55e' }}>
-                    Your Custom Thali 🍃
+                    Your Custom Thali
                   </div>
                   <div style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.5)', marginTop: '2px' }}>
                     {customDishes.length} dishes · ₹{customBudget}/plate
@@ -581,9 +603,10 @@ export default function NewRequest() {
                     background: 'rgba(34,197,94,0.15)', color: '#22c55e',
                     fontWeight: 700, fontSize: '0.82rem', cursor: 'pointer', fontFamily: 'inherit',
                     border: '1px solid rgba(34,197,94,0.3)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
                   }}
                 >
-                  ✏️ Edit My Thali
+                  <Icon name="Pencil" size={14} /> Edit My Thali
                 </button>
               </div>
             )}
@@ -592,8 +615,9 @@ export default function NewRequest() {
               className="btn btn-primary btn-block btn-lg"
               onClick={handleNext}
               disabled={!selectedPackage || (selectedPackage.category === 'custom' && customDishes.length === 0)}
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
             >
-              Next: Review →
+              Next: Review <Icon name="ArrowRight" size={16} />
             </button>
           </div>
         )}
@@ -609,17 +633,19 @@ export default function NewRequest() {
               border: '1px solid var(--border)', marginBottom: '16px',
               boxShadow: 'var(--shadow-md)',
             }}>
-              <div style={{ fontWeight: 800, fontSize: '1rem', marginBottom: '16px' }}>📋 Event Summary</div>
+              <div style={{ fontWeight: 800, fontSize: '1rem', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Icon name="ClipboardList" size={18} style={{ color: 'var(--primary)' }} /> Event Summary
+              </div>
 
               {[
-                { icon: '🎉', label: 'Event', value: eventName },
-                { icon: '📅', label: 'Date', value: new Date(eventDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) },
-                { icon: '👥', label: 'Guests', value: `${guests} people` },
-                { icon: '🍱', label: 'Food Type', value: foodType === 'veg' ? '🟢 Veg' : foodType === 'nonveg' ? '🔴 Non-Veg' : '🟠 Veg + Non-Veg' },
-                ...(fromVendorName ? [{ icon: '🎯', label: 'Vendor', value: fromVendorName }] : []),
+                { iconName: 'PartyPopper', label: 'Event', value: eventName },
+                { iconName: 'Calendar', label: 'Date', value: new Date(eventDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) },
+                { iconName: 'Users', label: 'Guests', value: `${guests} people` },
+                { iconName: 'Utensils', label: 'Food Type', value: foodType === 'veg' ? 'Veg' : foodType === 'nonveg' ? 'Non-Veg' : 'Veg + Non-Veg' },
+                ...(fromVendorName ? [{ iconName: 'Target', label: 'Vendor', value: fromVendorName }] : []),
               ].map(row => (
                 <div key={row.label} style={{ display: 'flex', gap: '10px', alignItems: 'center', paddingBottom: '10px', marginBottom: '10px', borderBottom: '1px solid var(--border)' }}>
-                  <span style={{ fontSize: '1rem', flexShrink: 0 }}>{row.icon}</span>
+                  <Icon name={row.iconName} size={16} style={{ color: 'var(--primary)', flexShrink: 0 }} />
                   <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', width: '70px', flexShrink: 0 }}>{row.label}</span>
                   <span style={{ fontWeight: 600, fontSize: '0.88rem' }}>{row.value}</span>
                 </div>
@@ -630,7 +656,7 @@ export default function NewRequest() {
                 const meta = PACKAGE_META[selectedPackage.category];
                 return (
                   <div style={{ display: 'flex', gap: '10px', alignItems: 'center', paddingBottom: '10px', marginBottom: '10px', borderBottom: '1px solid var(--border)' }}>
-                    <span style={{ fontSize: '1rem' }}>{selectedPackage.icon}</span>
+                    <Icon name={meta.iconName} size={16} style={{ color: meta.color, flexShrink: 0 }} />
                     <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', width: '70px', flexShrink: 0 }}>Package</span>
                     <span style={{ fontWeight: 700, color: meta.color }}>{selectedPackage.title} Package</span>
                   </div>
@@ -639,18 +665,31 @@ export default function NewRequest() {
 
             </div>
 
-            <div style={{ textAlign: 'center', fontSize: '0.82rem', color: 'var(--text-muted)', marginBottom: '16px', lineHeight: 1.5 }}>
-              {fromVendorName
-                ? `🎯 This request will go directly to ${fromVendorName} for a personalised bid.`
-                : '💡 Vendors near you will receive this request and submit competitive bids.'}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '0.82rem', color: 'var(--text-muted)', marginBottom: '16px', lineHeight: 1.5 }}>
+              {fromVendorName ? (
+                <>
+                  <Icon name="Target" size={14} style={{ color: 'var(--primary)' }} />
+                  This request will go directly to {fromVendorName} for a personalised bid.
+                </>
+              ) : (
+                <>
+                  <Icon name="Sparkles" size={14} style={{ color: 'var(--primary)' }} />
+                  Vendors near you will receive this request and submit competitive bids.
+                </>
+              )}
             </div>
 
-            <button className="btn btn-primary btn-block btn-lg" onClick={handleSubmit} disabled={submitting}>
-              {submitting
-                ? '⏳ Sending...'
-                : fromVendorName
-                  ? `🚀 Send Request to ${fromVendorName}`
-                  : '🚀 Send Request to Vendors'}
+            <button className="btn btn-primary btn-block btn-lg" onClick={handleSubmit} disabled={submitting} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+              {submitting ? (
+                <>
+                  <Icon name="Clock" size={18} className="animate-spin" /> Sending...
+                </>
+              ) : (
+                <>
+                  <Icon name="Send" size={18} />
+                  {fromVendorName ? `Send Request to ${fromVendorName}` : 'Send Request to Vendors'}
+                </>
+              )}
             </button>
           </div>
         )}

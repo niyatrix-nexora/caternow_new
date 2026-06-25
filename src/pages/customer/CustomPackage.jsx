@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import BananaLeaf from './BananaLeaf';
+import { Search, X, Leaf } from 'lucide-react';
 import {
   CATEGORY_ORDER,
   getDishImage,
@@ -205,7 +206,7 @@ export default function CustomPackage() {
             {vendorName ? `${vendorName}'s Menu` : 'Build Your Thali'}
           </div>
           <div style={{ fontSize: '0.72rem', color: '#9ca3af', marginTop: '1px' }}>
-            {selected.length} selected · {foodType === 'veg' ? '🟢 Veg' : foodType === 'nonveg' ? '🔴 Non-Veg' : '🟠 All'} · {guests} guests
+            {selected.length} selected · {foodType === 'veg' ? 'Veg' : foodType === 'nonveg' ? 'Non-Veg' : 'All'} · {guests} guests
             {vendorId && <span style={{ marginLeft: 6, color: '#FF6B00', fontWeight: 700 }}>· Vendor menu</span>}
           </div>
         </div>
@@ -220,14 +221,14 @@ export default function CustomPackage() {
       {/* ── Search bar ── */}
       <div style={{ padding: '10px 16px', background: '#fff', borderBottom: '1px solid #f0f0f0' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#f5f5f5', borderRadius: '12px', padding: '10px 14px' }}>
-          <span style={{ opacity: 0.4 }}>🔍</span>
+          <Search size={16} style={{ opacity: 0.5 }} />
           <input
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Search dishes..."
             style={{ flex: 1, border: 'none', background: 'transparent', fontSize: '0.88rem', fontFamily: 'inherit', outline: 'none', color: '#1a1a1a' }}
           />
-          {search && <button onClick={() => setSearch('')} style={{ border: 'none', background: 'none', cursor: 'pointer', color: '#9ca3af', fontSize: '0.9rem', padding: 0 }}>✕</button>}
+          {search && <button onClick={() => setSearch('')} style={{ border: 'none', background: 'none', cursor: 'pointer', color: '#9ca3af', display: 'flex', alignItems: 'center', padding: 0 }}><X size={16} /></button>}
         </div>
       </div>
 
@@ -246,7 +247,11 @@ export default function CustomPackage() {
               transition: 'all 0.2s',
             }}
           >
-            🍃 {showLeaf ? 'Hide Plating Preview' : `Preview on Banana Leaf (${selected.length} dishes)`}
+            {showLeaf ? (
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}><X size={16} /> Hide Plating Preview</span>
+            ) : (
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}><Leaf size={16} /> Preview on Banana Leaf ({selected.length} dishes)</span>
+            )}
           </button>
           {showLeaf && (
             <div style={{ marginTop: '12px', animation: 'fadeInUp 0.3s ease' }}>
@@ -305,7 +310,7 @@ export default function CustomPackage() {
 
         {Object.keys(grouped).length === 0 && (
           <div style={{ textAlign: 'center', padding: '48px 24px', color: '#9ca3af' }}>
-            <div style={{ fontSize: '2.5rem', marginBottom: '12px' }}>🔍</div>
+            <div style={{ marginBottom: '12px', display: 'flex', justifyContent: 'center', color: '#9ca3af' }}><Search size={40} /></div>
             <div style={{ fontWeight: 700, fontSize: '0.95rem' }}>No dishes found</div>
           </div>
         )}

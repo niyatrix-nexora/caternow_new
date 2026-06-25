@@ -1,21 +1,22 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Icon } from '../utils/iconHelper';
 
 const SLIDES = [
   {
-    emoji: '🍽️',
+    iconName: 'Utensils',
     title: 'Welcome Back!',
     subtitle: 'Find the best caterers and compare the best prices for your event.',
     bg: 'linear-gradient(135deg, rgba(255,107,0,0.12), rgba(255,140,66,0.06))',
   },
   {
-    emoji: '📋',
+    iconName: 'ClipboardList',
     title: 'Create Event Request',
     subtitle: 'Share your event details, guest count, and budget. Get bids from nearby caterers instantly.',
     bg: 'linear-gradient(135deg, rgba(124,58,237,0.12), rgba(167,139,250,0.06))',
   },
   {
-    emoji: '💰',
+    iconName: 'IndianRupee',
     title: 'Compare & Save',
     subtitle: 'Compare bids from multiple vendors, negotiate, and book the best deal for your event.',
     bg: 'linear-gradient(135deg, rgba(5,150,105,0.12), rgba(16,185,129,0.06))',
@@ -51,27 +52,34 @@ export default function Onboarding() {
         <div style={{ textAlign: 'center', animation: 'fadeInUp 0.4s ease' }} key={slide}>
           <div
             style={{
-              fontSize: '5rem',
+              height: '96px',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
               marginBottom: '16px',
+              color: slide === 0 ? '#FF6B00' : slide === 1 ? '#7C3AED' : '#059669',
               filter: 'drop-shadow(0 8px 24px rgba(0,0,0,0.12))',
             }}
           >
-            {current.emoji}
+            <Icon name={current.iconName} size={80} />
           </div>
           {/* Illustration placeholder — decorative food icons */}
           <div
             style={{
               display: 'flex',
-              gap: '12px',
+              gap: '16px',
               justifyContent: 'center',
+              alignItems: 'center',
               opacity: 0.5,
+              color: slide === 0 ? '#FF6B00' : slide === 1 ? '#7C3AED' : '#059669',
               fontSize: '1.8rem',
+              marginTop: '12px'
             }}
           >
-            <span>🥘</span>
-            <span>🍛</span>
-            <span>🎂</span>
-            <span>🥗</span>
+            <Icon name="Soup" size={24} />
+            <Icon name="CookingPot" size={24} />
+            <Icon name="Cake" size={24} />
+            <Icon name="Salad" size={24} />
           </div>
         </div>
       </div>

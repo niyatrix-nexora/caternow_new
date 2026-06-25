@@ -9,6 +9,11 @@ import {
   getDishImage,
   groupByCategory,
 } from '../../utils/masterMenu';
+import { Icon } from '../../utils/iconHelper';
+import {
+  ArrowLeft, CheckCircle, Save, Utensils, Sparkles, Search, X, TrendingUp, RotateCcw,
+  Home, Inbox, Calendar, IndianRupee, Menu, Check
+} from 'lucide-react';
 
 // ── Items from global master menu ─────────────────────────────────────────────
 const DISH_ITEMS  = MASTER_MENU.filter(d => d.type === 'menu_item');
@@ -78,7 +83,7 @@ function DishRow({ item, isSelected, onToggle, metaColor, metaBg, metaBorder, sh
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         transition: 'all 0.2s',
       }}>
-        {isSelected && <span style={{ color: '#fff', fontSize: '0.75rem', fontWeight: 900 }}>✓</span>}
+        {isSelected && <Check size={12} style={{ color: 'white' }} />}
       </div>
     </div>
   );
@@ -169,7 +174,9 @@ export default function CreatePackage() {
       {/* ── Header ── */}
       <div className="page-header" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '10px', paddingBottom: '10px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', width: '100%' }}>
-          <button className="back-btn" onClick={() => navigate('/vendor')}>←</button>
+          <button className="back-btn" onClick={() => navigate('/vendor')} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <ArrowLeft size={18} />
+          </button>
           <div style={{ flex: 1 }}>
             <h1 style={{ margin: 0, fontSize: '1.1rem' }}>Package Management</h1>
             <p style={{ margin: 0, fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '2px' }}>
@@ -184,9 +191,20 @@ export default function CreatePackage() {
               color: '#fff', fontWeight: 700, fontSize: '0.8rem',
               cursor: 'pointer', fontFamily: 'inherit', whiteSpace: 'nowrap',
               boxShadow: `0 4px 12px ${meta.color}40`,
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px'
             }}
           >
-            {saved ? '✅ Saved!' : '💾 Save'}
+            {saved ? (
+              <>
+                <CheckCircle size={16} />
+                <span>Saved!</span>
+              </>
+            ) : (
+              <>
+                <Save size={16} />
+                <span>Save</span>
+              </>
+            )}
           </button>
         </div>
 
@@ -200,14 +218,14 @@ export default function CreatePackage() {
                 key={p.category}
                 onClick={() => { setActiveIdx(i); setShowPicker(false); setDishSearch(''); setDishCatFilter('all'); setDishSubFilter('all'); }}
                 style={{
-                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px',
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px',
                   padding: '8px 4px', borderRadius: '14px',
                   border: `2px solid ${isAct ? m.color : 'var(--border)'}`,
                   background: isAct ? m.bg : 'var(--bg-card)',
                   cursor: 'pointer', transition: 'all 0.2s', fontFamily: 'inherit',
                 }}
               >
-                <span style={{ fontSize: '1.1rem' }}>{m.emoji}</span>
+                <Icon name={m.iconName} size={18} style={{ color: isAct ? m.color : 'var(--text-muted)' }} />
                 <span style={{ fontSize: '0.6rem', fontWeight: 800, color: isAct ? m.color : 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.3px' }}>
                   {m.label}
                 </span>
@@ -229,7 +247,7 @@ export default function CreatePackage() {
           borderRadius: '20px', padding: '16px', marginBottom: '14px',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
-            <span style={{ fontSize: '1.4rem' }}>{meta.emoji}</span>
+            <Icon name={meta.iconName} size={24} style={{ color: meta.color }} />
             <div style={{ flex: 1 }}>
               <div style={{ fontWeight: 800, fontSize: '0.95rem', color: meta.color }}>{meta.label} Package</div>
               <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '1px' }}>
@@ -294,7 +312,7 @@ export default function CreatePackage() {
             padding: '12px 14px', background: 'var(--bg-elevated)',
             borderBottom: '1px solid var(--border)',
           }}>
-            <span style={{ fontSize: '1.1rem' }}>🍽️</span>
+            <Utensils size={18} style={{ color: 'var(--primary)' }} />
             <div style={{ flex: 1 }}>
               <div style={{ fontWeight: 800, fontSize: '0.88rem' }}>Included Dishes</div>
               <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>{selectedDishNames.length} dishes selected</div>
@@ -307,16 +325,26 @@ export default function CreatePackage() {
                 background: showPicker && pickerTab === 'dishes' ? meta.bg : 'transparent',
                 color: meta.color, fontWeight: 700, fontSize: '0.75rem',
                 cursor: 'pointer', fontFamily: 'inherit',
+                display: 'flex', alignItems: 'center', gap: '4px'
               }}
             >
-              {showPicker && pickerTab === 'dishes' ? 'Done ✓' : '+ Edit'}
+              {showPicker && pickerTab === 'dishes' ? (
+                <>
+                  <Check size={14} />
+                  <span>Done</span>
+                </>
+              ) : (
+                <span>+ Edit</span>
+              )}
             </button>
           </div>
 
           {/* Selected dishes by category — image-card style */}
           {selectedDishNames.length === 0 ? (
             <div style={{ padding: '24px 16px', textAlign: 'center' }}>
-              <div style={{ fontSize: '2rem', marginBottom: '8px' }}>🍽️</div>
+              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '8px' }}>
+                <Utensils size={40} style={{ color: 'var(--text-muted)' }} />
+              </div>
               <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>No dishes selected — tap Edit to add dishes</div>
             </div>
           ) : (
@@ -330,7 +358,9 @@ export default function CreatePackage() {
                   borderBottom: '1px solid var(--border)',
                   borderTop: '1px solid var(--border)',
                 }}>
-                  <span style={{ fontSize: '0.9rem' }}>{CATEGORY_EMOJI[catLabel] || '🍽️'}</span>
+                  <span style={{ display: 'flex', alignItems: 'center' }}>
+                    <Icon name={CATEGORY_EMOJI[catLabel] || 'Utensils'} size={14} style={{ color: meta.color }} />
+                  </span>
                   <span style={{ fontWeight: 700, fontSize: '0.78rem', flex: 1 }}>{catLabel}</span>
                   <span style={{
                     fontSize: '0.6rem', fontWeight: 700, padding: '2px 7px', borderRadius: '999px',
@@ -365,7 +395,7 @@ export default function CreatePackage() {
             padding: '12px 14px', background: 'rgba(124,58,237,0.05)',
             borderBottom: selectedAddonNames.length > 0 ? '1px solid var(--border)' : 'none',
           }}>
-            <span style={{ fontSize: '1.1rem' }}>✨</span>
+            <Sparkles size={18} style={{ color: '#7C3AED' }} />
             <div style={{ flex: 1 }}>
               <div style={{ fontWeight: 800, fontSize: '0.88rem' }}>Add-ons & Live Counters</div>
               <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>{selectedAddonNames.length} selected</div>
@@ -378,9 +408,17 @@ export default function CreatePackage() {
                 background: showPicker && pickerTab === 'addons' ? 'rgba(124,58,237,0.08)' : 'transparent',
                 color: '#7C3AED', fontWeight: 700, fontSize: '0.75rem',
                 cursor: 'pointer', fontFamily: 'inherit',
+                display: 'flex', alignItems: 'center', gap: '4px'
               }}
             >
-              {showPicker && pickerTab === 'addons' ? 'Done ✓' : '+ Edit'}
+              {showPicker && pickerTab === 'addons' ? (
+                <>
+                  <Check size={14} />
+                  <span>Done</span>
+                </>
+              ) : (
+                <span>+ Edit</span>
+              )}
             </button>
           </div>
           {selectedAddonNames.length === 0 && (
@@ -422,8 +460,8 @@ export default function CreatePackage() {
               {/* Tab switcher */}
               <div style={{ display: 'flex', gap: '6px', marginBottom: '10px' }}>
                 {[
-                  { key: 'dishes', label: '🍽️ Dishes', color: meta.color },
-                  { key: 'addons', label: '✨ Add-ons', color: '#7C3AED' },
+                  { key: 'dishes', label: 'Dishes', iconName: 'Utensils', color: meta.color },
+                  { key: 'addons', label: 'Add-ons', iconName: 'Sparkles', color: '#7C3AED' },
                 ].map(t => (
                   <button key={t.key} onClick={() => setPickerTab(t.key)} style={{
                     flex: 1, padding: '7px', borderRadius: '10px',
@@ -432,7 +470,11 @@ export default function CreatePackage() {
                     color: pickerTab === t.key ? t.color : 'var(--text-muted)',
                     fontWeight: pickerTab === t.key ? 800 : 500, fontSize: '0.78rem',
                     cursor: 'pointer', fontFamily: 'inherit',
-                  }}>{t.label}</button>
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
+                  }}>
+                    <Icon name={t.iconName} size={14} style={{ color: pickerTab === t.key ? t.color : 'var(--text-muted)' }} />
+                    <span>{t.label}</span>
+                  </button>
                 ))}
               </div>
 
@@ -447,7 +489,7 @@ export default function CreatePackage() {
                       background: 'var(--bg-input)', border: '1.5px solid var(--border)',
                       borderRadius: '10px', padding: '6px 10px',
                     }}>
-                      <span style={{ opacity: 0.4 }}>🔍</span>
+                      <Search size={14} style={{ color: 'var(--text-muted)' }} />
                       <input
                         value={dishSearch}
                         onChange={e => setDishSearch(e.target.value)}
@@ -455,14 +497,16 @@ export default function CreatePackage() {
                         style={{ flex: 1, border: 'none', background: 'transparent', color: 'var(--text)', fontSize: '0.8rem', outline: 'none', fontFamily: 'inherit' }}
                       />
                       {dishSearch && (
-                        <button onClick={() => setDishSearch('')} style={{ border: 'none', background: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: 0 }}>✕</button>
+                        <button onClick={() => setDishSearch('')} style={{ border: 'none', background: 'none', color: 'var(--text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: 0 }}>
+                          <X size={12} />
+                        </button>
                       )}
                     </div>
                     <select value={dishSubFilter} onChange={e => setDishSubFilter(e.target.value)}
                       style={{ padding: '6px 8px', borderRadius: '10px', border: '1.5px solid var(--border)', background: 'var(--bg-input)', color: 'var(--text)', fontSize: '0.75rem', fontFamily: 'inherit', outline: 'none' }}>
                       <option value="all">All</option>
-                      <option value="veg">🟢 Veg</option>
-                      <option value="non-veg">🔴 Non-Veg</option>
+                      <option value="veg">Veg</option>
+                      <option value="non-veg">Non-Veg</option>
                     </select>
                   </div>
 
@@ -481,7 +525,16 @@ export default function CreatePackage() {
                           cursor: 'pointer', fontFamily: 'inherit',
                         }}
                       >
-                        {cat === 'all' ? '🌐 All' : `${CATEGORY_EMOJI[cat] || ''} ${cat}`}
+                        {cat === 'all' ? (
+                          <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            <Inbox size={12} /> All
+                          </span>
+                        ) : (
+                          <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            <Icon name={CATEGORY_EMOJI[cat] || 'Utensils'} size={12} />
+                            <span>{cat}</span>
+                          </span>
+                        )}
                       </button>
                     ))}
                   </div>
@@ -500,7 +553,8 @@ export default function CreatePackage() {
                       background: 'var(--bg-elevated)', borderBottom: '1px solid var(--border)',
                       display: 'flex', alignItems: 'center', gap: '5px',
                     }}>
-                      <span>{CATEGORY_EMOJI[cat] || '🍽️'}</span> {cat}
+                      <Icon name={CATEGORY_EMOJI[cat] || 'Utensils'} size={12} style={{ color: meta.color }} />
+                      <span style={{ marginLeft: '4px' }}>{cat}</span>
                       <span style={{
                         marginLeft: 'auto', fontSize: '0.6rem', fontWeight: 700,
                         padding: '1px 6px', borderRadius: '999px',
@@ -536,14 +590,19 @@ export default function CreatePackage() {
               <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
                 {['addon', 'live_counter'].map(type => {
                   const typeItems = ADDON_ITEMS.filter(i => i.type === type);
-                  const typeLabel = type === 'addon' ? '✨ Add-ons' : '🔥 Live Counters';
+                  const typeLabel = type === 'addon' ? 'Add-ons' : 'Live Counters';
+                  const typeIcon = type === 'addon' ? 'Sparkles' : 'Flame';
                   return (
                     <div key={type}>
                       <div style={{
                         padding: '8px 14px', fontSize: '0.68rem', fontWeight: 800,
                         color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px',
                         background: 'var(--bg-elevated)', borderBottom: '1px solid var(--border)',
-                      }}>{typeLabel}</div>
+                        display: 'flex', alignItems: 'center', gap: '6px'
+                      }}>
+                        <Icon name={typeIcon} size={12} style={{ color: 'var(--primary)' }} />
+                        <span>{typeLabel}</span>
+                      </div>
                       {typeItems.map(item => (
                         <DishRow
                           key={item.id}
@@ -573,7 +632,11 @@ export default function CreatePackage() {
           <div style={{
             padding: '12px 14px', fontWeight: 800, fontSize: '0.88rem',
             borderBottom: '1px solid var(--border)', background: 'var(--bg-elevated)',
-          }}>📊 All Packages</div>
+            display: 'flex', alignItems: 'center', gap: '6px'
+          }}>
+            <TrendingUp size={16} style={{ color: 'var(--primary)' }} />
+            <span>All Packages</span>
+          </div>
           {packages.map((p, i) => {
             const m = PACKAGE_META[p.category] || PACKAGE_META.custom;
             return (
@@ -584,7 +647,7 @@ export default function CreatePackage() {
                 borderBottom: i < packages.length - 1 ? '1px solid var(--border)' : 'none',
                 cursor: 'pointer', transition: 'background 0.15s',
               }}>
-                <span style={{ fontSize: '1.1rem' }}>{m.emoji}</span>
+                <Icon name={m.iconName} size={18} style={{ color: i === activeIdx ? m.color : 'var(--text-muted)' }} />
                 <div style={{ flex: 1 }}>
                   <div style={{ fontWeight: 700, fontSize: '0.85rem', color: i === activeIdx ? m.color : 'var(--text)' }}>{p.title}</div>
                   <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>{(p.dishes || []).length} dishes · {(p.addOns || []).length} add-ons</div>
@@ -604,16 +667,29 @@ export default function CreatePackage() {
         <div style={{ display: 'flex', gap: '10px' }}>
           <button
             className="btn btn-primary"
-            style={{ flex: 2, background: `linear-gradient(135deg,${meta.color},${meta.color}cc)`, border: 'none' }}
+            style={{ flex: 2, background: `linear-gradient(135deg,${meta.color},${meta.color}cc)`, border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
             onClick={handleSave}
           >
-            {saved ? '✅ Saved!' : '💾 Save All Packages'}
+            {saved ? (
+              <>
+                <CheckCircle size={18} />
+                <span>Saved!</span>
+              </>
+            ) : (
+              <>
+                <Save size={18} />
+                <span>Save All Packages</span>
+              </>
+            )}
           </button>
-          <button className="btn btn-secondary" style={{ flex: 1 }} onClick={handleReset}>↺ Reset</button>
+          <button className="btn btn-secondary" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }} onClick={handleReset}>
+            <RotateCcw size={16} />
+            <span>Reset</span>
+          </button>
         </div>
         {saved && (
-          <p style={{ textAlign: 'center', fontSize: '0.8rem', color: '#059669', marginTop: '10px' }}>
-            ✓ All packages saved — customers can now see your pricing
+          <p style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', fontSize: '0.8rem', color: '#059669', marginTop: '10px' }}>
+            <CheckCircle size={14} /> All packages saved — customers can now see your pricing
           </p>
         )}
       </div>
@@ -621,19 +697,24 @@ export default function CreatePackage() {
       {/* ── Bottom nav ── */}
       <div className="bottom-nav">
         <NavLink to="/vendor" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} end>
-          <span className="nav-icon">🏠</span><span>Home</span>
+          <Home size={20} className="nav-icon" />
+          <span>Home</span>
         </NavLink>
         <NavLink to="/vendor/requests" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-          <span className="nav-icon">📥</span><span>Requests</span>
+          <Inbox size={20} className="nav-icon" />
+          <span>Requests</span>
         </NavLink>
         <NavLink to="/vendor/bookings" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-          <span className="nav-icon">📅</span><span>Bookings</span>
+          <Calendar size={20} className="nav-icon" />
+          <span>Bookings</span>
         </NavLink>
         <NavLink to="/vendor/earnings" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-          <span className="nav-icon">💰</span><span>Earnings</span>
+          <IndianRupee size={20} className="nav-icon" />
+          <span>Earnings</span>
         </NavLink>
         <NavLink to="/vendor/profile" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-          <span className="nav-icon">☰</span><span>More</span>
+          <Menu size={20} className="nav-icon" />
+          <span>More</span>
         </NavLink>
       </div>
     </div>

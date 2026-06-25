@@ -17,6 +17,7 @@
     "@supabase/supabase-js": "^2.100.0",
     "firebase": "^12.12.1",
     "leaflet": "^1.9.4",
+    "lucide-react": "^1.21.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-leaflet": "^5.0.0",

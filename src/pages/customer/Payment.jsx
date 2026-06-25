@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import { acceptBid } from '../../utils/data';
+import { Smartphone, CreditCard, Landmark, Lock } from 'lucide-react';
 
 export default function Payment() {
   const { id } = useParams(); // bidId
@@ -63,7 +64,9 @@ export default function Payment() {
               background: 'white', cursor: 'pointer'
             }}
           >
-            <div style={{ fontSize: '1.5rem' }}>📱</div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Smartphone size={24} style={{ color: 'var(--primary)' }} />
+            </div>
             <div style={{ flex: 1 }}>
               <div style={{ fontWeight: '600' }}>UPI</div>
               <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Google Pay, PhonePe, Paytm</div>
@@ -82,7 +85,9 @@ export default function Payment() {
               background: 'white', cursor: 'pointer'
             }}
           >
-            <div style={{ fontSize: '1.5rem' }}>💳</div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <CreditCard size={24} style={{ color: 'var(--primary)' }} />
+            </div>
             <div style={{ flex: 1 }}>
               <div style={{ fontWeight: '600' }}>Credit / Debit Card</div>
               <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Visa, Mastercard, RuPay</div>
@@ -101,7 +106,9 @@ export default function Payment() {
               background: 'white', cursor: 'pointer'
             }}
           >
-            <div style={{ fontSize: '1.5rem' }}>🏦</div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Landmark size={24} style={{ color: 'var(--primary)' }} />
+            </div>
             <div style={{ flex: 1 }}>
               <div style={{ fontWeight: '600' }}>Net Banking</div>
               <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>All major banks</div>
@@ -120,8 +127,8 @@ export default function Payment() {
         >
           {processing ? 'Processing Secure Payment...' : `Pay ₹${bid.totalPrice?.toLocaleString('en-IN')}`}
         </button>
-        <div style={{ textAlign: 'center', marginTop: '16px', fontSize: '0.8rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
-          🔒 100% Secure Payment
+        <div style={{ textAlign: 'center', marginTop: '16px', fontSize: '0.8rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+          <Lock size={14} style={{ color: 'var(--text-muted)' }} /> 100% Secure Payment
         </div>
       </div>
     </div>

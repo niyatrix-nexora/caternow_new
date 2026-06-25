@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { MASTER_MENU } from '../../utils/masterMenu';
+import { Leaf } from 'lucide-react';
 
 // ── Image map ─────────────────────────────────────────────────────────────────
 const MENU_IMG_MAP = {};
@@ -12,20 +13,20 @@ const EXTRA_MAP = {
   'Chicken Biryani':   '/plateimg/Chicken Biryani.png',
   'Dal Makhani':       '/plateimg/Dal Makhani.png',
   'Palak Paneer':      '/plateimg/Palak Paneer.png',
-  'Shahi Paneer':      '/plateimg/Shahi Paneer.jpeg',
-  'Chana Masala':      '/plateimg/Chana Masala.jpeg',
+  'Shahi Paneer':      '/images/Shahi Paneer.jpeg',
+  'Chana Masala':      '/images/Chana Masala.jpeg',
   'Kadai Paneer':      '/plateimg/Kadai Paneer.png',
-  'Butter Chicken':    '/plateimg/Butter Chicken.jpeg',
-  'Mutton Curry':      '/plateimg/mutton curry.jpeg',
-  'Fish Curry':        '/plateimg/fish curry.jpeg',
-  'Chicken Curry':     '/plateimg/Chicken Curry.jpeg',
+  'Butter Chicken':    '/plateimg/Butter Chicken.png',
+  'Mutton Curry':      '/plateimg/Mutton Curry.png',
+  'Fish Curry':        '/plateimg/Fish Curry.png',
+  'Chicken Curry':     '/plateimg/Chicken Curry.png',
   'Paneer Tikka':      '/plateimg/Paneer Tikka.png',
   'Veg Spring Rolls':  '/plateimg/Veg Spring Rolls.png',
   'Samosa':            '/plateimg/dish-samosa.png',
   'Hara Bhara Kabab':  '/plateimg/Hara Bhara Kabab.png',
   'Hara Bhara Kebab':  '/plateimg/Hara Bhara Kabab.png',
   'Chicken Tikka':     '/plateimg/Chicken Tikka.png',
-  'Seekh Kabab':       '/plateimg/Chicken Seekh Kebab.jpeg',
+  'Seekh Kabab':       '/plateimg/Chicken Seekh Kebab.png',
   'Tandoori Chicken':  '/plateimg/Tandoori Chicken.png',
   'Chicken Lollipop':  '/plateimg/Chicken Lollipop.png',
   'Butter Naan':       '/plateimg/Butter Naan.png',
@@ -36,20 +37,20 @@ const EXTRA_MAP = {
   'Kheer':             '/plateimg/kheer.png',
   'Rasgulla':          '/plateimg/rasmalai.png',
   'Kulfi':             '/plateimg/kulfi.png',
-  'Ice Cream':         '/plateimg/icecream.jpeg',
+  'Ice Cream':         '/plateimg/Ice cream.png',
   'Rasmalai':          '/plateimg/rasmalai.png',
-  'Masala Lassi':      '/plateimg/masala-lassi.jpeg',
-  'Buttermilk':        '/plateimg/buttermilk.jpeg',
-  'Coconut Water':     '/plateimg/coconut-water.jpeg',
-  'Fresh Juice':       '/plateimg/lemonsoda.jpeg',
-  'Cold Drinks':       '/plateimg/lemonsoda.jpeg',
-  'Mix Veg Curry':     '/plateimg/Veg Kurma.jpeg',
-  'Prawn Masala':      '/plateimg/Prawns Curry.jpeg',
-  'Prawn Cocktail':    '/plateimg/Prawn Fry.jpeg',
-  'Fish Fingers':      '/plateimg/Fish Fry.jpeg',
-  'Sambar':            '/plateimg/sambar.jpeg',
-  'Rasam':             '/plateimg/rasam.jpeg',
-  'Curd':              '/plateimg/curd.jpeg',
+  'Masala Lassi':      '/images/Masala Lassi.jpeg',
+  'Buttermilk':        '/images/buttermilk.jpeg',
+  'Coconut Water':     '/images/coconut-water.jpeg',
+  'Fresh Juice':       '/images/lemonsoda.jpeg',
+  'Cold Drinks':       '/images/lemonsoda.jpeg',
+  'Mix Veg Curry':     '/images/Veg Kurma.jpeg',
+  'Prawn Masala':      '/plateimg/Prawns Curry.png',
+  'Prawn Cocktail':    '/plateimg/Prawn Fry.png',
+  'Fish Fingers':      '/plateimg/Fish Fry.png',
+  'Sambar':            '/plateimg/Sambar.png',
+  'Rasam':             '/plateimg/Rasam.png',
+  'Curd':              '/plateimg/Curd.png',
   'Raita':             '/plateimg/dish-raita.png',
   'Boondi Raita':      '/plateimg/dish-raita.png',
   'Mint Chutney':      '/plateimg/dish-chutney.png',
@@ -62,8 +63,8 @@ const EXTRA_MAP = {
   'Mushroom 65':       '/plateimg/Mushroom 65.png',
   'Corn Cheese Balls': '/plateimg/Corn Cheese Balls.png',
   'Chicken 65':        '/plateimg/Chicken 65.png',
-  'Chicken Seekh Kebab': '/plateimg/Chicken Seekh Kebab.jpeg',
-  'Veg Kurma':         '/plateimg/Veg Kurma.jpeg',
+  'Chicken Seekh Kebab': '/plateimg/Chicken Seekh Kebab.png',
+  'Veg Kurma':         '/images/Veg Kurma.jpeg',
   'Malai Kofta':       '/plateimg/Malai Kofta.png',
   'Gongura Mutton':    '/plateimg/Gongura Mutton.png',
   'Ghee Rice':         '/plateimg/Ghee Rice.png',
@@ -72,7 +73,7 @@ const EXTRA_MAP = {
   'Coconut Rice':      '/plateimg/Coconut Rice.png',
   'Veg Fried Rice':    '/plateimg/veg-fried-rice.png',
   'Tomato Rice':       '/plateimg/Tomato Rice.png',
-  'Paneer Biryani':    '/plateimg/dish-biryani.png',
+  'Paneer Biryani':    '/plateimg/Paneer Biryani.png',
   'Mushroom Biryani':  '/plateimg/Mushroom Biryani.png',
   'Chicken Dum Biryani': '/plateimg/Chicken Dum Biryani.png',
   'Mutton Biryani':    '/plateimg/Mutton Biryani.png',
@@ -89,70 +90,66 @@ const EXTRA_MAP = {
   'Carrot Halwa':      '/plateimg/carrot halwa.png',
 };
 
-const ALL_PLATE_FILES = new Set([
-  'Butter Chicken.jpeg',
-  'Butter Naan.jpeg',
+const PLATE_FILE_MAP = {};
+[
+  'Andhra Chicken Curry.png',
+  'Andhra Sambar.png',
+  'Apollo Fish.png',
+  'Butter Chicken.png',
   'Butter Naan.png',
-  'Chana Masala.jpeg',
   'Chicken 65.png',
   'Chicken Biryani.png',
-  'Chicken Curry.jpeg',
+  'Chicken Curry.png',
   'Chicken Dum Biryani.png',
-  'Chicken Lollipop.jpeg',
   'Chicken Lollipop.png',
-  'Chicken Seekh Kebab.jpeg',
-  'Chicken Tikka.jpeg',
+  'Chicken Seekh Kebab.png',
   'Chicken Tikka.png',
   'Chilli Paneer.png',
   'Coconut Rice.png',
   'Corn Cheese Balls.png',
   'Crispy Corn.png',
-  'Dal Makhani.jpeg',
+  'Curd.png',
   'Dal Makhani.png',
   'Fish Biryani.png',
-  'Fish Fry.jpeg',
+  'Fish Curry.png',
+  'Fish Fry.png',
   'Garlic Naan.png',
   'Ghee Rice.png',
   'Gobi 65.png',
   'Gongura Mutton.png',
   'Gutti Vankaya Kura.png',
-  'Hara Bhara Kabab.jpeg',
   'Hara Bhara Kabab.png',
-  'Jeera Rice.jpeg',
+  'Ice cream.png',
   'Jeera Rice.png',
-  'Kadai Paneer.jpeg',
+  'Kadai Chicken.png',
   'Kadai Paneer.png',
   'Lemon Rice.png',
   'Malai Kofta.png',
   'Mushroom 65.png',
   'Mushroom Biryani.png',
   'Mutton Biryani.png',
-  'Palak Paneer.jpeg',
+  'Mutton Curry.png',
   'Palak Paneer.png',
-  'Paneer Tikka.jpeg',
+  'Paneer Biryani.png',
   'Paneer Tikka.png',
   'Plain Naan.png',
   'Potato Fry.png',
   'Prawn Biryani.png',
-  'Prawn Fry.jpeg',
-  'Prawns Curry.jpeg',
+  'Prawn Fry.png',
+  'Prawns Curry.png',
   'Pulihora.png',
-  'Shahi Paneer.jpeg',
-  'Tandoori Chicken.jpeg',
+  'Rasam.png',
+  'Sambar.png',
+  'Semaya Payasam.png',
   'Tandoori Chicken.png',
-  'TandooriRoti.jpeg',
   'TandooriRoti.png',
+  'Tomato Rasam.png',
   'Tomato Rice.png',
-  'Veg Kurma.jpeg',
-  'Veg Spring Rolls.jpeg',
+  'Ulavacharu.png',
   'Veg Spring Rolls.png',
-  'Vegetable Dum Biryani.jpeg',
   'Vegetable Dum Biryani.png',
-  'buttermilk.jpeg',
+  'banana-leaf-real.png',
   'carrot halwa.png',
-  'chicken biriyani.jpeg',
-  'coconut-water.jpeg',
-  'curd.jpeg',
   'dish-butter-chicken.png',
   'dish-chutney.png',
   'dish-dal.png',
@@ -163,29 +160,19 @@ const ALL_PLATE_FILES = new Set([
   'dish-salad.png',
   'dish-samosa.png',
   'dubkalmeeta.png',
-  'fish curry.jpeg',
-  'gulab jamun.jpeg',
   'gulabjamun.png',
-  'icecream.jpeg',
-  'kheer.jpeg',
   'kheer.png',
   'kulcha.png',
-  'kulfi.jpeg',
   'kulfi.png',
-  'lemonsoda.jpeg',
-  'masala-lassi.jpeg',
-  'mutton curry.jpeg',
-  'parota.jpeg',
   'parota.png',
   'poori.png',
-  'rasam.jpeg',
-  'rasamalai.jpeg',
   'rasmalai.png',
   'rice-real.png',
   'rumaliroti.png',
-  'sambar.jpeg',
-  'veg-fried-rice.png',
-]);
+  'veg-fried-rice.png'
+].forEach(f => {
+  PLATE_FILE_MAP[f.toLowerCase()] = f;
+});
 
 function getImg(name) {
   // 1. Direct EXTRA_MAP override
@@ -201,12 +188,14 @@ function getImg(name) {
       const pngFilename = filename.replace(/\.(jpeg|jpg)$/i, '.png');
       
       // Try to find a transparent PNG first
-      if (ALL_PLATE_FILES.has(pngFilename)) {
-        return `/plateimg/${pngFilename}`;
+      const lowerPng = pngFilename.toLowerCase();
+      if (PLATE_FILE_MAP[lowerPng]) {
+        return `/plateimg/${PLATE_FILE_MAP[lowerPng]}`;
       }
       // Try to find the exact file in plateimg
-      if (ALL_PLATE_FILES.has(filename)) {
-        return `/plateimg/${filename}`;
+      const lowerFilename = filename.toLowerCase();
+      if (PLATE_FILE_MAP[lowerFilename]) {
+        return `/plateimg/${PLATE_FILE_MAP[lowerFilename]}`;
       }
       // If neither is in plateimg, fall back to the catalog image in /images/
       return img;
@@ -220,11 +209,13 @@ function getImg(name) {
       // Check if the filename without slash exists in plateimg
       const filename = img.substring(1);
       const pngFilename = filename.replace(/\.(jpeg|jpg)$/i, '.png');
-      if (ALL_PLATE_FILES.has(pngFilename)) {
-        return `/plateimg/${pngFilename}`;
+      const lowerPng = pngFilename.toLowerCase();
+      if (PLATE_FILE_MAP[lowerPng]) {
+        return `/plateimg/${PLATE_FILE_MAP[lowerPng]}`;
       }
-      if (ALL_PLATE_FILES.has(filename)) {
-        return `/plateimg/${filename}`;
+      const lowerFilename = filename.toLowerCase();
+      if (PLATE_FILE_MAP[lowerFilename]) {
+        return `/plateimg/${PLATE_FILE_MAP[lowerFilename]}`;
       }
     }
     return img;
@@ -258,12 +249,12 @@ function getFallbackCatalog(name) {
 function zone(name) {
   const n = name.toLowerCase();
   if (/rice|biryani/.test(n))                                                              return 'rice';
-  if (/sambar|rasam|curd|raita|chutney|pickle|papad|buttermilk|lassi|water|juice|drink/.test(n)) return 'condiment';
-  if (/dal|palak|shahi|chana|kadai|mix veg|kurma|malai/.test(n))                           return 'curry_veg';
-  if (/butter chicken|mutton|prawn masala|fish curry|kadai chicken|andhra|chicken curry/.test(n)) return 'curry_nonveg';
+  if (/sambar|rasam|curd|raita|buttermilk|lassi|water|juice|drink/.test(n))                 return 'condiment_liquid';
+  if (/chutney|pickle|papad|salad/.test(n))                                                 return 'condiment_dry';
   if (/tikka|kabab|samosa|spring roll|lollipop|finger|cocktail|aloo tikki|hara bhara|65|fry/.test(n)) return 'starter';
+  if (/dal|palak|shahi|chana|kadai|mix veg|kurma|malai|curry|mutton|prawn|fish|chicken/.test(n)) return 'curry';
   if (/naan|paratha|roti|poori|kulcha|rumali/.test(n))                                     return 'bread';
-  if (/gulab|rasgulla|kulfi|ice cream|rasmalai|kheer|halwa|semaya|carrot/.test(n))         return 'sweet';
+  if (/gulab|rasgulla|kulfi|ice cream|rasmalai|kheer|halwa|semaya|carrot|sweet|double ka/.test(n)) return 'sweet';
   return 'other';
 }
 
@@ -294,46 +285,50 @@ function buildLayout(dishes) {
   const breadItems = all.filter(d => zone(d) === 'bread');
   const otherItems = all.filter(d => zone(d) !== 'rice' && zone(d) !== 'bread');
 
+  // Compute sizes dynamically based on numbers of items
+  const arcDishes = [...otherItems, ...riceItems.slice(1)];
+  const N = arcDishes.length;
+  
+  // Calculate base katori size as a percentage of container width
+  // Limit to max 13.5% and scale down to prevent overlap
+  const katoriSize = N <= 1 ? 13.5 : Math.max(5.5, Math.min(13.5, (31 * 3.3) / (N + 1)));
+  const breadSize = Math.max(7.5, Math.min(15.5, katoriSize * 1.25));
+
   const layout = [];
 
-  // 3. Place Rice (first rice item is central)
+  // 3. Place Rice (first rice item is central, positioned slightly higher to leave room below)
   let mainRice = null;
   if (riceItems.length > 0) {
     mainRice = riceItems[0];
-    layout.push({ dish: mainRice, isRice: true, x: 50, y: 52 });
+    layout.push({ dish: mainRice, isRice: true, x: 50, y: 49, sizeW: 23, sizeH: 33 });
   }
 
-  // Remaining rice items are treated as arc items
-  const extraRice = riceItems.slice(1);
-  const arcDishes = [...otherItems, ...extraRice];
-
-  // 4. Sort arc dishes by Zone Order for clean arrangement from left to right
-  const ZONE_ORDER = ['condiment', 'starter', 'curry_nonveg', 'curry_veg', 'other', 'sweet'];
+  // 4. Sort arc dishes by Zone Order for clean arrangement from left to right:
+  // Condiments/Dry Starters -> Main Curries (top center) -> Liquid Condiments (Sambar, Rasam, Curd) -> Desserts -> Extra Biryani/Rice (bottom right)
+  const ZONE_ORDER = ['condiment_dry', 'starter', 'curry', 'condiment_liquid', 'other', 'sweet', 'rice'];
   arcDishes.sort((a, b) => ZONE_ORDER.indexOf(zone(a)) - ZONE_ORDER.indexOf(zone(b)));
 
   // 5. Place Arc Dishes in a semi-circle along the leaf
-  const N = arcDishes.length;
   if (N > 0) {
     const cx = 50; // horizontal center
-    const cy = 48; // vertical center
-    const rx = 36; // horizontal radius
-    const ry = 26; // vertical radius
+    const cy = 47; // vertical center (slightly shifted up to match the leaf shape and leave room)
+    const rx = 33; // horizontal radius
+    const ry = 22; // vertical radius
     
-    // Spanning angle from 195 degrees (bottom left) to -15 degrees (bottom right)
     const startAngle = 195 * (Math.PI / 180);
     const endAngle = -15 * (Math.PI / 180);
 
     arcDishes.forEach((dish, i) => {
       let angle;
       if (N === 1) {
-        angle = 90 * (Math.PI / 180); // directly on top
+        angle = 90 * (Math.PI / 180);
       } else {
         angle = startAngle + i * ((endAngle - startAngle) / (N - 1));
       }
       
       const x = cx + rx * Math.cos(angle);
       const y = cy - ry * Math.sin(angle);
-      layout.push({ dish, x: clamp(x, 14, 86), y: clamp(y, 16, 78) });
+      layout.push({ dish, x: clamp(x, 18, 82), y: clamp(y, 18, 75), size: katoriSize });
     });
   }
 
@@ -343,34 +338,26 @@ function buildLayout(dishes) {
     breadItems.forEach((dish, i) => {
       let x, y;
       if (M === 1) {
-        x = 34;
-        y = 60;
+        x = 32;
+        y = 66;
       } else if (M === 2) {
-        x = i === 0 ? 34 : 66;
-        y = 60;
+        x = i === 0 ? 32 : 68;
+        y = 66;
       } else if (M === 3) {
-        if (i === 0) { x = 34; y = 60; }
-        else if (i === 1) { x = 66; y = 60; }
-        else { x = 50; y = 70; }
+        if (i === 0) { x = 32; y = 62; }
+        else if (i === 1) { x = 68; y = 62; }
+        else { x = 50; y = 74; }
       } else {
         // Distribute 4 or more breads symmetrically
-        const step = 40 / (M - 1);
-        x = 30 + i * step;
-        y = 65 + (i % 2 === 0 ? 3 : -3); // slight zigzag
+        const step = 38 / (M - 1);
+        x = 31 + i * step;
+        y = 70 + (i % 2 === 0 ? 2 : -2);
       }
-      layout.push({ dish, x: clamp(x, 18, 82), y: clamp(y, 50, 80) });
+      layout.push({ dish, x: clamp(x, 18, 82), y: clamp(y, 50, 80), size: breadSize });
     });
   }
 
   return layout;
-}
-
-function bowlPx(total) {
-  if (total <= 6)  return 58;
-  if (total <= 10) return 52;
-  if (total <= 15) return 46;
-  if (total <= 20) return 40;
-  return 36;
 }
 
 // ── Katori component ──────────────────────────────────────────────────────────
@@ -385,19 +372,20 @@ function Katori({ dish, x, y, size, visible, delay, interactive, onRemove }) {
       style={{
         position: 'absolute',
         left: `${x}%`, top: `${y}%`,
-        width: size, height: size,
+        width: `${size}%`, height: `${size / 0.58}%`,
         transform: `translate(-50%,-50%) ${visible ? 'scale(1)' : 'scale(0) translateY(-8px)'}`,
         opacity: visible ? 1 : 0,
         transition: `transform 0.42s cubic-bezier(0.34,1.56,0.64,1) ${delay}s, opacity 0.35s ease ${delay}s`,
         zIndex: 4,
         cursor: interactive ? 'pointer' : 'default',
-        // Transparent PNGs do not need circular borders or background masks!
+        // Transparent PNGs sit directly on the leaf; JPG curries are rendered inside metallic steel cups (katoris)
         borderRadius: isPng ? '0%' : '50%',
         overflow: isPng ? 'visible' : 'hidden',
+        border: isPng ? 'none' : '2.5px solid #d5d8dc', // sleek silver steel cup border
         boxShadow: isPng 
           ? 'none' 
-          : '0 4px 16px rgba(0,0,0,0.55), 0 1px 4px rgba(0,0,0,0.3)',
-        // Apply a high quality shape-based drop shadow for transparent PNG items
+          : '0 4px 12px rgba(0,0,0,0.55), inset 0 2px 4px rgba(255,255,255,0.4)',
+        // Apply drop shadow for PNG dry items
         filter: isPng ? 'drop-shadow(0 6px 12px rgba(0,0,0,0.6))' : 'none',
       }}
     >
@@ -407,14 +395,11 @@ function Katori({ dish, x, y, size, visible, delay, interactive, onRemove }) {
         loading="eager"
         style={{
           width: '100%', height: '100%',
-          // 'contain' displays transparent PNG plates/bowls in their native aspect ratio
-          // 'cover' scales standard circular JPEGs to fill the container fully
           objectFit: isPng ? 'contain' : 'cover',
           display: 'block',
           transform: isPng ? 'scale(1.2)' : 'scale(1.08)',
         }}
         onError={e => {
-          // If it fails, fallback to generic PNG or generic catalog JPG
           e.currentTarget.src = isPng ? getFallback(dish) : getFallbackCatalog(dish);
           e.currentTarget.onerror = null;
         }}
@@ -450,7 +435,6 @@ export default function BananaLeaf({ dishes = [], interactive = false, onDishCli
   }
 
   const layout = buildLayout(unique);
-  const sz = bowlPx(layout.length);
 
   useEffect(() => {
     setShown([]);
@@ -480,12 +464,16 @@ export default function BananaLeaf({ dishes = [], interactive = false, onDishCli
         {/* Dishes */}
         {layout.map((item, i) => {
           if (item.isRice) {
+            const w = item.sizeW || 23;
+            const h = item.sizeH || 33;
             return (
               <div
                 key="rice"
                 style={{
                   position: 'absolute',
-                  left: '50%', top: '50%',
+                  left: `${item.x}%`, top: `${item.y}%`,
+                  width: `${w}%`,
+                  height: `${h}%`,
                   transform: `translate(-50%,-50%) ${shown.includes(i) ? 'scale(1)' : 'scale(0)'}`,
                   opacity: shown.includes(i) ? 1 : 0,
                   transition: `transform 0.5s cubic-bezier(0.34,1.56,0.64,1) ${i * 0.055}s, opacity 0.4s ease ${i * 0.055}s`,
@@ -498,9 +486,9 @@ export default function BananaLeaf({ dishes = [], interactive = false, onDishCli
                   alt="Rice"
                   loading="eager"
                   style={{
-                    width: `${sz + 44}px`, height: `${sz + 18}px`,
+                    width: '100%', height: '100%',
                     objectFit: 'cover',
-                    borderRadius: '50% 50% 44% 44% / 55% 55% 45% 45%',
+                    borderRadius: '50%',
                     display: 'block',
                   }}
                 />
@@ -513,7 +501,7 @@ export default function BananaLeaf({ dishes = [], interactive = false, onDishCli
               dish={item.dish}
               x={item.x}
               y={item.y}
-              size={sz}
+              size={item.size}
               visible={shown.includes(i)}
               delay={i * 0.055}
               interactive={interactive}
@@ -530,7 +518,9 @@ export default function BananaLeaf({ dishes = [], interactive = false, onDishCli
             textAlign: 'center', color: '#fff',
             textShadow: '0 2px 8px rgba(0,0,0,0.9)', zIndex: 6,
           }}>
-            <div style={{ fontSize: '2rem', marginBottom: '4px' }}>🍃</div>
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '8px' }}>
+              <Leaf size={32} style={{ color: '#22c55e' }} />
+            </div>
             <div style={{ fontSize: '0.82rem', fontWeight: 700 }}>Select a package to preview your thali</div>
           </div>
         )}

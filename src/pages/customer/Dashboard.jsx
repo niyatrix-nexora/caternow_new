@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate, NavLink } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import { subscribeToAllRequests } from '../../utils/data';
+import { Heart, Star, Bell, Search, MapPin, Home, PlusCircle, User } from 'lucide-react';
 
 // Stable, reliable Indian food images (Unsplash with crossOrigin-safe format)
 const FOOD_IMAGES = [
@@ -71,20 +72,25 @@ export default function CustomerDashboard() {
   return (
     <div className="app-container premium-shell">
       <div className="home-topbar">
-        <button className="location-pill" type="button" onClick={() => alert('Location selector coming soon!')}>
-          <span>Hyderabad</span>
-          <small>Deliver to current area</small>
+        <button className="location-pill" type="button" onClick={() => alert('Location selector coming soon!')} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <MapPin size={16} style={{ color: 'var(--primary)', flexShrink: 0 }} />
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+            <span style={{ fontSize: '0.85rem', fontWeight: 700 }}>Hyderabad</span>
+            <small style={{ fontSize: '0.65rem' }}>Deliver to current area</small>
+          </div>
         </button>
-        <button className="icon-button" type="button" aria-label="Notifications" onClick={() => alert('No new notifications')}>!</button>
-        <div className="avatar-button">
+        <button className="icon-button" type="button" aria-label="Notifications" onClick={() => alert('No new notifications')} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <Bell size={20} />
+        </button>
+        <div className="avatar-button" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           {(user.name || 'CN').slice(0, 1).toUpperCase()}
         </div>
       </div>
 
       <div className="page home-page">
-        <button className="home-search" type="button" onClick={() => navigate('/customer/vendors')}>
+        <button className="home-search" type="button" onClick={() => navigate('/customer/vendors')} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <span>Search vendors, cuisine, events...</span>
-          <strong>Search</strong>
+          <Search size={18} style={{ color: 'var(--primary)' }} />
         </button>
 
         <div className="category-rail">
@@ -144,7 +150,7 @@ export default function CustomerDashboard() {
                   }}
                 />
               </div>
-              <span className="save-dot">♡</span>
+              <span className="save-dot" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Heart size={14} /></span>
               <strong>{pack.name}</strong>
               <small>{pack.meta}</small>
               <span className="price-line">₹{pack.price}/plate</span>
@@ -180,7 +186,9 @@ export default function CustomerDashboard() {
               <div className="vendor-card-body">
                 <div className="vendor-card-name">{vendor.name}</div>
                 <div className="vendor-card-meta">
-                  <span className="rating-pill">★ {(vendor.rating || 4.5).toFixed(1)}</span>
+                  <span className="rating-pill" style={{ display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                    <Star size={11} fill="currentColor" /> {(vendor.rating || 4.5).toFixed(1)}
+                  </span>
                   <span>{vendor.foodType === 'both' ? 'Veg + Non-Veg' : vendor.foodType}</span>
                 </div>
                 <div className="vendor-tags">
@@ -206,19 +214,19 @@ export default function CustomerDashboard() {
 
       <div className="bottom-nav">
         <NavLink to="/customer" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} end>
-          <span className="nav-icon">⌂</span>
+          <span className="nav-icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Home size={20} /></span>
           <span>Home</span>
         </NavLink>
         <NavLink to="/customer/new-request" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-          <span className="nav-icon">+</span>
+          <span className="nav-icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><PlusCircle size={20} /></span>
           <span>Request</span>
         </NavLink>
         <NavLink to="/customer/vendors" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-          <span className="nav-icon">⌕</span>
+          <span className="nav-icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Search size={20} /></span>
           <span>Search</span>
         </NavLink>
         <NavLink to="/customer/profile" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-          <span className="nav-icon">◉</span>
+          <span className="nav-icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><User size={20} /></span>
           <span>Profile</span>
         </NavLink>
       </div>

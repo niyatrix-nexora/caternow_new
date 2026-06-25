@@ -3,16 +3,20 @@ import { useNavigate, NavLink } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import { updateCustomer } from '../../utils/data';
 import { getWishlist, toggleWishlist } from '../../utils/packages';
+import {
+  Heart, Star, Search, MapPin, Check, Home, PlusCircle, User, Utensils, Leaf, Sparkles, X, Mail, Phone, Save, ClipboardList, CheckCircle2, IndianRupee, LogOut, ArrowLeft, Eye, Clock, AlertTriangle, MessageSquare, PartyPopper, XCircle, Pencil
+} from 'lucide-react';
+import { Icon } from '../../utils/iconHelper';
 
 const STATUS_MAP = {
-  searching: { cls: 'badge-searching', label: '🔍 Searching', icon: '🔍' },
-  bidding:   { cls: 'badge-bidding',   label: '💰 Bids In',   icon: '💰' },
-  confirmed: { cls: 'badge-confirmed', label: '✅ Confirmed',  icon: '✅' },
-  completed: { cls: 'badge-confirmed', label: '🎉 Completed',  icon: '🎉' },
-  cancelled: { cls: 'badge-cancelled', label: '✕ Cancelled',  icon: '✕'  },
+  searching: { cls: 'badge-searching', label: 'Searching', iconName: 'Search' },
+  bidding:   { cls: 'badge-bidding',   label: 'Bids In',   iconName: 'IndianRupee' },
+  confirmed: { cls: 'badge-confirmed', label: 'Confirmed',  iconName: 'CheckCircle2' },
+  completed: { cls: 'badge-confirmed', label: 'Completed',  iconName: 'PartyPopper' },
+  cancelled: { cls: 'badge-cancelled', label: 'Cancelled',  iconName: 'XCircle'  },
 };
 
-const FOOD_LABEL = { veg: '🟢 Veg', nonveg: '🔴 Non-Veg', both: '🟠 Both' };
+const FOOD_LABEL = { veg: 'Veg', nonveg: 'Non-Veg', both: 'Both' };
 
 function getInitials(name, phone) {
   if (name && name.trim()) {
@@ -75,13 +79,13 @@ export default function CustomerProfile() {
     const trimmedName  = name.trim();
     const trimmedEmail = email.trim();
     if (trimmedEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
-      setSaveFeedback('⚠️ Enter a valid email address.');
+      setSaveFeedback('error:Enter a valid email address.');
       return;
     }
     updateUser({ name: trimmedName, email: trimmedEmail });
     await updateCustomer(user.phone, { name: trimmedName, email: trimmedEmail });
     setEditing(false);
-    setSaveFeedback('✅ Profile updated!');
+    setSaveFeedback('success:Profile updated!');
     setTimeout(() => setSaveFeedback(''), 2500);
   };
 
@@ -96,8 +100,8 @@ export default function CustomerProfile() {
     <div className="app-container">
       <div className="page-header">
         <div style={{ flex: 1 }}>
-          <div className="logo" style={{ fontSize: '1.1rem' }}>
-            <span className="logo-icon" style={{ fontSize: '1.4rem' }}>🍽️</span>
+          <div className="logo" style={{ fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Utensils size={24} style={{ color: 'var(--primary)' }} />
             <span className="logo-text">My Profile</span>
           </div>
         </div>
@@ -114,22 +118,22 @@ export default function CustomerProfile() {
             <div className="profile-name">{user.name || 'Customer'}</div>
             <div className="profile-phone">{formatPhoneDisplay(user.phone)}</div>
             {user.email && (
-              <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '2px' }}>
-                ✉️ {user.email}
+              <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '2px', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                <Mail size={12} /> {user.email}
               </div>
             )}
             <div className="profile-role-badge">Customer Account</div>
           </div>
           <button
             className="btn btn-secondary btn-sm"
-            style={{ marginLeft: 'auto', alignSelf: 'flex-start' }}
+            style={{ marginLeft: 'auto', alignSelf: 'flex-start', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}
             onClick={() => {
               if (!editing) { setName(user?.name || ''); setEmail(user?.email || ''); }
               setEditing(e => !e);
               setSaveFeedback('');
             }}
           >
-            {editing ? '✕ Close' : '✏️ Edit'}
+            {editing ? <><X size={14} /> Close</> : <><Pencil size={14} /> Edit</>}
           </button>
         </div>
 
@@ -148,54 +152,58 @@ export default function CustomerProfile() {
             <div>
               <label style={{ fontSize: '0.78rem', color: 'var(--text-muted)', display: 'block', marginBottom: '6px' }}>Mobile Number</label>
               <input className="form-input" type="text" value={formatPhoneDisplay(user.phone)} disabled style={{ opacity: 0.5, cursor: 'not-allowed' }} />
-              <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '4px' }}>📱 Phone number cannot be changed.</p>
+              <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <Phone size={12} /> Phone number cannot be changed.
+              </p>
             </div>
             {saveFeedback && (
-              <p style={{ fontSize: '0.82rem', color: saveFeedback.startsWith('⚠️') ? 'var(--warning)' : 'var(--success)', margin: 0 }}>
-                {saveFeedback}
+              <p style={{ fontSize: '0.82rem', color: saveFeedback.startsWith('error:') ? 'var(--danger)' : 'var(--success)', margin: 0, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                {saveFeedback.startsWith('error:') ? <AlertTriangle size={14} /> : <Check size={14} />}
+                {saveFeedback.split(':')[1]}
               </p>
             )}
             <div style={{ display: 'flex', gap: '10px' }}>
-              <button className="btn btn-primary" style={{ flex: 1 }} onClick={handleSave}>💾 Save Changes</button>
+              <button className="btn btn-primary" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }} onClick={handleSave}><Save size={16} /> Save Changes</button>
               <button className="btn btn-secondary" style={{ flex: 1 }} onClick={() => { setEditing(false); }}>Cancel</button>
             </div>
           </div>
         )}
 
         {saveFeedback && !editing && (
-          <p style={{ fontSize: '0.82rem', color: 'var(--success)', marginBottom: '12px', textAlign: 'center' }}>
-            {saveFeedback}
+          <p style={{ fontSize: '0.82rem', color: saveFeedback.startsWith('error:') ? 'var(--danger)' : 'var(--success)', marginBottom: '12px', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
+            {saveFeedback.startsWith('error:') ? <AlertTriangle size={14} /> : <Check size={14} />}
+            {saveFeedback.split(':')[1]}
           </p>
         )}
 
         {/* ── Stats ── */}
         <div className="vd-stats" style={{ marginBottom: '20px' }}>
           <div className="vd-stat">
-            <span className="vd-stat-icon">📋</span>
+            <span className="vd-stat-icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><ClipboardList size={18} style={{ color: 'var(--primary)' }} /></span>
             <span className="vd-stat-value">{totalOrders}</span>
             <span className="vd-stat-label">Total Orders</span>
           </div>
           <div className="vd-stat-divider" />
           <div className="vd-stat">
-            <span className="vd-stat-icon">✅</span>
+            <span className="vd-stat-icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><CheckCircle2 size={18} style={{ color: 'var(--success)' }} /></span>
             <span className="vd-stat-value">{confirmed}</span>
             <span className="vd-stat-label">Confirmed</span>
           </div>
           <div className="vd-stat-divider" />
           <div className="vd-stat">
-            <span className="vd-stat-icon">💰</span>
+            <span className="vd-stat-icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><IndianRupee size={18} style={{ color: '#059669' }} /></span>
             <span className="vd-stat-value">{totalBidsRcvd}</span>
-            <span className="vd-stat-label">Bids Received</span>
+            <span className="vd-stat-label">Active Bids</span>
           </div>
         </div>
 
         {/* ── Tabs ── */}
         <div className="vd-tabs" style={{ marginBottom: '16px' }}>
-          <button className={`vd-tab ${activeTab === 'history' ? 'active' : ''}`} onClick={() => setActiveTab('history')}>
-            📋 Orders
+          <button className={`vd-tab ${activeTab === 'history' ? 'active' : ''}`} onClick={() => setActiveTab('history')} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+            <ClipboardList size={14} /> Orders
           </button>
-          <button className={`vd-tab ${activeTab === 'wishlist' ? 'active' : ''}`} onClick={() => setActiveTab('wishlist')}>
-            ❤️ Saved{wishlist.length > 0 ? ` (${wishlist.length})` : ''}
+          <button className={`vd-tab ${activeTab === 'wishlist' ? 'active' : ''}`} onClick={() => setActiveTab('wishlist')} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+            <Heart size={14} fill={activeTab === 'wishlist' ? 'var(--primary)' : 'transparent'} color={activeTab === 'wishlist' ? 'var(--primary)' : 'currentColor'} /> Saved{wishlist.length > 0 ? ` (${wishlist.length})` : ''}
           </button>
         </div>
 
@@ -204,7 +212,7 @@ export default function CustomerProfile() {
           <div>
             {history.length === 0 ? (
               <div className="empty-state">
-                <div className="empty-icon">📋</div>
+                <div className="empty-icon"><ClipboardList size={40} style={{ color: 'var(--text-muted)' }} /></div>
                 <h3>No orders yet</h3>
                 <p>Your catering request history will appear here.</p>
                 <button className="btn btn-primary mt-md" onClick={() => navigate('/customer/new-request')}>
@@ -214,7 +222,7 @@ export default function CustomerProfile() {
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {history.map((req, i) => {
-                  const s = STATUS_MAP[req.status] || { cls: 'badge-pending', label: req.status, icon: '•' };
+                  const s = STATUS_MAP[req.status] || { cls: 'badge-pending', label: req.status, iconName: 'HelpCircle' };
                   const bidCount = getBidCount(req.id);
                   return (
                     <div
@@ -224,7 +232,9 @@ export default function CustomerProfile() {
                       style={{ animationDelay: `${i * 0.04}s` }}
                     >
                       <div className="history-card-left">
-                        <div className={`history-status-dot ${req.status}`}>{s.icon}</div>
+                        <div className={`history-status-dot ${req.status}`} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <Icon name={s.iconName} size={12} />
+                        </div>
                       </div>
                       <div className="history-card-body">
                         <div className="history-card-title">
@@ -257,9 +267,9 @@ export default function CustomerProfile() {
         {activeTab === 'wishlist' && (
           <div>
             {wishlist.length === 0 ? (
-              <div className="empty-state">
-                <div className="empty-icon">🤍</div>
-                <h3>No saved vendors</h3>
+              <div className="empty-state" style={{ padding: '40px 16px' }}>
+                <div className="empty-icon"><Heart size={40} style={{ color: 'var(--text-muted)' }} /></div>
+                <h3>Your wishlist is empty</h3>
                 <p>Tap the heart icon on any vendor to save them here for quick access.</p>
                 <button className="btn btn-primary mt-md" onClick={() => navigate('/customer/vendors')}>
                   Browse Vendors
@@ -293,11 +303,11 @@ export default function CustomerProfile() {
                       <div className="history-card-meta">
                         <span>{FOOD_LABEL[vendor.foodType] || vendor.foodType}</span>
                         <span>·</span>
-                        <span>⭐ {vendor.rating?.toFixed(1) || '—'}</span>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '3px' }}><Star size={12} fill="var(--warning)" color="var(--warning)" /> {vendor.rating?.toFixed(1) || '—'}</span>
                         {vendor.fssai && (
                           <>
                             <span>·</span>
-                            <span style={{ color: 'var(--success)' }}>✅ FSSAI</span>
+                            <span style={{ color: 'var(--success)', display: 'inline-flex', alignItems: 'center', gap: '3px' }}><Check size={12} strokeWidth={3} /> FSSAI</span>
                           </>
                         )}
                       </div>
@@ -308,7 +318,7 @@ export default function CustomerProfile() {
                         style={{ background: 'none', border: 'none', fontSize: '1.2rem', cursor: 'pointer', padding: '4px' }}
                         aria-label="Remove from wishlist"
                       >
-                        ❤️
+                        <Heart size={16} fill="#dc2626" color="#dc2626" />
                       </button>
                     </div>
                   </div>
@@ -316,8 +326,8 @@ export default function CustomerProfile() {
               </div>
             ) : (
               <div style={{ textAlign: 'center', padding: '32px 16px', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
-                <div style={{ fontSize: '2rem', marginBottom: '8px' }}>🤍</div>
-                {wishlist.length} saved vendor{wishlist.length !== 1 ? 's' : ''} ·{' '}
+                <div style={{ marginBottom: '8px', display: 'flex', justifyContent: 'center', color: 'var(--text-muted)' }}><Heart size={36} /></div>
+                <h3>No saved vendors</h3>{wishlist.length} saved vendor{wishlist.length !== 1 ? 's' : ''} ·{' '}
                 <button
                   onClick={() => navigate('/customer/vendors')}
                   style={{ color: 'var(--primary)', fontWeight: 700, background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}
@@ -334,9 +344,9 @@ export default function CustomerProfile() {
           <button
             className="btn btn-secondary btn-block"
             onClick={logout}
-            style={{ borderColor: 'rgba(239,68,68,0.3)', color: 'var(--danger)' }}
+            style={{ borderColor: 'rgba(239,68,68,0.3)', color: 'var(--danger)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
           >
-            🚪 Logout
+            <LogOut size={16} /> Logout
           </button>
           <p style={{ textAlign: 'center', fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '10px' }}>
             CaterNow · All data is encrypted &amp; secure
@@ -346,20 +356,16 @@ export default function CustomerProfile() {
 
       <div className="bottom-nav">
         <NavLink to="/customer" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} end>
-          <span className="nav-icon">🏠</span>
-          <span>Home</span>
+          <span className="nav-icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Home size={20} /></span><span>Home</span>
         </NavLink>
         <NavLink to="/customer/new-request" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-          <span className="nav-icon">➕</span>
-          <span>New</span>
+          <span className="nav-icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><PlusCircle size={20} /></span><span>New</span>
         </NavLink>
         <NavLink to="/customer/vendors" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-          <span className="nav-icon">🔍</span>
-          <span>Vendors</span>
+          <span className="nav-icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Search size={20} /></span><span>Vendors</span>
         </NavLink>
         <NavLink to="/customer/profile" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-          <span className="nav-icon">👤</span>
-          <span>Profile</span>
+          <span className="nav-icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><User size={20} /></span><span>Profile</span>
         </NavLink>
       </div>
     </div>
