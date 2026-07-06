@@ -3,7 +3,7 @@ import { useNavigate, NavLink } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import { getVendors, getDistance } from '../../utils/data';
 import { toggleWishlist } from '../../utils/packages';
-import { Heart, Search, X, MapPin, Check, Home, PlusCircle, User, Utensils, Leaf, Sparkles, Star } from 'lucide-react';
+import { Heart, Search, X, MapPin, Check, Home, PlusCircle, User, Utensils, Leaf, Sparkles } from 'lucide-react';
 
 const VENDOR_IMAGE_MAP = {
   'Spice Garden Kitchen': '/spice.jpeg',
