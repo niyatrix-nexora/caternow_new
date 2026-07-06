@@ -2,8 +2,6 @@ import { useState, useEffect, useMemo } from 'react';
 import { useNavigate, NavLink } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import {
-  MASTER_MENU,
-  CATEGORY_ORDER,
   CATEGORY_EMOJI,
   getDishImage,
   groupByCategory,
@@ -19,7 +17,7 @@ import {
 } from '../../utils/masterMenu';
 import { Icon } from '../../utils/iconHelper';
 import {
-  Utensils, Flame, Sparkles, Save, Search, Check, CheckCircle, X, Pencil, ArrowLeft,
+  Sparkles, Save, Search, Check, CheckCircle, X, Pencil, ArrowLeft,
   Home, Inbox, Calendar, IndianRupee, Menu
 } from 'lucide-react';
 

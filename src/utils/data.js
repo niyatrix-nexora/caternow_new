@@ -143,7 +143,7 @@ function toCamel(obj) {
           result.menuNotes = parsed.notes || '';
         }
       }
-    } catch (e) {
+    } catch (_e) {
       // not JSON
     }
   }
@@ -160,7 +160,7 @@ function toCamel(obj) {
           result.notesRaw = trimmed;
         }
       }
-    } catch (e) {
+    } catch (_e) {
       // not JSON
     }
   }

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, NavLink } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import { getVendors, getDistance } from '../../utils/data';
-import { loadVendorPackages, toggleWishlist } from '../../utils/packages';
+import { toggleWishlist } from '../../utils/packages';
 import { Heart, Search, X, MapPin, Check, Home, PlusCircle, User, Utensils, Leaf, Sparkles, Star } from 'lucide-react';
 
 const VENDOR_IMAGE_MAP = {
@@ -16,15 +16,6 @@ const FALLBACK_GRADIENTS = {
   nonveg: 'linear-gradient(135deg,#DC2626,#B91C1C)',
   both: 'linear-gradient(135deg,#E8590C,#7C3AED)',
 };
-
-function getStartingPrice(vendorId) {
-  try {
-    const pkgs = loadVendorPackages(vendorId);
-    const active = pkgs.filter(p => p.isActive);
-    if (active.length === 0) return null;
-    return Math.min(...active.map(p => p.pricePerPlate));
-  } catch { return null; }
-}
 
 export default function VendorSearch() {
   const { user } = useApp();
@@ -149,7 +140,6 @@ export default function VendorSearch() {
             {filtered.map((vendor, i) => {
               const img = VENDOR_IMAGE_MAP[vendor.name];
               const grad = FALLBACK_GRADIENTS[vendor.foodType] || FALLBACK_GRADIENTS.both;
-              const startingPrice = getStartingPrice(vendor.id);
               const isWished = wishlist.includes(vendor.id);
 
               return (

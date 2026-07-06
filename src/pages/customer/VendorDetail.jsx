@@ -3,39 +3,16 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import { getVendor, getDistance } from '../../utils/data';
 import { loadVendorPackages, PACKAGE_META, toggleWishlist, isWishlisted } from '../../utils/packages';
-import { Heart, Star, Search, MapPin, PlusCircle, MessageSquare, Flame, Utensils, Leaf, CookingPot, ClipboardList, HelpCircle, Check, Phone, ArrowLeft, Pencil, X, Sparkles, CheckCircle2, Package } from 'lucide-react';
+import { Heart, Search, MapPin, PlusCircle, MessageSquare, Flame, Utensils, Leaf, CookingPot, ClipboardList, HelpCircle, Check, Phone, ArrowLeft, Pencil, X, Sparkles, CheckCircle2, Package } from 'lucide-react';
 import { Icon } from '../../utils/iconHelper';
 import {
   getVendorMenuForDisplay,
   getVendorLiveCounters,
   loadVendorMenuSelection,
   getDishImage,
-  CATEGORY_EMOJI,
-  CATEGORY_ORDER,
   groupByCategory,
   MASTER_MENU,
 } from '../../utils/masterMenu';
-
-// ── Dot indicator (like Swiggy / Zomato) ──────────────────────────────────────
-const SUB_DOT = {
-  veg:       { color: '#16a34a', border: '#16a34a' },
-  'non-veg': { color: '#dc2626', border: '#dc2626' },
-  na:        { color: '#9ca3af', border: '#9ca3af' },
-};
-
-function DietDot({ subCategory }) {
-  const d = SUB_DOT[subCategory] || SUB_DOT.na;
-  if (subCategory === 'na') return null;
-  return (
-    <div style={{
-      width: '14px', height: '14px', borderRadius: '3px', flexShrink: 0,
-      border: `1.5px solid ${d.border}`,
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-    }}>
-      <div style={{ width: '7px', height: '7px', borderRadius: '50%', background: d.color }} />
-    </div>
-  );
-}
 
 // ── Fallback: build a display menu from the vendor's package dishes ────────────
 function buildFallbackMenu(packages) {

@@ -171,8 +171,7 @@ export default function NewRequest() {
     }
   }, [position, foodType]);
 
-  const basePrice = selectedPackage?.price || 0;
-  const grandTotal = basePrice * parseInt(guests || 0);
+
 
   const validateStep = () => {
     setError('');

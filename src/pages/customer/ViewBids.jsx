@@ -12,7 +12,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import BananaLeaf from './BananaLeaf';
 import {
-  Check, X, Clock, IndianRupee, RotateCw, Send, MessageSquare, Utensils,
+  Check, X, RotateCw, MessageSquare, Utensils,
   CookingPot, MapPin, Sparkles, AlertTriangle, Search, Trash2, Eye, EyeOff,
   CheckCircle2, Zap, PartyPopper, FileText, ShoppingCart, Plus, ArrowLeft,
   FolderOpen

@@ -4,7 +4,7 @@ import { useApp } from '../../context/AppContext';
 import { updateCustomer } from '../../utils/data';
 import { getWishlist, toggleWishlist } from '../../utils/packages';
 import {
-  Heart, Star, Search, MapPin, Check, Home, PlusCircle, User, Utensils, Leaf, Sparkles, X, Mail, Phone, Save, ClipboardList, CheckCircle2, IndianRupee, LogOut, ArrowLeft, Eye, Clock, AlertTriangle, MessageSquare, PartyPopper, XCircle, Pencil
+  Heart, Star, Search, Check, Home, PlusCircle, User, Utensils, X, Mail, Phone, Save, ClipboardList, CheckCircle2, IndianRupee, LogOut, AlertTriangle, Pencil
 } from 'lucide-react';
 import { Icon } from '../../utils/iconHelper';
 

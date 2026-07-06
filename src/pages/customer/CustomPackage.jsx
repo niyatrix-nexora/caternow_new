@@ -126,10 +126,8 @@ export default function CustomPackage() {
   const { foodType = 'both', guests = 100, vendorId = null, vendorName = null } = location.state || {};
 
   const [selected, setSelected] = useState([]);
-  const [budget, setBudget] = useState('');
   const [search, setSearch] = useState('');
   const [activeCategory, setActiveCategory] = useState('all');
-  const [showBudget, setShowBudget] = useState(true);
   const [showLeaf, setShowLeaf] = useState(false);
 
   // Build the base item list:
@@ -187,7 +185,7 @@ export default function CustomPackage() {
     );
   };
 
-  const totalCost = budget ? parseInt(budget) * parseInt(guests) : 0;
+
 
   return (
     <div className="app-container" style={{ background: '#f8f8f8', minHeight: '100vh' }}>

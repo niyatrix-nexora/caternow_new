@@ -8,8 +8,14 @@
 // Strips all HTML tags from a string
 export function sanitizeText(str, maxLength = 500) {
   if (typeof str !== 'string') return '';
-  return str
-    .replace(/<[^>]*>/g, '')   // Strip HTML tags
+  let clean = str;
+  let prev;
+  do {
+    prev = clean;
+    clean = clean.replace(/<[^>]*>/g, '');   // Strip HTML tags recursively
+  } while (clean !== prev);
+
+  return clean
     .replace(/[<>]/g, '')       // Remove stray angle brackets
     .trim()
     .slice(0, maxLength);
