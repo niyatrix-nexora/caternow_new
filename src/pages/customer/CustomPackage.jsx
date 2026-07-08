@@ -61,7 +61,7 @@ function DishCard({ item, isSelected, onToggle }) {
     >
       {/* Food image */}
       <div style={{
-        width: 72, height: 72, borderRadius: 14, flexShrink: 0,
+        width: 90, height: 90, borderRadius: 16, flexShrink: 0,
         overflow: 'hidden', background: '#f5f5f5',
         border: isSelected ? '2px solid #FF6B00' : '1px solid #eee',
         position: 'relative', transition: 'border 0.15s',

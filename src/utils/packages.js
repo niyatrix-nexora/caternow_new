@@ -73,21 +73,64 @@ export const DEFAULT_PACKAGES = [
   },
 ];
 
+// ── Sanitize a package: ensure no null/undefined fields overwrite real data ────
+function sanitizePackage(pkg) {
+  return {
+    ...pkg,
+    title:         pkg.title         ?? '',
+    description:   pkg.description   ?? '',
+    pricePerPlate: pkg.pricePerPlate ?? 0,
+    dishes:        [...new Set((pkg.dishes || []).filter(Boolean))],
+    addOns:        [...new Set((pkg.addOns || []).filter(Boolean))],
+    isActive:      pkg.isActive !== undefined ? pkg.isActive : true,
+  };
+}
+
 // ── Load / save packages ──────────────────────────────────────────────────────
-export function loadVendorPackages(vendorId) {
+export async function loadVendorPackages(vendorId) {
+  // 1. Try Supabase first (source of truth)
+  if (isSupabaseConfigured()) {
+    try {
+      const { data, error } = await supabase
+        .from('vendors')
+        .select('menu')
+        .eq('id', vendorId)
+        .single();
+      if (!error && data?.menu?.packages?.length) {
+        const pkgs = data.menu.packages.map(p => sanitizePackage(p));
+        // ponytail: cache to localStorage for offline/fast reload
+        try { localStorage.setItem(PKG_KEY(vendorId), JSON.stringify(pkgs)); } catch { /* ignore */ }
+        return pkgs;
+      }
+    } catch { /* fall through */ }
+  }
+  // 2. Fall back to localStorage
   try {
     const raw = localStorage.getItem(PKG_KEY(vendorId));
     if (raw) return JSON.parse(raw);
   } catch { /* ignore */ }
+  // 3. Defaults
   return DEFAULT_PACKAGES.map(p => ({ ...p, id: `${vendorId}_${p.category}`, vendorId }));
 }
 
 export async function saveVendorPackages(vendorId, packages) {
-  try { localStorage.setItem(PKG_KEY(vendorId), JSON.stringify(packages)); } catch { /* ignore */ }
+  const clean = packages.map(sanitizePackage);
+  try { localStorage.setItem(PKG_KEY(vendorId), JSON.stringify(clean)); } catch { /* ignore */ }
   if (isSupabaseConfigured()) {
+    // ponytail: merge into existing menu JSON — don't overwrite other keys
+    let existingMenu = {};
+    try {
+      const { data } = await supabase
+        .from('vendors')
+        .select('menu')
+        .eq('id', vendorId)
+        .single();
+      if (data?.menu && typeof data.menu === 'object') existingMenu = data.menu;
+    } catch { /* ignore, will just write { packages } */ }
+
     const { error } = await supabase
       .from('vendors')
-      .update({ menu: { packages } })
+      .update({ menu: { ...existingMenu, packages: clean } })
       .eq('id', vendorId);
     if (error) {
       console.error('saveVendorPackages error:', error);

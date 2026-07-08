@@ -1,99 +1,13 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, NavLink } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
-import { saveVendorMenu, loadVendorMenu } from '../../utils/data';
 import { Icon } from '../../utils/iconHelper';
 import {
-  Mail, ClipboardList, Check, Clock, X, Utensils, Pencil, Save, RotateCcw,
+  Mail, ClipboardList, Check, Clock, X, Utensils, Pencil, Save,
   Smartphone, LogOut, Home, Inbox, Calendar, DollarSign, Menu, CheckCircle, AlertTriangle
 } from 'lucide-react';
 
-// ─── Item pool per food type ──────────────────────────────────────────────────
-const ITEM_POOL = {
-  starters: {
-    veg:    ['Paneer Tikka','Veg Spring Rolls','Samosa','Hara Bhara Kabab','Soup of the Day','Dahi Puri','Papdi Chaat','Veg Cutlet','Corn Chaat','Bruschetta','Aloo Tikki','Mushroom Skewer'],
-    nonveg: ['Chicken Tikka','Seekh Kabab','Fish Fingers','Mutton Shammi Kabab','Chicken Wings','Prawn Cocktail','Tandoori Chicken','Chicken Lollipop'],
-  },
-  mains: {
-    veg:    ['Dal Makhani','Palak Paneer','Shahi Paneer','Chana Masala','Aloo Gobi','Mix Veg Curry','Veg Biryani','Veg Fried Rice','Kadai Paneer','Matar Paneer','Pav Bhaji'],
-    nonveg: ['Butter Chicken','Chicken Biryani','Mutton Curry','Fish Curry','Chicken Curry','Egg Curry','Prawn Masala','Chicken Korma'],
-    breads: ['Naan','Butter Roti','Paratha','Steamed Rice','Jeera Rice'],
-  },
-  desserts:  ['Gulab Jamun','Rasgulla','Kheer','Halwa','Kulfi','Ice Cream','Fruit Salad','Jalebi','Brownie','Rasmalai','Payasam','Double Ka Meetha'],
-  beverages: ['Masala Lassi','Buttermilk','Lemon Water','Cold Drinks','Fresh Juice','Tea / Coffee','Mineral Water','Coconut Water','Rose Sharbat','Jaljeera'],
-};
 
-function getDefaultPrice(cat, name) {
-  const nonvegStarters = ITEM_POOL.starters.nonveg;
-  const nonvegMains    = ITEM_POOL.mains.nonveg;
-  const breads         = ITEM_POOL.mains.breads;
-  if (cat === 'starters' || cat === 'startersNonveg') return nonvegStarters.includes(name) ? 110 : 45;
-  if (cat === 'mainsNonveg') return 150;
-  if (cat === 'breads')      return breads.includes(name) ? 20 : 50;
-  if (cat === 'mainsVeg')    return 70;
-  if (cat === 'mains')       return nonvegMains.includes(name) ? 150 : breads.includes(name) ? 20 : 70;
-  if (cat === 'desserts')    return 40;
-  if (cat === 'beverages')   return 25;
-  return 50;
-}
-
-
-// Build the full menu split into separate sub-categories
-function buildFullMenu(foodType) {
-  const { starters, mains, desserts, beverages } = ITEM_POOL;
-
-  function toRows(cat, items) {
-    return items.map(name => ({
-      name,
-      enabled: true,
-      price: getDefaultPrice(cat, name),
-    }));
-  }
-
-  const isVeg    = foodType === 'veg'    || foodType === 'both';
-  const isNonveg = foodType === 'nonveg' || foodType === 'both';
-
-  // Starters: show veg always; nonveg only if vendor serves nonveg
-  const starterItems = isNonveg
-    ? [...starters.veg, ...starters.nonveg]
-    : starters.veg;
-
-  const result = {
-    starters:  toRows('starters', starterItems),
-    desserts:  toRows('desserts', desserts),
-    beverages: toRows('beverages', beverages),
-    breads:    toRows('breads', mains.breads),
-  };
-
-  if (isVeg)    result.mainsVeg    = toRows('mainsVeg',    mains.veg);
-  if (isNonveg) result.mainsNonveg = toRows('mainsNonveg', mains.nonveg);
-
-  return result;
-}
-
-// Merge saved menu with full pool — also handles old flat 'mains' data
-function mergeMenu(full, saved) {
-  const result = {};
-  for (const cat of Object.keys(full)) {
-    // Try the exact key first; fall back to the old 'mains' key for migration
-    const savedCat = saved[cat] || saved['mains'] || [];
-    result[cat] = full[cat].map(row => {
-      const s = savedCat.find(r => r.name === row.name);
-      return s ? { ...row, enabled: s.enabled, price: s.price ?? row.price, customName: s.customName ?? row.customName } : row;
-    });
-  }
-  return result;
-}
-
-// Order of display in the UI
-const CATEGORY_META = {
-  starters:    { icon: 'Salad', label: 'Starters' },
-  mainsVeg:    { icon: 'Leaf', label: 'Veg Mains' },
-  mainsNonveg: { icon: 'Flame', label: 'Non-Veg Mains' },
-  breads:      { icon: 'UtensilsCrossed', label: 'Breads & Rice' },
-  desserts:    { icon: 'Cake', label: 'Desserts' },
-  beverages:   { icon: 'Coffee', label: 'Beverages' },
-};
 
 const BID_STATUS = {
   pending:  { cls: 'badge-bidding',   label: 'Pending', icon: 'Clock' },
@@ -132,13 +46,6 @@ export default function VendorProfile() {
   const navigate = useNavigate();
 
   const [activeTab, setActiveTab]  = useState('history');
-  const [menu, setMenu]            = useState(null);
-  const [saved, setSaved]          = useState(false);
-  // Accordion: only one category open at a time
-  const [openCat, setOpenCat]      = useState('starters');
-  // Inline dish-name editing
-  const [renamingItem, setRenamingItem] = useState(null); // { cat, name }
-  const [renameValue,  setRenameValue]  = useState('');
 
   // Edit profile state
   const [name, setName]               = useState('');
@@ -154,11 +61,6 @@ export default function VendorProfile() {
 
   useEffect(() => {
     if (!user) return;
-    // Load from Supabase first, fall back to localStorage
-    loadVendorMenu(user.id).then(stored => {
-      const full = buildFullMenu(user.foodType || 'both');
-      setMenu(stored ? mergeMenu(full, stored) : full);
-    });
     setName(user.name || '');
     setBusinessName(user.businessName || '');
     setEmail(user.email || '');
@@ -179,54 +81,7 @@ export default function VendorProfile() {
   const wonBids     = myBids.filter(b => b.status === 'accepted');
   const pendingBids = myBids.filter(b => b.status === 'pending');
 
-  // Toggle item on/off
-  const toggleItem = useCallback((cat, name) => {
-    setSaved(false);
-    setMenu(prev => ({
-      ...prev,
-      [cat]: prev[cat].map(r => r.name === name ? { ...r, enabled: !r.enabled } : r),
-    }));
-  }, []);
 
-  // Update price for an item
-  const updatePrice = useCallback((cat, name, raw) => {
-    const price = parseInt(raw, 10);
-    setSaved(false);
-    setMenu(prev => ({
-      ...prev,
-      [cat]: prev[cat].map(r => r.name === name ? { ...r, price: isNaN(price) ? '' : price } : r),
-    }));
-  }, []);
-
-  // Rename a dish (custom display name)
-  const commitRename = useCallback((cat, name) => {
-    const trimmed = renameValue.trim();
-    if (trimmed && trimmed !== name) {
-      setSaved(false);
-      setMenu(prev => ({
-        ...prev,
-        [cat]: prev[cat].map(r => r.name === name ? { ...r, customName: trimmed } : r),
-      }));
-    }
-    setRenamingItem(null);
-    setRenameValue('');
-  }, [renameValue]);
-
-  const startRename = useCallback((cat, row) => {
-    setRenamingItem({ cat, name: row.name });
-    setRenameValue(row.customName || row.name);
-  }, []);
-
-  const handleSave = async () => {
-    await saveVendorMenu(user.id, menu);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2500);
-  };
-
-  const handleReset = () => {
-    setMenu(buildFullMenu(user.foodType || 'both'));
-    setSaved(false);
-  };
 
   const handleSaveProfile = () => {
     const trimmedEmail = email.trim();
@@ -245,10 +100,7 @@ export default function VendorProfile() {
     setTimeout(() => setSaveFeedback(null), 2500);
   };
 
-  if (!user || !menu) return null;
-
-  const enabledCount = Object.values(menu).flat().filter(r => r.enabled).length;
-  const totalCount   = Object.values(menu).flat().length;
+  if (!user) return null;
 
   return (
     <div className="app-container">
@@ -356,11 +208,7 @@ export default function VendorProfile() {
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
             <ClipboardList size={16} /> Bid History
           </button>
-          <button className={`vd-tab ${activeTab === 'menu' ? 'active' : ''}`}
-            onClick={() => setActiveTab('menu')}
-            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
-            <Utensils size={16} /> My Menu
-          </button>
+
           <button className={`vd-tab ${activeTab === 'account' ? 'active' : ''}`}
             onClick={() => setActiveTab('account')}
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
@@ -415,180 +263,7 @@ export default function VendorProfile() {
           </div>
         )}
 
-        {/* ══════════ MY MENU ══════════ */}
-        {activeTab === 'menu' && (
-          <div>
-            {/* Header bar */}
-            <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'14px' }}>
-              <p style={{ fontSize:'0.8rem', color:'var(--text-muted)', margin:0 }}>
-                <strong style={{ color:'var(--primary-light)' }}>{enabledCount}</strong> of {totalCount} items offered
-              </p>
-              <p style={{ fontSize:'0.72rem', color:'var(--text-muted)', margin:0, display: 'flex', alignItems: 'center', gap: '4px' }}>
-                Toggle · edit ₹ price · <Pencil size={10} /> rename
-              </p>
-            </div>
 
-            {Object.entries(CATEGORY_META).map(([cat, meta]) => {
-              // Skip categories not applicable to this vendor's food type
-              if (!menu[cat]) return null;
-              const rows    = menu[cat] || [];
-              const enabled = rows.filter(r => r.enabled).length;
-              const isOpen  = openCat === cat;
-              const toggle  = () => setOpenCat(prev => prev === cat ? '' : cat);
-
-              return (
-                <div key={cat} className="vm-category" style={{ marginBottom: '10px' }}>
-                  {/* Category header — tap to open/close */}
-                  <button className="vm-cat-header" onClick={toggle} style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
-                    <span className="vm-cat-icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <Icon name={meta.icon} size={18} style={{ color: 'var(--primary)' }} />
-                    </span>
-                    <span className="vm-cat-label" style={{ marginLeft: '10px' }}>{meta.label}</span>
-                    <span className="vm-cat-count" style={{ marginLeft: 'auto' }}>{enabled}/{rows.length}</span>
-                    <span className="vm-cat-arrow" style={{ marginLeft: '10px' }}>{isOpen ? '▲' : '▼'}</span>
-                  </button>
-
-                  {/* Items — shown when open */}
-                  {isOpen && (
-                    <div className="vm-item-list">
-                      <div className="vm-col-header">
-                        <span style={{ flex:1 }}></span>
-                        <span>Item</span>
-                        <span style={{ marginLeft:'auto', color:'var(--text-muted)', fontSize:'0.7rem' }}>₹/plate</span>
-                      </div>
-
-                      {rows.map((row, idx) => (
-                        <div
-                          key={row.name}
-                          className={`vm-item-row ${row.enabled ? 'enabled' : 'disabled'}`}
-                          style={{ animationDelay:`${idx * 0.02}s` }}
-                        >
-                          {/* Toggle */}
-                          <button
-                            className={`vm-toggle ${row.enabled ? 'on' : 'off'}`}
-                            onClick={() => toggleItem(cat, row.name)}
-                            title={row.enabled ? 'Click to hide from menu' : 'Click to show on menu'}
-                          >
-                            <span className="vm-toggle-knob" />
-                          </button>
-
-                          {/* Item name — tap Pencil to rename */}
-                          {renamingItem?.cat === cat && renamingItem?.name === row.name ? (
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '5px', flex: 1, minWidth: 0 }}>
-                              <input
-                                autoFocus
-                                type="text"
-                                value={renameValue}
-                                onChange={e => setRenameValue(e.target.value)}
-                                onKeyDown={e => {
-                                  if (e.key === 'Enter') commitRename(cat, row.name);
-                                  if (e.key === 'Escape') { setRenamingItem(null); setRenameValue(''); }
-                                }}
-                                maxLength={60}
-                                style={{
-                                  flex: 1, minWidth: 0, border: '1.5px solid var(--primary)',
-                                  borderRadius: '8px', padding: '4px 8px',
-                                  fontSize: '0.82rem', fontFamily: 'inherit',
-                                  background: 'var(--bg-input)', color: 'var(--text)',
-                                  outline: 'none',
-                                }}
-                              />
-                              <button
-                                onClick={() => commitRename(cat, row.name)}
-                                title="Confirm rename"
-                                style={{
-                                  width: 26, height: 26, borderRadius: '50%', border: 'none',
-                                  background: 'var(--success)', color: '#fff', cursor: 'pointer',
-                                  fontSize: '0.75rem', display: 'flex', alignItems: 'center',
-                                  justifyContent: 'center', flexShrink: 0,
-                                }}
-                              ><Check size={14} /></button>
-                              <button
-                                onClick={() => { setRenamingItem(null); setRenameValue(''); }}
-                                title="Cancel"
-                                style={{
-                                  width: 26, height: 26, borderRadius: '50%', border: 'none',
-                                  background: 'var(--bg-elevated)', color: 'var(--text-muted)',
-                                  cursor: 'pointer', fontSize: '0.75rem',
-                                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                  flexShrink: 0,
-                                }}
-                              ><X size={14} /></button>
-                            </div>
-                          ) : (
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '5px', flex: 1, minWidth: 0 }}>
-                              <span className="vm-item-name" style={{ flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                {row.customName || row.name}
-                                {row.customName && row.customName !== row.name && (
-                                  <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginLeft: '4px', fontStyle: 'italic' }}>
-                                    ({row.name})
-                                  </span>
-                                )}
-                              </span>
-                              <button
-                                onClick={() => startRename(cat, row)}
-                                title="Customize dish name"
-                                style={{
-                                  border: 'none', background: 'transparent', cursor: 'pointer',
-                                  color: 'var(--text-muted)', fontSize: '0.75rem', padding: '2px 4px',
-                                  borderRadius: '6px', flexShrink: 0, opacity: 0.6,
-                                  transition: 'opacity 0.15s, color 0.15s',
-                                  display: 'flex', alignItems: 'center', justifyContent: 'center'
-                                }}
-                                onMouseEnter={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.color = 'var(--primary)'; }}
-                                onMouseLeave={e => { e.currentTarget.style.opacity = '0.6'; e.currentTarget.style.color = 'var(--text-muted)'; }}
-                              ><Pencil size={12} /></button>
-                            </div>
-                          )}
-
-                          {/* Price input */}
-                          <div className="vm-price-field">
-                            <span className="vm-price-rs">₹</span>
-                            <input
-                              type="number"
-                              className="vm-price-input"
-                              value={row.price}
-                              min={1}
-                              max={9999}
-                              disabled={!row.enabled}
-                              onChange={e => updatePrice(cat, row.name, e.target.value)}
-                              placeholder="—"
-                            />
-                            <span className="vm-price-unit">/pl</span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-
-            {/* Save / Reset */}
-            <div style={{ display:'flex', gap:'10px', marginTop:'20px' }}>
-              <button className="btn btn-primary" style={{ flex:1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }} onClick={handleSave}>
-                {saved ? (
-                  <>
-                    <Check size={18} />
-                    <span>Saved!</span>
-                  </>
-                ) : (
-                  <>
-                    <Save size={18} />
-                    <span>Save Menu</span>
-                  </>
-                )}
-              </button>
-              <button className="btn btn-secondary" style={{ flex:1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }} onClick={handleReset}>
-                <RotateCcw size={18} />
-                <span>Reset</span>
-              </button>
-            </div>
-            <p style={{ fontSize:'0.7rem', color:'var(--text-muted)', textAlign:'center', marginTop:'10px' }}>
-              Customers see your enabled items with these prices on your profile page.
-            </p>
-          </div>
-        )}
 
         {/* ══════════ ACCOUNT EDIT ══════════ */}
         {activeTab === 'account' && (

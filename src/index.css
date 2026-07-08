@@ -882,7 +882,7 @@ textarea.form-input {
 
 /* ===== HIDDEN BID CARD ===== */
 .hidden-bid {
-  opacity: 0.65;
+  opacity: 0.85;
   border-style: dashed;
   background: rgba(107, 107, 128, 0.06);
 }
@@ -1192,13 +1192,13 @@ textarea.form-input {
 }
 
 .vendor-avatar-lg {
-  width: 52px;
-  height: 52px;
-  border-radius: var(--radius-md);
+  width: 76px;
+  height: 76px;
+  border-radius: var(--radius-lg);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.1rem;
+  font-size: 1.3rem;
   font-weight: 800;
   color: white;
   flex-shrink: 0;

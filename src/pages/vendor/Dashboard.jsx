@@ -44,7 +44,7 @@ export default function VendorDashboard() {
 
   useEffect(() => {
     if (!user) return;
-    setPackages(loadVendorPackages(user.id));
+    loadVendorPackages(user.id).then(setPackages);
   }, [user?.id]);
 
   useEffect(() => {

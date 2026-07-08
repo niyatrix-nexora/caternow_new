@@ -175,6 +175,30 @@ export default function EventTracking() {
   const eventDateObj = new Date(request.eventDate || new Date());
   const formattedDate = eventDateObj.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
 
+  // Calculate actual timestamps if available
+  const confirmedTime = request.confirmedAt || request.createdAt;
+  const statusUpdatedTime = request.trackingStatusUpdatedAt;
+
+  const getStepTime = (step, idx) => {
+    // If the step is confirmed, return the time the request was confirmed
+    if (step.id === 'confirmed' && confirmedTime) {
+      return new Date(confirmedTime).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+    }
+    // If the step is the current one, return the update time if available, or current time
+    if (idx === currentIndex && statusUpdatedTime) {
+      return new Date(statusUpdatedTime).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+    }
+    // Otherwise, calculate relative simulated time based on confirmed time for completed ones
+    if (idx < currentIndex && confirmedTime) {
+      const baseTime = new Date(confirmedTime);
+      const stepTime = new Date(baseTime.getTime() + step.timeOffset * 60000);
+      return stepTime.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+    }
+    return null;
+  };
+
+  const progressPercent = Math.round(((currentIndex + 1) / TRACKING_STEPS.length) * 100);
+
   return (
     <div className="app-container">
       <div className="page-header">
@@ -209,6 +233,17 @@ export default function EventTracking() {
           </div>
         </div>
 
+        {/* Dynamic progress bar */}
+        <div className="card" style={{ marginBottom: '20px', padding: '16px 20px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+            <span style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-secondary)' }}>Overall Progress</span>
+            <span style={{ fontSize: '0.82rem', fontWeight: 800, color: 'var(--primary)' }}>{progressPercent}%</span>
+          </div>
+          <div style={{ width: '100%', height: '8px', background: 'var(--border)', borderRadius: '4px', overflow: 'hidden' }}>
+            <div style={{ width: `${progressPercent}%`, height: '100%', background: 'var(--primary)', transition: 'width 0.4s ease' }} />
+          </div>
+        </div>
+
         <div className="card" style={{ padding: '24px 20px' }}>
           <h3 style={{ marginBottom: '24px', fontSize: '1rem' }}>Tracking Status</h3>
           
@@ -218,10 +253,7 @@ export default function EventTracking() {
               const isCurrent = idx === currentIndex;
               const isLast = idx === TRACKING_STEPS.length - 1;
               
-              // Calculate a simulated time based on event date minus some offset
-              // For a real app, this would be actual timestamps stored in DB
-              const time = new Date(eventDateObj.getTime() - (300 - step.timeOffset) * 60000);
-              const timeStr = time.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+              const stepTimeStr = getStepTime(step, idx);
 
               return (
                 <div key={step.id} style={{ display: 'flex', marginBottom: isLast ? 0 : '24px', position: 'relative' }}>
@@ -243,7 +275,7 @@ export default function EventTracking() {
                     width: '24px',
                     height: '24px',
                     borderRadius: '50%',
-                    background: isCompleted ? 'var(--success)' : 'var(--surface)',
+                    background: isCompleted ? 'var(--success)' : 'var(--bg-elevated)',
                     border: `2px solid ${isCompleted ? 'var(--success)' : 'var(--border)'}`,
                     display: 'flex',
                     alignItems: 'center',
@@ -252,9 +284,10 @@ export default function EventTracking() {
                     fontSize: '12px',
                     zIndex: 2,
                     marginRight: '16px',
-                    flexShrink: 0
+                    flexShrink: 0,
+                    boxShadow: isCurrent ? '0 0 0 4px rgba(232, 89, 12, 0.2)' : 'none'
                   }}>
-                    {isCompleted && <Check size={12} strokeWidth={3} />}
+                    {isCompleted ? <Check size={12} strokeWidth={3} /> : <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--text-muted)' }} />}
                   </div>
                   
                   {/* Content */}
@@ -274,7 +307,7 @@ export default function EventTracking() {
                     color: isCompleted ? 'var(--text-secondary)' : 'var(--text-muted)',
                     marginTop: '4px'
                   }}>
-                    {isCompleted ? timeStr : '--:--'}
+                    {isCompleted ? (stepTimeStr || 'Done') : '--:--'}
                   </div>
                 </div>
               );

@@ -1167,69 +1167,7 @@ export function formatDateShort(dateStr) {
 
 // ===== VENDOR MENU CONFIG (custom names, prices, enabled state) =====
 
-const LS_VENDOR_MENU_KEY = (id) => `caternow_vendor_menu_${id}`;
 
-/**
- * Save the full menu config (with customName overrides) for a vendor.
- * Uses Supabase vendors.menu_config (JSONB column) when available,
- * otherwise falls back to localStorage.
- */
-export async function saveVendorMenu(vendorId, menu) {
-  // Always mirror to localStorage for instant reads on next mount
-  try {
-    localStorage.setItem(LS_VENDOR_MENU_KEY(vendorId), JSON.stringify(menu));
-  } catch { /* ignore quota errors */ }
-
-  if (isSupabaseConfigured()) {
-    const { error } = await supabase
-      .from('vendors')
-      .update({ menu_config: menu })
-      .eq('id', vendorId);
-
-    if (error) {
-      // If the column doesn't exist yet, degrade gracefully to localStorage-only
-      const isColumnMissing =
-        error.message?.includes('menu_config') ||
-        error.code === 'PGRST204' ||
-        error.details?.includes('menu_config');
-
-      if (!isColumnMissing) {
-        console.error('saveVendorMenu:', error);
-      } else {
-        console.warn('menu_config column not found — saved to localStorage only. Add the column to persist across sessions.');
-      }
-    }
-  }
-}
-
-/**
- * Load the menu config for a vendor.
- * Reads from Supabase first; falls back to localStorage.
- */
-export async function loadVendorMenu(vendorId) {
-  if (isSupabaseConfigured()) {
-    const { data, error } = await supabase
-      .from('vendors')
-      .select('menu_config')
-      .eq('id', vendorId)
-      .maybeSingle();
-
-    if (!error && data?.menu_config) {
-      // Sync back to localStorage so next render is instant
-      try {
-        localStorage.setItem(LS_VENDOR_MENU_KEY(vendorId), JSON.stringify(data.menu_config));
-      } catch { /* ignore */ }
-      return data.menu_config;
-    }
-  }
-
-  // localStorage fallback
-  try {
-    return JSON.parse(localStorage.getItem(LS_VENDOR_MENU_KEY(vendorId)) || 'null');
-  } catch {
-    return null;
-  }
-}
 
 // ===== REALTIME SUBSCRIPTIONS =====
 

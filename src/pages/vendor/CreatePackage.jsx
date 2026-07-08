@@ -37,7 +37,7 @@ function DishRow({ item, isSelected, onToggle, metaColor, metaBg, metaBorder, sh
     >
       {/* Dish image */}
       <div style={{
-        width: 58, height: 58, borderRadius: 12, flexShrink: 0,
+        width: 80, height: 80, borderRadius: 12, flexShrink: 0,
         overflow: 'hidden', border: `1.5px solid ${isSelected ? metaBorder : 'var(--border)'}`,
         background: 'var(--bg-elevated)', position: 'relative',
       }}>
@@ -102,7 +102,7 @@ export default function CreatePackage() {
   const [dishSubFilter,  setDishSubFilter]  = useState('all');
 
   useEffect(() => { if (!user || user.role !== 'vendor') navigate('/'); }, [user, navigate]);
-  useEffect(() => { if (!user) return; setPackages(loadVendorPackages(user.id)); }, [user]);
+  useEffect(() => { if (!user) return; loadVendorPackages(user.id).then(setPackages); }, [user]);
 
   // ── Filtered dish items — must stay above early return (Rules of Hooks) ───────
   const dishCategories = CATEGORY_ORDER.filter(c => DISH_ITEMS.some(d => d.category === c));

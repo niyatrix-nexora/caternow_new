@@ -216,7 +216,7 @@ function MenuTab({ vendor, packages }) {
                 animation: `fadeInUp 0.3s ease ${idx * 0.03}s both`,
               }}>
                 <div style={{
-                  width: 72, height: 72, borderRadius: 14, flexShrink: 0,
+                  width: 90, height: 90, borderRadius: 16, flexShrink: 0,
                   overflow: 'hidden', border: '1px solid var(--border)',
                   background: 'var(--bg-elevated)', position: 'relative',
                 }}>
@@ -291,7 +291,7 @@ function MenuTab({ vendor, packages }) {
               borderBottom: idx < liveCounters.length - 1 ? '1px solid var(--border)' : 'none',
             }}>
               <div style={{
-                width: 72, height: 72, borderRadius: 14, flexShrink: 0,
+                width: 90, height: 90, borderRadius: 16, flexShrink: 0,
                 overflow: 'hidden', border: '1px solid rgba(234,88,12,0.25)',
                 background: 'var(--bg-elevated)',
               }}>
@@ -342,7 +342,7 @@ export default function VendorDetail() {
     getVendor(id).then(v => {
       if (v) {
         setVendor({ ...v, distance: getDistance(12.9716, 77.5946, v.lat, v.lng) });
-        setPackages(loadVendorPackages(v.id));
+        loadVendorPackages(v.id).then(setPackages);
         setWishlisted(isWishlisted(user?.id || 'guest', v.id));
       }
       setLoading(false);

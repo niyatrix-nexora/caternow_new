@@ -15,7 +15,7 @@ import {
   Check, X, RotateCw, MessageSquare, Utensils,
   CookingPot, MapPin, Sparkles, AlertTriangle, Search, Trash2, Eye, EyeOff,
   CheckCircle2, Zap, PartyPopper, FileText, ShoppingCart, Plus, ArrowLeft,
-  FolderOpen
+  FolderOpen, HelpCircle, Star
 } from 'lucide-react';
 
 delete L.Icon.Default.prototype._getIconUrl;
@@ -704,8 +704,17 @@ export default function ViewBids() {
                              <button className="btn btn-success btn-sm" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }} onClick={() => handleAccept(bid.id)} disabled={processing}>
                                <Check size={14} strokeWidth={3} /> Accept
                              </button>
-                             <button className="btn btn-secondary btn-sm" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }} onClick={() => handleUnhide(bid.id)}>
-                               <Eye size={14} /> Un-hide
+                             <button
+                               className="btn btn-sm"
+                               style={{
+                                 flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+                                 background: 'rgba(5,150,105,0.12)', color: '#059669', fontWeight: 700,
+                                 border: '1.5px solid rgba(5,150,105,0.4)', borderRadius: '10px',
+                                 padding: '8px 14px', fontSize: '0.82rem',
+                               }}
+                               onClick={() => handleUnhide(bid.id)}
+                             >
+                               <Eye size={14} /> Restore
                              </button>
                           </div>
                         </div>

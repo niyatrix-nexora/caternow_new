@@ -23,3 +23,5 @@ export const auth = getAuth(app);
 
 // Set language for SMS messages
 auth.useDeviceLanguage();
+
+

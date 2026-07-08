@@ -62,7 +62,7 @@ function EditDishModal({ item, customName, customPrice, onSave, onClose }) {
           <img
             src={getDishImage(item)}
             alt={item.name}
-            style={{ width: 64, height: 64, borderRadius: 14, objectFit: 'cover', flexShrink: 0, border: '1px solid var(--border)' }}
+            style={{ width: 80, height: 80, borderRadius: 14, objectFit: 'cover', flexShrink: 0, border: '1px solid var(--border)' }}
             onError={e => { e.currentTarget.src = '/dish-paneer.png'; }}
           />
           <div>
@@ -155,7 +155,7 @@ function DishCard({ item, isOn, customName, customPrice, onToggle, onEdit }) {
     }}>
       {/* Dish image */}
       <div style={{
-        width: 68, height: 68, borderRadius: 14, flexShrink: 0,
+        width: 86, height: 86, borderRadius: 14, flexShrink: 0,
         overflow: 'hidden', border: '1px solid var(--border)',
         background: 'var(--bg-elevated)',
         position: 'relative',
@@ -249,7 +249,7 @@ export default function MenuManagement() {
   const [customPrices, setCustomPrices] = useState({});
   const [search,       setSearch]       = useState('');
   const [subFilter,    setSubFilter]    = useState('all');
-  const [collapsed,    setCollapsed]    = useState({});
+  const [expanded,     setExpanded]     = useState({}); // ponytail: empty = all collapsed by default
   const [saved,        setSaved]        = useState(false);
   const [saveAnim,     setSaveAnim]     = useState(false);
   const [editItem,     setEditItem]     = useState(null);
@@ -305,7 +305,7 @@ export default function MenuManagement() {
   const grouped        = groupByCategory(filtered);
   const totalSelected  = enabledIds.size;
 
-  const toggleCollapse = cat => setCollapsed(prev => ({ ...prev, [cat]: !prev[cat] }));
+  const toggleExpand = cat => setExpanded(prev => ({ ...prev, [cat]: !prev[cat] }));
 
   const selectAll = items => {
     setSaved(false);
@@ -466,7 +466,7 @@ export default function MenuManagement() {
         {/* ── Category sections ── */}
         {Object.entries(grouped).map(([cat, items]) => {
           const catSelected = items.filter(i => enabledIds.has(i.id)).length;
-          const isCollapsed = collapsed[cat];
+          const isOpen = expanded[cat];
           const emoji = CATEGORY_EMOJI[cat] || 'Utensils';
 
           return (
@@ -477,11 +477,11 @@ export default function MenuManagement() {
             }}>
               {/* Category header */}
               <div
-                onClick={() => toggleCollapse(cat)}
+                onClick={() => toggleExpand(cat)}
                 style={{
                   display: 'flex', alignItems: 'center', gap: '10px',
                   padding: '13px 14px', cursor: 'pointer',
-                  borderBottom: isCollapsed ? 'none' : '1px solid var(--border)',
+                  borderBottom: isOpen ? '1px solid var(--border)' : 'none',
                   background: 'var(--bg-elevated)',
                 }}
               >
@@ -503,12 +503,12 @@ export default function MenuManagement() {
                   </span>
                 )}
                 <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginLeft: '4px' }}>
-                  {isCollapsed ? '▸' : '▾'}
+                  {isOpen ? '▾' : '▸'}
                 </span>
               </div>
 
               {/* Dish cards */}
-              {!isCollapsed && (
+              {isOpen && (
                 <div>
                   {items.map(item => (
                     <DishCard
